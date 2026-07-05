@@ -11,19 +11,20 @@
   <!-- FontAwesome Icons -->
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" />
 
-  <!-- Google Fonts: Orbitron / Share Tech Mono / Inter -->
+  <!-- Google Fonts: Inter (professional financial UI stack) -->
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;700;900&family=Share+Tech+Mono&family=Inter:wght@400;500;600&display=swap" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
 
   <script>
     tailwind.config = {
       theme: {
         extend: {
           fontFamily: {
-            orbitron: ['Orbitron', 'sans-serif'],
-            techmono: ['"Share Tech Mono"', 'monospace'],
-            inter: ['Inter', 'sans-serif'],
+            /* Phase 3 refactor: unified professional Inter stack (aliases kept for markup stability) */
+            orbitron: ['Inter', 'system-ui', '-apple-system', 'sans-serif'],
+            techmono: ['Inter', 'system-ui', '-apple-system', 'sans-serif'],
+            inter: ['Inter', 'system-ui', '-apple-system', 'sans-serif'],
           },
           colors: {
             void: '#020617',
@@ -42,6 +43,12 @@
   </script>
 
   <style>
+    /* ============ PHASE 3 TYPOGRAPHY REFACTOR ============ */
+    /* Headers & buttons (was Orbitron): clean bold Inter */
+    .font-orbitron { font-weight: 700; letter-spacing: 0.06em; }
+    /* Telemetry & data readouts (was Share Tech Mono): medium Inter with tabular figures */
+    .font-techmono { font-weight: 500; font-variant-numeric: tabular-nums; }
+
     /* ============ GLOBAL BASE ============ */
     body {
       background-color: #020617;
@@ -180,7 +187,7 @@
     <div class="flex items-center gap-3">
       <i class="fa-solid fa-atom text-neoncyan text-2xl glow-cyan" aria-hidden="true"></i>
       <div>
-        <h1 class="font-orbitron font-900 text-lg md:text-xl tracking-widest text-neoncyan glow-cyan">QUANTUM CORE <span class="text-neonmagenta glow-magenta">v3</span></h1>
+        <h1 class="font-orbitron font-extrabold text-lg md:text-xl tracking-widest text-neoncyan glow-cyan">QUANTUM CORE <span class="text-neonmagenta glow-magenta">v3</span></h1>
         <p class="font-techmono text-[10px] tracking-[0.3em] text-slate-500 uppercase">Trading Intelligence Terminal</p>
       </div>
     </div>
@@ -247,7 +254,7 @@
         <div class="px-4 pt-3 flex items-end gap-4">
           <div>
             <p class="font-techmono text-[10px] text-slate-500 uppercase">Last Tick</p>
-            <p id="ticker-price" class="font-orbitron text-3xl font-700 text-neongreen glow-green">$--,---.--</p>
+            <p id="ticker-price" class="font-orbitron text-3xl font-bold text-neongreen glow-green">$--,---.--</p>
           </div>
           <div class="pb-1">
             <p class="font-techmono text-[10px] text-slate-500 uppercase">24h Delta</p>
@@ -319,50 +326,21 @@
           <span class="font-techmono text-[10px] text-slate-500">ON-CHAIN // MEM</span>
         </div>
 
-        <!-- Wallet injector form -->
-        <form class="px-4 pt-3 flex gap-2" aria-label="Wallet address injector">
-          <label for="wallet-input" class="sr-only">Wallet address</label>
-          <input id="wallet-input" type="text" placeholder="0x... INJECT WALLET NODE"
-            class="flex-1 bg-paneldeep border border-gridline rounded-sm px-3 py-2 font-techmono text-[11px] text-neongreen placeholder:text-slate-600 focus:outline-none focus:border-neongreen/60" />
-          <button type="button" class="btn-neon font-orbitron text-[10px] tracking-widest text-neongreen border-neongreen/50 rounded-sm px-3 uppercase" style="border-color: rgba(74,222,128,0.5); background: rgba(74,222,128,0.06);">
-            <i class="fa-solid fa-syringe mr-1" aria-hidden="true"></i>Inject
+        <!-- Node injector form (address + tag) -->
+        <form id="wallet-form" class="px-4 pt-3 flex flex-col sm:flex-row gap-2" aria-label="Tracking node injector">
+          <label for="wallet-input" class="sr-only">Wallet address or order block ID</label>
+          <input id="wallet-input" type="text" placeholder="0x... OR FX BLOCK ID"
+            class="flex-1 min-w-0 bg-paneldeep border border-gridline rounded-sm px-3 py-2 font-techmono text-[11px] text-neongreen placeholder:text-slate-600 focus:outline-none focus:border-neongreen/60" />
+          <label for="wallet-tag" class="sr-only">Node tag</label>
+          <input id="wallet-tag" type="text" placeholder="TAG"
+            class="w-full sm:w-28 bg-paneldeep border border-gridline rounded-sm px-3 py-2 font-techmono text-[11px] text-neoncyan placeholder:text-slate-600 focus:outline-none focus:border-neoncyan/60" />
+          <button type="submit" class="btn-neon font-orbitron text-[10px] tracking-widest text-neongreen rounded-sm px-3 py-2 uppercase" style="border-color: rgba(74,222,128,0.5); background: rgba(74,222,128,0.06);">
+            <i class="fa-solid fa-syringe mr-1" aria-hidden="true"></i>Inject New Node
           </button>
         </form>
 
-        <!-- Tracked entities -->
-        <div class="flex-1 overflow-y-auto px-4 py-3 space-y-2 font-techmono text-[11px]">
-          <div class="border border-gridline rounded-sm px-3 py-2 flex items-center justify-between bg-paneldeep">
-            <div class="flex items-center gap-2">
-              <i class="fa-solid fa-fish text-neoncyan" aria-hidden="true"></i>
-              <div>
-                <p class="text-slate-300">WHALE-α // 0x7f3...a9c2</p>
-                <p class="text-[10px] text-slate-600">ROI 30D: <span class="text-neongreen">+---%</span></p>
-              </div>
-            </div>
-            <span class="text-[10px] text-slate-600 uppercase">Dormant</span>
-          </div>
-          <div class="border border-gridline rounded-sm px-3 py-2 flex items-center justify-between bg-paneldeep">
-            <div class="flex items-center gap-2">
-              <i class="fa-solid fa-robot text-neonmagenta" aria-hidden="true"></i>
-              <div>
-                <p class="text-slate-300">MEV-BOT-07 // 0x1b8...44de</p>
-                <p class="text-[10px] text-slate-600">SANDWICH OPS: <span class="text-neonamber">---</span></p>
-              </div>
-            </div>
-            <span class="text-[10px] text-slate-600 uppercase">Dormant</span>
-          </div>
-          <div class="border border-gridline rounded-sm px-3 py-2 flex items-center justify-between bg-paneldeep">
-            <div class="flex items-center gap-2">
-              <i class="fa-solid fa-building-columns text-neonamber" aria-hidden="true"></i>
-              <div>
-                <p class="text-slate-300">FX-ORDERBLOCK // EURUSD-INST</p>
-                <p class="text-[10px] text-slate-600">BLOCK DEPTH: <span class="text-neoncyan">--.-M</span></p>
-              </div>
-            </div>
-            <span class="text-[10px] text-slate-600 uppercase">Dormant</span>
-          </div>
-          <div class="text-center text-slate-600 text-[10px] pt-1">— SIMULATED MEMORY ARRAY // AWAITING PHASE ACTIVATION —</div>
-        </div>
+        <!-- Tracked entities (rendered dynamically) -->
+        <div id="wallet-list" class="flex-1 overflow-y-auto px-4 py-3 space-y-2 font-techmono text-[11px]"></div>
       </div>
 
       <!-- (2) MACRO WORLD SCRAPER -->
@@ -411,7 +389,7 @@
           <div class="strategy-card active-strat border border-gridline rounded-sm px-3 py-2 flex items-center gap-3">
             <span class="text-neoncyan font-orbitron text-xs w-6">01</span>
             <div class="flex-1"><p class="text-slate-200">ICT Liquidity Recon</p><p class="text-[10px] text-slate-600">Fair value gaps &amp; sweeps</p></div>
-            <i class="fa-solid fa-circle-check text-neoncyan text-xs" aria-hidden="true"></i>
+            <span class="deploy-badge shrink-0 border border-neoncyan/50 bg-neoncyan/10 text-neoncyan text-[9px] tracking-widest px-1.5 py-0.5 rounded-sm uppercase">Deployed</span>
           </div>
           <div class="strategy-card border border-gridline rounded-sm px-3 py-2 flex items-center gap-3">
             <span class="text-slate-500 font-orbitron text-xs w-6">02</span>
@@ -484,7 +462,7 @@
     <span><i class="fa-solid fa-database text-neongreen mr-1.5" aria-hidden="true"></i>STORAGE: <span class="text-neongreen">LOCAL SANDBOX</span></span>
     <span><i class="fa-solid fa-tower-broadcast text-neonamber mr-1.5" aria-hidden="true"></i>UPLINK: <span class="text-neonamber">DORMANT</span></span>
     <span><i class="fa-solid fa-lock text-neonmagenta mr-1.5" aria-hidden="true"></i>KEYS: <span class="text-neonmagenta">NOT DECIPHERED</span></span>
-    <span class="ml-auto text-slate-600">PHASE 2 // WEBSOCKET ENGINE ONLINE</span>
+    <span class="ml-auto text-slate-600">PHASE 3 // DYNAMIC DATA PANELS ONLINE</span>
   </footer>
 
   <script>
@@ -507,6 +485,8 @@
     var MAX_POINTS = 50;
     var state = {
       active: 'BTCUSDT',
+      strategy: 'ICT Liquidity Recon',  // deployed strategy vector (AI-readable)
+      wallets: [],                       // monitored node matrix (AI-readable)
       buffers: {},   // symbol -> [prices] (max 50)
       last: {},      // symbol -> { price, delta }
       forexTimer: null,
@@ -534,6 +514,10 @@
       aiBtn: document.getElementById('btn-ai-trigger'),
       keysBtn: document.getElementById('btn-decipher-keys'),
       deck: document.getElementById('strategy-deck'),
+      walletList: document.getElementById('wallet-list'),
+      walletForm: document.getElementById('wallet-form'),
+      walletInput: document.getElementById('wallet-input'),
+      walletTag: document.getElementById('wallet-tag'),
       tabs: Array.prototype.slice.call(document.querySelectorAll('.asset-tab'))
     };
 
@@ -568,7 +552,7 @@
       var up = d.delta >= 0;
       el.delta.textContent = (up ? '+ ' : '- ') + Math.abs(d.delta).toFixed(2) + ' %';
       el.delta.className = 'font-techmono text-sm ' + (up ? 'text-neongreen' : 'text-neonred');
-      el.price.className = 'font-orbitron text-3xl font-700 ' + (up ? 'text-neongreen glow-green' : 'text-neonred');
+      el.price.className = 'font-orbitron text-3xl font-bold ' + (up ? 'text-neongreen glow-green' : 'text-neonred');
 
       el.sl.textContent = fmtPrice(symbol, d.price * 0.98);
       el.tp.textContent = fmtPrice(symbol, d.price * 1.04);
@@ -811,25 +795,118 @@
     }
 
     function activeStrategy() {
-      var card = el.deck.querySelector('.active-strat');
-      return card ? card.querySelector('p').textContent : 'ICT Liquidity Recon';
+      return state.strategy;
     }
 
-    // strategy deck selection
+    // strategy deck: click to deploy (updates system state variables)
     Array.prototype.forEach.call(el.deck.querySelectorAll('.strategy-card'), function (card) {
-      card.addEventListener('click', function () {
+      card.setAttribute('role', 'button');
+      card.setAttribute('tabindex', '0');
+      function deploy() {
         el.deck.querySelectorAll('.strategy-card').forEach(function (c) {
           c.classList.remove('active-strat');
-          var chk = c.querySelector('.fa-circle-check');
-          if (chk) chk.remove();
+          var badge = c.querySelector('.deploy-badge');
+          if (badge) badge.remove();
         });
         card.classList.add('active-strat');
-        var icon = document.createElement('i');
-        icon.className = 'fa-solid fa-circle-check text-neoncyan text-xs';
-        icon.setAttribute('aria-hidden', 'true');
-        card.appendChild(icon);
-        aiPrint('> Strategy vector reloaded: ' + card.querySelector('p').textContent.toUpperCase(), 'text-neoncyan');
+        var badge = document.createElement('span');
+        badge.className = 'deploy-badge shrink-0 border border-neoncyan/50 bg-neoncyan/10 text-neoncyan text-[9px] tracking-widest px-1.5 py-0.5 rounded-sm uppercase';
+        badge.textContent = 'Deployed';
+        card.appendChild(badge);
+        state.strategy = card.querySelector('p').textContent;
+        aiPrint('> Strategy vector deployed: ' + state.strategy.toUpperCase(), 'text-neoncyan');
+      }
+      card.addEventListener('click', deploy);
+      card.addEventListener('keydown', function (e) {
+        if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); deploy(); }
       });
+    });
+
+    /* ---------------- ON-CHAIN & FOREX BLOCK MONITOR ---------------- */
+    var NODE_SLOT = 'qc3_wallet_nodes';
+    var DEFAULT_NODES = [
+      { addr: '0x7f3d...a9c2', tag: 'WHALE-\u03b1', kind: 'whale', stat: 'ROI 30D: +214%', status: 'Active' },
+      { addr: '0x9c41...e07b', tag: 'WHALE-\u03b2', kind: 'whale', stat: 'ROI 30D: +167%', status: 'Active' },
+      { addr: '0x1b82...44de', tag: 'MEV-BOT-07', kind: 'mev', stat: 'SANDWICH OPS: 1,204', status: 'Hunting' },
+      { addr: '0x5aa9...c3f1', tag: 'MEV-BOT-12', kind: 'mev', stat: 'BUNDLE RATE: 96.2%', status: 'Hunting' },
+      { addr: 'EURUSD-INST-OB1', tag: 'FX-ORDERBLOCK', kind: 'fx', stat: 'BLOCK DEPTH: 48.2M', status: 'Resting' },
+      { addr: 'GBPUSD-INST-OB4', tag: 'FX-ORDERBLOCK', kind: 'fx', stat: 'BLOCK DEPTH: 31.7M', status: 'Resting' },
+      { addr: 'USDJPY-INST-OB2', tag: 'FX-ORDERBLOCK', kind: 'fx', stat: 'BLOCK DEPTH: 62.9M', status: 'Filling' }
+    ];
+
+    function loadCustomNodes() {
+      try { return JSON.parse(localStorage.getItem(NODE_SLOT)) || []; }
+      catch (e) { return []; }
+    }
+    function saveCustomNodes(nodes) {
+      localStorage.setItem(NODE_SLOT, JSON.stringify(nodes));
+    }
+
+    var NODE_ICON = { whale: 'fa-fish text-neoncyan', mev: 'fa-robot text-neonmagenta', fx: 'fa-building-columns text-neonamber', custom: 'fa-satellite text-neongreen' };
+
+    function renderNodes() {
+      var custom = loadCustomNodes();
+      state.wallets = DEFAULT_NODES.concat(custom);
+      el.walletList.textContent = '';
+      state.wallets.forEach(function (n, idx) {
+        var isCustom = idx >= DEFAULT_NODES.length;
+        var row = document.createElement('div');
+        row.className = 'border border-gridline rounded-sm px-3 py-2 flex items-center justify-between gap-2 bg-paneldeep';
+        var left = document.createElement('div');
+        left.className = 'flex items-center gap-2 min-w-0';
+        var icon = document.createElement('i');
+        icon.className = 'fa-solid ' + (NODE_ICON[n.kind] || NODE_ICON.custom) + ' shrink-0';
+        icon.setAttribute('aria-hidden', 'true');
+        var info = document.createElement('div');
+        info.className = 'min-w-0';
+        var line1 = document.createElement('p');
+        line1.className = 'text-slate-300 truncate';
+        line1.textContent = n.tag + ' // ' + n.addr;
+        var line2 = document.createElement('p');
+        line2.className = 'text-[10px] text-slate-600';
+        line2.textContent = n.stat;
+        info.appendChild(line1); info.appendChild(line2);
+        left.appendChild(icon); left.appendChild(info);
+        row.appendChild(left);
+
+        var right = document.createElement('div');
+        right.className = 'flex items-center gap-2 shrink-0';
+        var status = document.createElement('span');
+        status.className = 'text-[10px] uppercase ' + (n.status === 'Active' || n.status === 'Tracked' ? 'text-neongreen' : n.status === 'Hunting' ? 'text-neonmagenta' : 'text-neonamber');
+        status.textContent = n.status;
+        right.appendChild(status);
+        if (isCustom) {
+          var del = document.createElement('button');
+          del.type = 'button';
+          del.className = 'text-slate-600 hover:text-neonred';
+          del.setAttribute('aria-label', 'Purge node ' + n.tag);
+          del.innerHTML = '<i class="fa-solid fa-xmark" aria-hidden="true"></i>';
+          del.addEventListener('click', function () {
+            var nodes = loadCustomNodes();
+            nodes.splice(idx - DEFAULT_NODES.length, 1);
+            saveCustomNodes(nodes);
+            renderNodes();
+            aiPrint('> Node purged from tracking matrix: ' + n.tag, 'text-neonamber');
+          });
+          right.appendChild(del);
+        }
+        row.appendChild(right);
+        el.walletList.appendChild(row);
+      });
+    }
+
+    el.walletForm.addEventListener('submit', function (e) {
+      e.preventDefault();
+      var addr = el.walletInput.value.trim();
+      var tag = el.walletTag.value.trim().toUpperCase() || 'CUSTOM-NODE';
+      if (!addr) return;
+      var nodes = loadCustomNodes();
+      nodes.push({ addr: addr, tag: tag, kind: 'custom', stat: 'INJECTED: ' + new Date().toISOString().slice(0, 10), status: 'Tracked' });
+      saveCustomNodes(nodes);
+      el.walletInput.value = '';
+      el.walletTag.value = '';
+      renderNodes();
+      aiPrint('> New node injected into tracking matrix: ' + tag + ' // ' + addr, 'text-neongreen');
     });
 
     function buildPayload() {
@@ -848,7 +925,9 @@
           'TRAIL SL (2%): ' + fmtPrice(symbol, (d.price || 0) * 0.98) + '\n' +
           'TARGET (4%): ' + fmtPrice(symbol, (d.price || 0) * 1.04) + '\n' +
           'RECENT TICK ARRAY (' + buf.length + 'pt): ' + buf.slice(-10).map(function (v) { return v.toFixed(ASSETS[symbol].decimals); }).join(', ') + '\n' +
-          'ACTIVE STRATEGY VECTOR: ' + activeStrategy() + '\n\n' +
+          'ACTIVE STRATEGY VECTOR: ' + activeStrategy() + '\n' +
+          'MONITORED NODE MATRIX (' + state.wallets.length + ' nodes):\n' +
+          state.wallets.map(function (n) { return '- [' + n.status.toUpperCase() + '] ' + n.tag + ' // ' + n.addr + ' // ' + n.stat; }).join('\n') + '\n\n' +
           'PAST COGNITIVE MEMORIES (your last 5 analyses — maintain continuity with them):\n' + memoryContext()
       };
     }
@@ -928,10 +1007,12 @@
     });
 
     /* ---------------- IGNITION ---------------- */
+    renderNodes();
     seedForex();
     startForexEngine();
     connectBinance();
-    aiPrint('> Phase 2 engine online. WebSocket uplink + quantum_memory buffer armed.', 'text-neongreen');
+    aiPrint('> Phase 3 engine online. Node matrix + strategy deck + quantum_memory armed.', 'text-neongreen');
+    aiPrint('> Tracking ' + state.wallets.length + ' nodes // Strategy: ' + state.strategy.toUpperCase(), 'text-slate-500');
     if (quantum_memory.length) {
       aiPrint('> Restored ' + quantum_memory.length + ' cognitive memories from local sandbox.', 'text-slate-500');
     }
