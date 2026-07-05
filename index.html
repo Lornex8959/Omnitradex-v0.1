@@ -1,0 +1,479 @@
+<!DOCTYPE html>
+<html lang="en" class="bg-[#020617]">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>QUANTUM CORE v3 // Trading Intelligence Terminal</title>
+
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+
+  <!-- FontAwesome Icons -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" />
+
+  <!-- Google Fonts: Orbitron / Share Tech Mono / Inter -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;700;900&family=Share+Tech+Mono&family=Inter:wght@400;500;600&display=swap" rel="stylesheet" />
+
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: {
+            orbitron: ['Orbitron', 'sans-serif'],
+            techmono: ['"Share Tech Mono"', 'monospace'],
+            inter: ['Inter', 'sans-serif'],
+          },
+          colors: {
+            void: '#020617',
+            panel: '#0b1120',
+            paneldeep: '#060b18',
+            neoncyan: '#22d3ee',
+            neongreen: '#4ade80',
+            neonmagenta: '#e879f9',
+            neonamber: '#fbbf24',
+            neonred: '#f87171',
+            gridline: '#1e293b',
+          },
+        },
+      },
+    };
+  </script>
+
+  <style>
+    /* ============ GLOBAL BASE ============ */
+    body {
+      background-color: #020617;
+      background-image:
+        linear-gradient(rgba(34, 211, 238, 0.035) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(34, 211, 238, 0.035) 1px, transparent 1px);
+      background-size: 42px 42px;
+    }
+
+    /* ============ CUSTOM SCROLLBARS ============ */
+    ::-webkit-scrollbar { width: 6px; height: 6px; }
+    ::-webkit-scrollbar-track { background: #060b18; }
+    ::-webkit-scrollbar-thumb { background: #164e63; border-radius: 2px; }
+    ::-webkit-scrollbar-thumb:hover { background: #22d3ee; }
+    * { scrollbar-width: thin; scrollbar-color: #164e63 #060b18; }
+
+    /* ============ NEON PANEL FX ============ */
+    .neon-panel {
+      background: linear-gradient(180deg, rgba(11, 17, 32, 0.92), rgba(6, 11, 24, 0.96));
+      border: 1px solid rgba(34, 211, 238, 0.22);
+      box-shadow:
+        0 0 12px rgba(34, 211, 238, 0.06),
+        inset 0 0 24px rgba(34, 211, 238, 0.03);
+    }
+    .neon-panel-magenta {
+      border-color: rgba(232, 121, 249, 0.28);
+      box-shadow:
+        0 0 14px rgba(232, 121, 249, 0.08),
+        inset 0 0 24px rgba(232, 121, 249, 0.03);
+    }
+    .neon-panel-green {
+      border-color: rgba(74, 222, 128, 0.25);
+      box-shadow:
+        0 0 14px rgba(74, 222, 128, 0.07),
+        inset 0 0 24px rgba(74, 222, 128, 0.03);
+    }
+
+    /* Corner brackets */
+    .hud-corners { position: relative; }
+    .hud-corners::before,
+    .hud-corners::after {
+      content: '';
+      position: absolute;
+      width: 14px; height: 14px;
+      pointer-events: none;
+    }
+    .hud-corners::before {
+      top: -1px; left: -1px;
+      border-top: 2px solid #22d3ee;
+      border-left: 2px solid #22d3ee;
+    }
+    .hud-corners::after {
+      bottom: -1px; right: -1px;
+      border-bottom: 2px solid #22d3ee;
+      border-right: 2px solid #22d3ee;
+    }
+
+    /* Glowing text */
+    .glow-cyan { text-shadow: 0 0 8px rgba(34, 211, 238, 0.7); }
+    .glow-green { text-shadow: 0 0 8px rgba(74, 222, 128, 0.7); }
+    .glow-magenta { text-shadow: 0 0 8px rgba(232, 121, 249, 0.7); }
+
+    /* Pulsing status dot */
+    @keyframes pulse-dot {
+      0%, 100% { opacity: 1; box-shadow: 0 0 6px currentColor; }
+      50% { opacity: 0.35; box-shadow: 0 0 2px currentColor; }
+    }
+    .pulse-dot { animation: pulse-dot 1.6s ease-in-out infinite; }
+
+    /* Scanline sweep on header */
+    @keyframes scanline {
+      0% { transform: translateX(-100%); }
+      100% { transform: translateX(100%); }
+    }
+    .scanline-bar {
+      position: absolute; inset: 0; overflow: hidden; pointer-events: none;
+    }
+    .scanline-bar::after {
+      content: '';
+      position: absolute; top: 0; bottom: 0; width: 30%;
+      background: linear-gradient(90deg, transparent, rgba(34, 211, 238, 0.06), transparent);
+      animation: scanline 6s linear infinite;
+    }
+
+    /* Strategy card hover */
+    .strategy-card { transition: all 0.15s ease; cursor: pointer; }
+    .strategy-card:hover {
+      border-color: rgba(34, 211, 238, 0.6);
+      background: rgba(34, 211, 238, 0.05);
+      transform: translateX(2px);
+    }
+    .strategy-card.active-strat {
+      border-color: #22d3ee;
+      background: rgba(34, 211, 238, 0.08);
+      box-shadow: 0 0 10px rgba(34, 211, 238, 0.15);
+    }
+
+    /* AI terminal glow */
+    .ai-terminal {
+      border: 1px solid rgba(232, 121, 249, 0.4);
+      box-shadow:
+        0 0 20px rgba(232, 121, 249, 0.12),
+        inset 0 0 30px rgba(232, 121, 249, 0.04);
+    }
+
+    /* Neon button */
+    .btn-neon {
+      transition: all 0.15s ease;
+      border: 1px solid rgba(34, 211, 238, 0.5);
+      background: rgba(34, 211, 238, 0.06);
+    }
+    .btn-neon:hover {
+      background: rgba(34, 211, 238, 0.16);
+      box-shadow: 0 0 14px rgba(34, 211, 238, 0.35);
+    }
+    .btn-neon-magenta {
+      border-color: rgba(232, 121, 249, 0.5);
+      background: rgba(232, 121, 249, 0.06);
+    }
+    .btn-neon-magenta:hover {
+      background: rgba(232, 121, 249, 0.16);
+      box-shadow: 0 0 14px rgba(232, 121, 249, 0.35);
+    }
+  </style>
+</head>
+
+<body class="font-inter text-slate-300 min-h-screen flex flex-col p-3 gap-3 select-none">
+
+  <!-- ================================================================ -->
+  <!-- HEADER PANEL -->
+  <!-- ================================================================ -->
+  <header class="neon-panel hud-corners relative rounded-sm px-4 py-3 flex flex-col md:flex-row md:items-center gap-3">
+    <div class="scanline-bar"></div>
+
+    <!-- Terminal identity -->
+    <div class="flex items-center gap-3">
+      <i class="fa-solid fa-atom text-neoncyan text-2xl glow-cyan" aria-hidden="true"></i>
+      <div>
+        <h1 class="font-orbitron font-900 text-lg md:text-xl tracking-widest text-neoncyan glow-cyan">QUANTUM CORE <span class="text-neonmagenta glow-magenta">v3</span></h1>
+        <p class="font-techmono text-[10px] tracking-[0.3em] text-slate-500 uppercase">Trading Intelligence Terminal</p>
+      </div>
+    </div>
+
+    <!-- Live status indicators -->
+    <div class="flex flex-wrap items-center gap-4 md:ml-auto font-techmono text-xs">
+      <div class="flex items-center gap-2 border border-gridline rounded-sm px-3 py-1.5 bg-paneldeep">
+        <span class="w-2 h-2 rounded-full bg-neongreen text-neongreen pulse-dot"></span>
+        <span class="text-slate-500">LATENCY</span>
+        <span id="hud-latency" class="text-neongreen glow-green">-- ms</span>
+      </div>
+      <div class="flex items-center gap-2 border border-gridline rounded-sm px-3 py-1.5 bg-paneldeep">
+        <i class="fa-solid fa-satellite-dish text-neoncyan text-[10px]" aria-hidden="true"></i>
+        <span class="text-slate-500">PAIR</span>
+        <span id="hud-pair" class="text-neoncyan glow-cyan">BTC/USDT</span>
+      </div>
+      <div class="flex items-center gap-2 border border-gridline rounded-sm px-3 py-1.5 bg-paneldeep">
+        <span class="w-2 h-2 rounded-full bg-neonamber text-neonamber pulse-dot"></span>
+        <span class="text-slate-500">FEED</span>
+        <span id="hud-feed" class="text-neonamber">STANDBY</span>
+      </div>
+      <button id="btn-decipher-keys" class="btn-neon font-orbitron text-xs tracking-widest text-neoncyan rounded-sm px-4 py-2 uppercase">
+        <i class="fa-solid fa-key mr-2" aria-hidden="true"></i>Decipher Keys
+      </button>
+    </div>
+  </header>
+
+  <!-- ================================================================ -->
+  <!-- MAIN GRID: LEFT / CENTER / RIGHT COLUMNS -->
+  <!-- ================================================================ -->
+  <main class="flex-1 grid grid-cols-1 lg:grid-cols-3 gap-3 min-h-0">
+
+    <!-- ============================================================ -->
+    <!-- LEFT COLUMN -->
+    <!-- ============================================================ -->
+    <section class="flex flex-col gap-3 min-h-0" aria-label="Market telemetry">
+
+      <!-- (1) LIVE TICKER PRICE HUD -->
+      <div class="neon-panel hud-corners rounded-sm flex flex-col flex-1 min-h-[320px]">
+        <div class="flex items-center justify-between border-b border-gridline px-4 py-2.5">
+          <h2 class="font-orbitron text-xs tracking-[0.25em] text-neoncyan uppercase">
+            <i class="fa-solid fa-wave-square mr-2" aria-hidden="true"></i>Price Waveform HUD
+          </h2>
+          <span class="font-techmono text-[10px] text-slate-500">CH-01 // SPOT</span>
+        </div>
+
+        <!-- Asset selector tabs -->
+        <div class="flex gap-1 px-4 pt-3 font-techmono text-[11px]" role="tablist" aria-label="Asset selector">
+          <button class="px-3 py-1 border border-neoncyan text-neoncyan bg-neoncyan/10 rounded-sm" role="tab" aria-selected="true">BTCUSDT</button>
+          <button class="px-3 py-1 border border-gridline text-slate-500 rounded-sm hover:text-neoncyan hover:border-neoncyan/40" role="tab" aria-selected="false">ETHUSDT</button>
+          <button class="px-3 py-1 border border-gridline text-slate-500 rounded-sm hover:text-neoncyan hover:border-neoncyan/40" role="tab" aria-selected="false">SOLUSDT</button>
+        </div>
+
+        <!-- Live price readout -->
+        <div class="px-4 pt-3 flex items-end gap-4">
+          <div>
+            <p class="font-techmono text-[10px] text-slate-500 uppercase">Last Tick</p>
+            <p id="ticker-price" class="font-orbitron text-3xl font-700 text-neongreen glow-green">$--,---.--</p>
+          </div>
+          <div class="pb-1">
+            <p class="font-techmono text-[10px] text-slate-500 uppercase">24h Delta</p>
+            <p class="font-techmono text-sm text-neongreen">+ -.-- %</p>
+          </div>
+        </div>
+
+        <!-- Chart canvas -->
+        <div class="flex-1 px-4 py-3 min-h-[130px]">
+          <canvas id="waveform-canvas" class="w-full h-full min-h-[120px] border border-gridline/60 rounded-sm bg-paneldeep" aria-label="Price waveform chart placeholder"></canvas>
+        </div>
+
+        <!-- Risk boundaries -->
+        <div class="grid grid-cols-2 gap-2 px-4 pb-4 font-techmono text-[11px]">
+          <div class="border border-neonred/30 bg-neonred/5 rounded-sm px-3 py-2 flex items-center justify-between">
+            <span class="text-slate-500 uppercase"><i class="fa-solid fa-shield-halved text-neonred mr-1.5" aria-hidden="true"></i>Trail SL 2%</span>
+            <span id="risk-sl" class="text-neonred">$--,---.--</span>
+          </div>
+          <div class="border border-neongreen/30 bg-neongreen/5 rounded-sm px-3 py-2 flex items-center justify-between">
+            <span class="text-slate-500 uppercase"><i class="fa-solid fa-crosshairs text-neongreen mr-1.5" aria-hidden="true"></i>Target 4%</span>
+            <span id="risk-tp" class="text-neongreen">$--,---.--</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- (2) ANOMALOUS STREAM EVENT LOG -->
+      <div class="neon-panel hud-corners rounded-sm flex flex-col h-[240px]">
+        <div class="flex items-center justify-between border-b border-gridline px-4 py-2.5">
+          <h2 class="font-orbitron text-xs tracking-[0.25em] text-neonamber uppercase">
+            <i class="fa-solid fa-bolt mr-2" aria-hidden="true"></i>Anomalous Stream
+          </h2>
+          <span class="font-techmono text-[10px] text-slate-500">EVT LOG // 00</span>
+        </div>
+        <div id="anomaly-log" class="flex-1 overflow-y-auto px-4 py-3 font-techmono text-[11px] space-y-2">
+          <div class="flex gap-2 text-slate-500">
+            <span class="text-neonamber shrink-0">[--:--:--]</span>
+            <span>Awaiting anomaly feed initialization...</span>
+          </div>
+          <div class="flex gap-2 text-slate-500">
+            <span class="text-neonamber shrink-0">[--:--:--]</span>
+            <span>Volatility spike detectors: STANDBY</span>
+          </div>
+          <div class="flex gap-2 text-slate-500">
+            <span class="text-neonamber shrink-0">[--:--:--]</span>
+            <span>Liquidation cascade sensors: STANDBY</span>
+          </div>
+          <div class="flex gap-2 text-slate-600">
+            <span class="shrink-0">[SYS]</span>
+            <span>Stream channel dormant. Phase 2 activation required.</span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============================================================ -->
+    <!-- CENTER COLUMN -->
+    <!-- ============================================================ -->
+    <section class="flex flex-col gap-3 min-h-0" aria-label="Intelligence monitors">
+
+      <!-- (1) SMART WALLET TRACKER -->
+      <div class="neon-panel neon-panel-green hud-corners rounded-sm flex flex-col flex-1 min-h-[320px]">
+        <div class="flex items-center justify-between border-b border-gridline px-4 py-2.5">
+          <h2 class="font-orbitron text-xs tracking-[0.25em] text-neongreen uppercase">
+            <i class="fa-solid fa-link mr-2" aria-hidden="true"></i>Smart Wallet Tracker
+          </h2>
+          <span class="font-techmono text-[10px] text-slate-500">ON-CHAIN // MEM</span>
+        </div>
+
+        <!-- Wallet injector form -->
+        <form class="px-4 pt-3 flex gap-2" aria-label="Wallet address injector">
+          <label for="wallet-input" class="sr-only">Wallet address</label>
+          <input id="wallet-input" type="text" placeholder="0x... INJECT WALLET NODE"
+            class="flex-1 bg-paneldeep border border-gridline rounded-sm px-3 py-2 font-techmono text-[11px] text-neongreen placeholder:text-slate-600 focus:outline-none focus:border-neongreen/60" />
+          <button type="button" class="btn-neon font-orbitron text-[10px] tracking-widest text-neongreen border-neongreen/50 rounded-sm px-3 uppercase" style="border-color: rgba(74,222,128,0.5); background: rgba(74,222,128,0.06);">
+            <i class="fa-solid fa-syringe mr-1" aria-hidden="true"></i>Inject
+          </button>
+        </form>
+
+        <!-- Tracked entities -->
+        <div class="flex-1 overflow-y-auto px-4 py-3 space-y-2 font-techmono text-[11px]">
+          <div class="border border-gridline rounded-sm px-3 py-2 flex items-center justify-between bg-paneldeep">
+            <div class="flex items-center gap-2">
+              <i class="fa-solid fa-fish text-neoncyan" aria-hidden="true"></i>
+              <div>
+                <p class="text-slate-300">WHALE-α // 0x7f3...a9c2</p>
+                <p class="text-[10px] text-slate-600">ROI 30D: <span class="text-neongreen">+---%</span></p>
+              </div>
+            </div>
+            <span class="text-[10px] text-slate-600 uppercase">Dormant</span>
+          </div>
+          <div class="border border-gridline rounded-sm px-3 py-2 flex items-center justify-between bg-paneldeep">
+            <div class="flex items-center gap-2">
+              <i class="fa-solid fa-robot text-neonmagenta" aria-hidden="true"></i>
+              <div>
+                <p class="text-slate-300">MEV-BOT-07 // 0x1b8...44de</p>
+                <p class="text-[10px] text-slate-600">SANDWICH OPS: <span class="text-neonamber">---</span></p>
+              </div>
+            </div>
+            <span class="text-[10px] text-slate-600 uppercase">Dormant</span>
+          </div>
+          <div class="border border-gridline rounded-sm px-3 py-2 flex items-center justify-between bg-paneldeep">
+            <div class="flex items-center gap-2">
+              <i class="fa-solid fa-building-columns text-neonamber" aria-hidden="true"></i>
+              <div>
+                <p class="text-slate-300">FX-ORDERBLOCK // EURUSD-INST</p>
+                <p class="text-[10px] text-slate-600">BLOCK DEPTH: <span class="text-neoncyan">--.-M</span></p>
+              </div>
+            </div>
+            <span class="text-[10px] text-slate-600 uppercase">Dormant</span>
+          </div>
+          <div class="text-center text-slate-600 text-[10px] pt-1">— SIMULATED MEMORY ARRAY // AWAITING PHASE ACTIVATION —</div>
+        </div>
+      </div>
+
+      <!-- (2) MACRO WORLD SCRAPER -->
+      <div class="neon-panel hud-corners rounded-sm flex flex-col h-[240px]">
+        <div class="flex items-center justify-between border-b border-gridline px-4 py-2.5">
+          <h2 class="font-orbitron text-xs tracking-[0.25em] text-neoncyan uppercase">
+            <i class="fa-solid fa-earth-americas mr-2" aria-hidden="true"></i>Macro World Scraper
+          </h2>
+          <span class="font-techmono text-[10px] text-slate-500">GEO FEED // 00</span>
+        </div>
+        <div class="flex-1 overflow-y-auto px-4 py-3 font-techmono text-[11px] space-y-2.5">
+          <div class="flex gap-3 items-start">
+            <span class="shrink-0 border border-neonamber/40 text-neonamber text-[9px] px-1.5 py-0.5 rounded-sm uppercase">Macro</span>
+            <p class="text-slate-500">Central bank telemetry channel offline. Awaiting scraper deployment...</p>
+          </div>
+          <div class="flex gap-3 items-start">
+            <span class="shrink-0 border border-neoncyan/40 text-neoncyan text-[9px] px-1.5 py-0.5 rounded-sm uppercase">Crypto</span>
+            <p class="text-slate-500">Regulatory sentiment sweep: NOT INITIALIZED</p>
+          </div>
+          <div class="flex gap-3 items-start">
+            <span class="shrink-0 border border-neonmagenta/40 text-neonmagenta text-[9px] px-1.5 py-0.5 rounded-sm uppercase">Forex</span>
+            <p class="text-slate-500">DXY correlation matrix: NOT INITIALIZED</p>
+          </div>
+          <div class="flex gap-3 items-start">
+            <span class="shrink-0 border border-gridline text-slate-600 text-[9px] px-1.5 py-0.5 rounded-sm uppercase">Sys</span>
+            <p class="text-slate-600">Update board dormant. Static shell v1.0 anchored.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============================================================ -->
+    <!-- RIGHT COLUMN -->
+    <!-- ============================================================ -->
+    <section class="flex flex-col gap-3 min-h-0" aria-label="Strategy and AI systems">
+
+      <!-- (1) TOP 10 STRATEGY DECK -->
+      <div class="neon-panel hud-corners rounded-sm flex flex-col flex-1 min-h-[320px]">
+        <div class="flex items-center justify-between border-b border-gridline px-4 py-2.5">
+          <h2 class="font-orbitron text-xs tracking-[0.25em] text-neoncyan uppercase">
+            <i class="fa-solid fa-chess-king mr-2" aria-hidden="true"></i>Top 10 Strategy Deck
+          </h2>
+          <span class="font-techmono text-[10px] text-slate-500">VECTOR // SELECT</span>
+        </div>
+        <div id="strategy-deck" class="flex-1 overflow-y-auto px-3 py-3 space-y-1.5 font-techmono text-[11px]">
+          <div class="strategy-card active-strat border border-gridline rounded-sm px-3 py-2 flex items-center gap-3">
+            <span class="text-neoncyan font-orbitron text-xs w-6">01</span>
+            <div class="flex-1"><p class="text-slate-200">ICT Liquidity Recon</p><p class="text-[10px] text-slate-600">Fair value gaps &amp; sweeps</p></div>
+            <i class="fa-solid fa-circle-check text-neoncyan text-xs" aria-hidden="true"></i>
+          </div>
+          <div class="strategy-card border border-gridline rounded-sm px-3 py-2 flex items-center gap-3">
+            <span class="text-slate-500 font-orbitron text-xs w-6">02</span>
+            <div class="flex-1"><p class="text-slate-300">Wyckoff Accumulation</p><p class="text-[10px] text-slate-600">Structural phase testing</p></div>
+          </div>
+          <div class="strategy-card border border-gridline rounded-sm px-3 py-2 flex items-center gap-3">
+            <span class="text-slate-500 font-orbitron text-xs w-6">03</span>
+            <div class="flex-1"><p class="text-slate-300">HFT Order Book Delta</p><p class="text-[10px] text-slate-600">Bid-ask volume imbalances</p></div>
+          </div>
+          <div class="strategy-card border border-gridline rounded-sm px-3 py-2 flex items-center gap-3">
+            <span class="text-slate-500 font-orbitron text-xs w-6">04</span>
+            <div class="flex-1"><p class="text-slate-300">MEV Flash Loan Front-Run</p><p class="text-[10px] text-slate-600">On-chain pool exploitation</p></div>
+          </div>
+          <div class="strategy-card border border-gridline rounded-sm px-3 py-2 flex items-center gap-3">
+            <span class="text-slate-500 font-orbitron text-xs w-6">05</span>
+            <div class="flex-1"><p class="text-slate-300">Funding Rate Carry Recon</p><p class="text-[10px] text-slate-600">Perp-spot arbitrage tracking</p></div>
+          </div>
+          <div class="strategy-card border border-gridline rounded-sm px-3 py-2 flex items-center gap-3">
+            <span class="text-slate-500 font-orbitron text-xs w-6">06</span>
+            <div class="flex-1"><p class="text-slate-300">Statistical Mean Reversion</p><p class="text-[10px] text-slate-600">3x standard deviation fatigue</p></div>
+          </div>
+          <div class="strategy-card border border-gridline rounded-sm px-3 py-2 flex items-center gap-3">
+            <span class="text-slate-500 font-orbitron text-xs w-6">07</span>
+            <div class="flex-1"><p class="text-slate-300">Sentiment Correlation</p><p class="text-[10px] text-slate-600">Macro news fear-greed matching</p></div>
+          </div>
+          <div class="strategy-card border border-gridline rounded-sm px-3 py-2 flex items-center gap-3">
+            <span class="text-slate-500 font-orbitron text-xs w-6">08</span>
+            <div class="flex-1"><p class="text-slate-300">Gamma Squeeze Force</p><p class="text-[10px] text-slate-600">Derivative maker hedging points</p></div>
+          </div>
+          <div class="strategy-card border border-gridline rounded-sm px-3 py-2 flex items-center gap-3">
+            <span class="text-slate-500 font-orbitron text-xs w-6">09</span>
+            <div class="flex-1"><p class="text-slate-300">Multi-Tier Grid Flow</p><p class="text-[10px] text-slate-600">Sideways market grid spacing</p></div>
+          </div>
+          <div class="strategy-card border border-gridline rounded-sm px-3 py-2 flex items-center gap-3">
+            <span class="text-slate-500 font-orbitron text-xs w-6">10</span>
+            <div class="flex-1"><p class="text-slate-300">Whale Wallet Mimicry</p><p class="text-[10px] text-slate-600">High-ROI wallet log tracking</p></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- (2) COGNITIVE AI TERMINAL -->
+      <div class="ai-terminal hud-corners rounded-sm flex flex-col h-[240px] bg-paneldeep">
+        <div class="flex items-center justify-between border-b border-neonmagenta/25 px-4 py-2.5">
+          <h2 class="font-orbitron text-xs tracking-[0.25em] text-neonmagenta glow-magenta uppercase">
+            <i class="fa-solid fa-brain mr-2" aria-hidden="true"></i>Cognitive AI Terminal
+          </h2>
+          <span class="font-techmono text-[10px] text-slate-500">GEMINI // OFFLINE</span>
+        </div>
+        <div id="ai-log" class="flex-1 overflow-y-auto px-4 py-3 font-techmono text-[11px] space-y-1.5">
+          <p class="text-neonmagenta">&gt; QUANTUM CORE v3 cognitive shell mounted.</p>
+          <p class="text-slate-500">&gt; Neural inference engine: STANDBY</p>
+          <p class="text-slate-500">&gt; Strategy vector loaded: [01] ICT LIQUIDITY RECON</p>
+          <p class="text-slate-600">&gt; Awaiting key decryption and Phase 2 uplink...</p>
+          <p class="text-neonmagenta/60">&gt; _</p>
+        </div>
+        <div class="border-t border-neonmagenta/25 px-4 py-2.5">
+          <button id="btn-ai-trigger" class="btn-neon btn-neon-magenta w-full font-orbitron text-xs tracking-[0.25em] text-neonmagenta rounded-sm py-2 uppercase">
+            <i class="fa-solid fa-bolt-lightning mr-2" aria-hidden="true"></i>Trigger Cognitive Analysis
+          </button>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <!-- ================================================================ -->
+  <!-- FOOTER TELEMETRY HUD -->
+  <!-- ================================================================ -->
+  <footer class="neon-panel rounded-sm px-4 py-2 flex flex-wrap items-center gap-x-6 gap-y-1 font-techmono text-[10px] text-slate-500">
+    <span><i class="fa-solid fa-microchip text-neoncyan mr-1.5" aria-hidden="true"></i>CORE: <span class="text-neoncyan">QC-v3.0.1-STATIC</span></span>
+    <span><i class="fa-solid fa-database text-neongreen mr-1.5" aria-hidden="true"></i>STORAGE: <span class="text-neongreen">LOCAL SANDBOX</span></span>
+    <span><i class="fa-solid fa-tower-broadcast text-neonamber mr-1.5" aria-hidden="true"></i>UPLINK: <span class="text-neonamber">DORMANT</span></span>
+    <span><i class="fa-solid fa-lock text-neonmagenta mr-1.5" aria-hidden="true"></i>KEYS: <span class="text-neonmagenta">NOT DECIPHERED</span></span>
+    <span class="ml-auto text-slate-600">PHASE 1 // STRUCTURAL SHELL ANCHORED</span>
+  </footer>
+
+</body>
+</html>
