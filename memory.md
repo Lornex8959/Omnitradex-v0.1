@@ -15,7 +15,19 @@ Architecture lock: single-file `index.html` (HTML5 + Tailwind CDN + vanilla JS).
 - `quantum_memory` — last 5 AI decision summaries `[{t, s}]`
 - `qc3_wallet_nodes` — tracked wallet/FX nodes `[{addr, tag, kind}]`
 
+- [x] **Phase 4.5 — Audit, Bug Fixes & System Activation**:
+  - FIXED: footer telemetry corrupted by index-based `querySelectorAll('footer span')` matching nested spans → explicit `#ftr-uplink` / `#ftr-keys` IDs.
+  - FIXED: waveform x-axis divided by MAX_POINTS so partial buffers squashed left → scales to real buffer length.
+  - FIXED: WS failover never rotated after a prior successful connect → per-connection open tracking + fail-streak endpoint rotation + reconnect backoff (2.5s→10s cap).
+  - FIXED: LATENCY showed inter-message gap → true feed latency via Binance event timestamp (`Date.now() - t.E`).
+  - FIXED: stale price/pair readout when switching to an asset with no data yet → placeholder state.
+  - FIXED: `window.prompt()` key entry blocked in sandboxed iframes → inline Key Vault modal (input field, Seal/Purge/Cancel, Esc + backdrop close).
+  - FIXED: lookbehind regex in `extractMemory` (Safari <16.4 parse crash) → compatible pattern.
+  - ACTIVATED: Anomalous Stream — rolling 3σ/4σ tick-move detector (VOL-SPIKE / CASCADE), 15s per-symbol rate limit, EVT counter.
+  - ACTIVATED: Macro World Scraper — rotating simulated Macro/Crypto/Forex intel board (9s cadence, GEO counter, capped 12 rows).
+  - PERF: Page Visibility API pauses forex timer, macro feed, and chart repaints when tab hidden.
+
 ## Next Candidates (Phase 5)
-- Anomalous Stream live detectors (volatility spikes, delta divergence)
-- Macro World Scraper simulated geo feed activation
-- Latency-aware feed health diagnostics
+- Latency-aware feed health diagnostics / uptime meter
+- AI auto-inference scheduling (periodic cognitive sweeps)
+- Order flow depth simulation panel

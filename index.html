@@ -288,24 +288,12 @@
           <h2 class="font-orbitron text-xs tracking-[0.25em] text-neonamber uppercase">
             <i class="fa-solid fa-bolt mr-2" aria-hidden="true"></i>Anomalous Stream
           </h2>
-          <span class="font-techmono text-[10px] text-slate-500">EVT LOG // 00</span>
+          <span id="anomaly-count" class="font-techmono text-[10px] text-slate-500">EVT LOG // 00</span>
         </div>
         <div id="anomaly-log" class="flex-1 overflow-y-auto px-4 py-3 font-techmono text-[11px] space-y-2">
           <div class="flex gap-2 text-slate-500">
-            <span class="text-neonamber shrink-0">[--:--:--]</span>
-            <span>Awaiting anomaly feed initialization...</span>
-          </div>
-          <div class="flex gap-2 text-slate-500">
-            <span class="text-neonamber shrink-0">[--:--:--]</span>
-            <span>Volatility spike detectors: STANDBY</span>
-          </div>
-          <div class="flex gap-2 text-slate-500">
-            <span class="text-neonamber shrink-0">[--:--:--]</span>
-            <span>Liquidation cascade sensors: STANDBY</span>
-          </div>
-          <div class="flex gap-2 text-slate-600">
             <span class="shrink-0">[SYS]</span>
-            <span>Stream channel dormant. Phase 2 activation required.</span>
+            <span>Volatility spike + delta divergence detectors armed. Monitoring live tick stream...</span>
           </div>
         </div>
       </div>
@@ -348,24 +336,12 @@
           <h2 class="font-orbitron text-xs tracking-[0.25em] text-neoncyan uppercase">
             <i class="fa-solid fa-earth-americas mr-2" aria-hidden="true"></i>Macro World Scraper
           </h2>
-          <span class="font-techmono text-[10px] text-slate-500">GEO FEED // 00</span>
+          <span id="macro-count" class="font-techmono text-[10px] text-slate-500">GEO FEED // 00</span>
         </div>
-        <div class="flex-1 overflow-y-auto px-4 py-3 font-techmono text-[11px] space-y-2.5">
-          <div class="flex gap-3 items-start">
-            <span class="shrink-0 border border-neonamber/40 text-neonamber text-[9px] px-1.5 py-0.5 rounded-sm uppercase">Macro</span>
-            <p class="text-slate-500">Central bank telemetry channel offline. Awaiting scraper deployment...</p>
-          </div>
-          <div class="flex gap-3 items-start">
-            <span class="shrink-0 border border-neoncyan/40 text-neoncyan text-[9px] px-1.5 py-0.5 rounded-sm uppercase">Crypto</span>
-            <p class="text-slate-500">Regulatory sentiment sweep: NOT INITIALIZED</p>
-          </div>
-          <div class="flex gap-3 items-start">
-            <span class="shrink-0 border border-neonmagenta/40 text-neonmagenta text-[9px] px-1.5 py-0.5 rounded-sm uppercase">Forex</span>
-            <p class="text-slate-500">DXY correlation matrix: NOT INITIALIZED</p>
-          </div>
+        <div id="macro-board" class="flex-1 overflow-y-auto px-4 py-3 font-techmono text-[11px] space-y-2.5">
           <div class="flex gap-3 items-start">
             <span class="shrink-0 border border-gridline text-slate-600 text-[9px] px-1.5 py-0.5 rounded-sm uppercase">Sys</span>
-            <p class="text-slate-600">Update board dormant. Static shell v1.0 anchored.</p>
+            <p class="text-slate-500">Macro scraper deployed. Sweeping simulated intel channels...</p>
           </div>
         </div>
       </div>
@@ -462,10 +438,34 @@
   <footer class="neon-panel rounded-sm px-4 py-2 flex flex-wrap items-center gap-x-6 gap-y-1 font-techmono text-[10px] text-slate-500">
     <span><i class="fa-solid fa-microchip text-neoncyan mr-1.5" aria-hidden="true"></i>CORE: <span class="text-neoncyan">QC-v3.0.1-STATIC</span></span>
     <span><i class="fa-solid fa-database text-neongreen mr-1.5" aria-hidden="true"></i>STORAGE: <span class="text-neongreen">LOCAL SANDBOX</span></span>
-    <span><i class="fa-solid fa-tower-broadcast text-neonamber mr-1.5" aria-hidden="true"></i>UPLINK: <span class="text-neonamber">DORMANT</span></span>
-    <span><i class="fa-solid fa-lock text-neonmagenta mr-1.5" aria-hidden="true"></i>KEYS: <span class="text-neonmagenta">NOT DECIPHERED</span></span>
+    <span><i class="fa-solid fa-tower-broadcast text-neonamber mr-1.5" aria-hidden="true"></i>UPLINK: <span id="ftr-uplink" class="text-neonamber">DORMANT</span></span>
+    <span><i class="fa-solid fa-lock text-neonmagenta mr-1.5" aria-hidden="true"></i>KEYS: <span id="ftr-keys" class="text-neonmagenta">NOT DECIPHERED</span></span>
     <span class="ml-auto text-slate-600">PHASE 4 // GEMINI CORE INTEGRATED</span>
   </footer>
+
+  <!-- ================================================================ -->
+  <!-- KEY VAULT MODAL (sovereign credential input) -->
+  <!-- ================================================================ -->
+  <div id="key-modal" class="fixed inset-0 z-50 hidden items-center justify-center bg-void/80 p-4" role="dialog" aria-modal="true" aria-labelledby="key-modal-title">
+    <div class="neon-panel neon-panel-magenta hud-corners rounded-sm w-full max-w-md p-5 flex flex-col gap-4">
+      <div>
+        <h2 id="key-modal-title" class="font-orbitron text-sm tracking-[0.25em] text-neonmagenta glow-magenta uppercase">
+          <i class="fa-solid fa-key mr-2" aria-hidden="true"></i>Key Vault
+        </h2>
+        <p class="font-techmono text-[10px] text-slate-500 mt-1">Credential is locked ONLY into this browser&apos;s localStorage. Never transmitted to third parties.</p>
+      </div>
+      <form id="key-form" class="flex flex-col gap-3">
+        <label for="key-input" class="sr-only">Gemini API key</label>
+        <input id="key-input" type="password" placeholder="GEMINI API KEY" autocomplete="off" spellcheck="false"
+          class="bg-paneldeep border border-neonmagenta/40 rounded-sm px-3 py-2 font-techmono text-xs text-neonmagenta placeholder:text-slate-600 focus:outline-none focus:border-neonmagenta/80" />
+        <div class="flex gap-2">
+          <button type="submit" class="btn-neon btn-neon-magenta flex-1 font-orbitron text-[10px] tracking-widest text-neonmagenta rounded-sm py-2 uppercase">Seal Vault</button>
+          <button type="button" id="key-purge" class="btn-neon flex-1 font-orbitron text-[10px] tracking-widest text-neonamber rounded-sm py-2 uppercase" style="border-color: rgba(251,191,36,0.5); background: rgba(251,191,36,0.06);">Purge</button>
+          <button type="button" id="key-cancel" class="btn-neon flex-1 font-orbitron text-[10px] tracking-widest text-slate-400 rounded-sm py-2 uppercase" style="border-color: rgba(148,163,184,0.3); background: rgba(148,163,184,0.04);">Cancel</button>
+        </div>
+      </form>
+    </div>
+  </div>
 
   <script>
   /* ================================================================
@@ -524,6 +524,18 @@
       tabs: Array.prototype.slice.call(document.querySelectorAll('.asset-tab'))
     };
 
+    /* ---------------- FOOTER TELEMETRY (fixed ID targeting) ---------------- */
+    function setFooterUplink(text) {
+      var s = document.getElementById('ftr-uplink');
+      s.textContent = text;
+      s.className = text === 'ACTIVE' ? 'text-neongreen' : 'text-neonamber';
+    }
+    function setFooterKeys(deciphered) {
+      var s = document.getElementById('ftr-keys');
+      s.textContent = deciphered ? 'DECIPHERED' : 'NOT DECIPHERED';
+      s.className = deciphered ? 'text-neongreen' : 'text-neonmagenta';
+    }
+
     /* ---------------- FORMATTERS ---------------- */
     function fmtPrice(symbol, price) {
       var a = ASSETS[symbol];
@@ -534,20 +546,83 @@
       });
     }
 
+    /* ---------------- ANOMALOUS STREAM DETECTOR ---------------- */
+    var anomalyCount = 0;
+    var lastAnomalyAt = {}; // symbol -> timestamp (rate limit per symbol)
+
+    function logAnomaly(symbol, kind, detail) {
+      var now = Date.now();
+      if (now - (lastAnomalyAt[symbol] || 0) < 15000) return; // max 1 event / 15s per symbol
+      lastAnomalyAt[symbol] = now;
+      anomalyCount++;
+      document.getElementById('anomaly-count').textContent = 'EVT LOG // ' + String(Math.min(anomalyCount, 99)).padStart(2, '0');
+
+      var log = document.getElementById('anomaly-log');
+      var row = document.createElement('div');
+      row.className = 'flex gap-2 text-slate-400';
+      var ts = document.createElement('span');
+      ts.className = 'text-neonamber shrink-0';
+      ts.textContent = '[' + new Date().toISOString().slice(11, 19) + ']';
+      var msg = document.createElement('span');
+      var badge = document.createElement('span');
+      badge.className = 'text-neonred font-semibold';
+      badge.textContent = kind + ' ';
+      msg.appendChild(badge);
+      msg.appendChild(document.createTextNode(ASSETS[symbol].label + ' — ' + detail));
+      row.appendChild(ts); row.appendChild(msg);
+      log.insertBefore(row, log.firstChild);
+      while (log.children.length > 30) log.removeChild(log.lastChild);
+    }
+
+    function detectAnomaly(symbol, price) {
+      var buf = state.buffers[symbol];
+      if (buf.length < 12) return;
+      // rolling mean + stddev of last 20 tick-to-tick moves
+      var win = buf.slice(-21);
+      var moves = [];
+      for (var i = 1; i < win.length; i++) moves.push((win[i] - win[i - 1]) / win[i - 1]);
+      var mean = 0;
+      for (var j = 0; j < moves.length; j++) mean += moves[j];
+      mean /= moves.length;
+      var variance = 0;
+      for (var k = 0; k < moves.length; k++) variance += Math.pow(moves[k] - mean, 2);
+      var sd = Math.sqrt(variance / moves.length);
+      if (!sd) return;
+      var lastMove = (price - buf[buf.length - 2]) / buf[buf.length - 2];
+      var z = (lastMove - mean) / sd;
+      if (Math.abs(z) >= 3) {
+        logAnomaly(symbol, Math.abs(z) >= 4 ? 'CASCADE' : 'VOL-SPIKE',
+          (lastMove >= 0 ? '+' : '') + (lastMove * 100).toFixed(3) + '% tick move @ ' + Math.abs(z).toFixed(1) + 'σ');
+      }
+    }
+
     /* ---------------- TICK INGESTION ---------------- */
     function ingestTick(symbol, price, deltaPct) {
       var buf = state.buffers[symbol];
+      if (buf.length) detectAnomaly(symbol, price);
       buf.push(price);
       if (buf.length > MAX_POINTS) buf.shift();
       state.last[symbol] = { price: price, delta: deltaPct };
-      if (symbol === state.active) renderActive();
+      if (symbol === state.active && !document.hidden) renderActive();
     }
 
     function renderActive() {
       var symbol = state.active;
       var a = ASSETS[symbol];
       var d = state.last[symbol];
-      if (d.price == null) return;
+      el.hudPair.textContent = a.label;
+
+      if (d.price == null) {
+        // no data yet for this asset: show placeholders instead of a stale readout
+        el.price.textContent = a.prefix + '--,---.--';
+        el.price.className = 'font-orbitron text-3xl font-700 text-slate-600';
+        el.delta.textContent = '+ -.-- %';
+        el.delta.className = 'font-techmono text-sm text-slate-600';
+        el.sl.textContent = a.prefix + '--,---.--';
+        el.tp.textContent = a.prefix + '--,---.--';
+        drawWaveform();
+        return;
+      }
 
       if (el.standby) { el.standby.style.display = 'none'; el.standby = null; }
 
@@ -559,7 +634,6 @@
 
       el.sl.textContent = fmtPrice(symbol, d.price * 0.98);
       el.tp.textContent = fmtPrice(symbol, d.price * 1.04);
-      el.hudPair.textContent = a.label;
       drawWaveform();
     }
 
@@ -596,7 +670,8 @@
       var max = Math.max.apply(null, buf);
       var range = (max - min) || (min * 0.0005) || 1;
       var padY = 14;
-      function px(i) { return (i / (MAX_POINTS - 1)) * w; }
+      var span = Math.max(buf.length - 1, 1); // scale to real data so the line always fills the chart width
+      function px(i) { return (i / span) * w; }
       function py(v) { return h - padY - ((v - min) / range) * (h - padY * 2); }
 
       var rising = buf[buf.length - 1] >= buf[0];
@@ -660,41 +735,45 @@
       'wss://stream.binance.us:9443/stream?streams='  // failover for geo-restricted regions (HTTP 451)
     ];
     var wsEndpointIdx = 0;
-    var wsEverOpened = false;
+    var wsFailStreak = 0; // consecutive connections that never opened
 
     function connectBinance() {
       var streams = 'btcusdt@ticker/ethusdt@ticker/solusdt@ticker';
       var ws = new WebSocket(WS_ENDPOINTS[wsEndpointIdx] + streams);
       state.ws = ws;
+      var openedThisConn = false;
 
       ws.onopen = function () {
-        wsEverOpened = true;
+        openedThisConn = true;
+        wsFailStreak = 0;
         setFeed('LIVE', 'text-neongreen glow-green');
       };
       ws.onmessage = function (evt) {
-        var now = performance.now();
-        if (state.lastTickAt) {
-          var lat = Math.min(999, Math.round(now - state.lastTickAt));
-          el.hudLatency.textContent = lat + ' ms';
-        }
-        state.lastTickAt = now;
         try {
           var msg = JSON.parse(evt.data);
           var t = msg.data;
           if (t && t.s && ASSETS[t.s]) {
+            // true feed latency: local clock vs Binance event timestamp (t.E, ms epoch)
+            if (t.E) {
+              var lat = Math.max(0, Math.min(9999, Date.now() - t.E));
+              el.hudLatency.textContent = lat + ' ms';
+            }
             ingestTick(t.s, parseFloat(t.c), parseFloat(t.P));
           }
         } catch (e) { /* malformed frame: ignore */ }
       };
       ws.onclose = function () {
-        if (!wsEverOpened) {
-          // never connected on this endpoint: rotate to failover
+        if (!openedThisConn) wsFailStreak++;
+        if (wsFailStreak >= 1 && !openedThisConn) {
+          // this endpoint is unreachable: rotate to failover
           wsEndpointIdx = (wsEndpointIdx + 1) % WS_ENDPOINTS.length;
           setFeed('FAILOVER-' + (wsEndpointIdx + 1), 'text-neonamber');
         } else {
           setFeed('RECONNECTING', 'text-neonamber');
         }
-        setTimeout(connectBinance, 2500);
+        // exponential backoff on repeated failures (2.5s -> 5s -> 10s, capped)
+        var wait = Math.min(10000, 2500 * Math.pow(2, Math.max(0, wsFailStreak - 1)));
+        setTimeout(connectBinance, wait);
       };
       ws.onerror = function () { ws.close(); };
     }
@@ -753,19 +832,49 @@
     var KEY_SLOT = 'qc3_gemini_key';
     function getKey() { return localStorage.getItem(KEY_SLOT) || ''; }
 
+    // Inline modal replaces window.prompt (which is blocked in sandboxed iframes)
+    var keyModal = document.getElementById('key-modal');
+    var keyForm = document.getElementById('key-form');
+    var keyInput = document.getElementById('key-input');
+
+    function closeKeyModal() {
+      keyModal.classList.add('hidden');
+      keyModal.classList.remove('flex');
+      keyInput.value = '';
+      el.keysBtn.focus();
+    }
+
     el.keysBtn.addEventListener('click', function () {
-      var current = getKey();
-      var input = window.prompt('QUANTUM CORE v3 // Enter Gemini API key (stored ONLY in this browser localStorage):', current);
-      if (input === null) return;
-      if (input.trim()) {
-        localStorage.setItem(KEY_SLOT, input.trim());
+      keyModal.classList.remove('hidden');
+      keyModal.classList.add('flex');
+      keyInput.value = getKey();
+      keyInput.focus();
+    });
+
+    keyForm.addEventListener('submit', function (e) {
+      e.preventDefault();
+      var val = keyInput.value.trim();
+      if (val) {
+        localStorage.setItem(KEY_SLOT, val);
         aiPrint('> Key vault sealed. Credential locked to local sandbox.', 'text-neongreen');
-        document.querySelectorAll('footer span')[3].innerHTML =
-          '<i class="fa-solid fa-lock text-neonmagenta mr-1.5" aria-hidden="true"></i>KEYS: <span class="text-neongreen">DECIPHERED</span>';
-      } else {
-        localStorage.removeItem(KEY_SLOT);
-        aiPrint('> Key vault purged.', 'text-neonamber');
+        setFooterKeys(true);
+        setLoader(false); // refresh GEMINI // ARMED status
       }
+      closeKeyModal();
+    });
+
+    document.getElementById('key-purge').addEventListener('click', function () {
+      localStorage.removeItem(KEY_SLOT);
+      aiPrint('> Key vault purged.', 'text-neonamber');
+      setFooterKeys(false);
+      setLoader(false);
+      closeKeyModal();
+    });
+
+    document.getElementById('key-cancel').addEventListener('click', closeKeyModal);
+    keyModal.addEventListener('click', function (e) { if (e.target === keyModal) closeKeyModal(); });
+    document.addEventListener('keydown', function (e) {
+      if (e.key === 'Escape' && !keyModal.classList.contains('hidden')) closeKeyModal();
     });
 
     /* ---------------- QUANTUM MEMORY BUFFER (self-learning) ---------------- */
@@ -1036,9 +1145,9 @@
     function extractMemory(fullText) {
       var m = fullText.match(/MEMORY:\s*(.+)$/im);
       if (m) return m[1].trim();
-      // fallback: first sentence of the analysis
-      var first = fullText.split(/(?<=[.!?])\s/)[0] || fullText;
-      return first.slice(0, 200);
+      // fallback: first sentence (no lookbehind — Safari < 16.4 compatibility)
+      var sentence = fullText.match(/^[\s\S]*?[.!?](?=\s|$)/);
+      return (sentence ? sentence[0] : fullText).slice(0, 200);
     }
 
     /* Minimal markdown -> safe DOM parser (bold, italics, bullets, headings) */
@@ -1133,22 +1242,77 @@
     window.triggerCoreAIInference = triggerCoreAIInference;
     el.aiBtn.addEventListener('click', triggerCoreAIInference);
 
+    /* ---------------- MACRO WORLD SCRAPER (simulated intel rotation) ---------------- */
+    var MACRO_FEED = [
+      { cat: 'Macro', cls: 'border-neonamber/40 text-neonamber', items: [
+        'Fed funds futures reprice: 2 cuts now expected by Q4.',
+        'US 10Y yield tests resistance; risk assets watching 4.5% line.',
+        'ECB holds rates; Lagarde signals data-dependent path.',
+        'BoJ intervention watch: USD/JPY approaching verbal defense zone.',
+        'US CPI print due — options implying 1.2% SPX straddle move.'
+      ]},
+      { cat: 'Crypto', cls: 'border-neoncyan/40 text-neoncyan', items: [
+        'BTC ETF net inflows resume after 3-day outflow streak.',
+        'Exchange BTC reserves at 5-year low — supply squeeze thesis active.',
+        'Large OTC desk reports elevated ETH accumulation blocks.',
+        'Funding rates flip positive across major perp venues.',
+        'Stablecoin market cap expands — dry powder building.'
+      ]},
+      { cat: 'Forex', cls: 'border-neonmagenta/40 text-neonmagenta', items: [
+        'DXY correlation matrix: inverse BTC coupling strengthens to -0.72.',
+        'EUR/USD order block cluster detected at 1.0780-1.0800.',
+        'GBP positioning: leveraged funds trim longs ahead of BoE.',
+        'Carry unwind risk flagged as JPY vol term structure inverts.',
+        'Institutional flows favor USD dips — real money bids layered.'
+      ]}
+    ];
+    var macroCount = 0;
+
+    function pushMacroUpdate() {
+      var group = MACRO_FEED[Math.floor(Math.random() * MACRO_FEED.length)];
+      var text = group.items[Math.floor(Math.random() * group.items.length)];
+      macroCount++;
+      document.getElementById('macro-count').textContent = 'GEO FEED // ' + String(Math.min(macroCount, 99)).padStart(2, '0');
+
+      var board = document.getElementById('macro-board');
+      var row = document.createElement('div');
+      row.className = 'flex gap-3 items-start';
+      var badge = document.createElement('span');
+      badge.className = 'shrink-0 border ' + group.cls + ' text-[9px] px-1.5 py-0.5 rounded-sm uppercase';
+      badge.textContent = group.cat;
+      var p = document.createElement('p');
+      p.className = 'text-slate-400';
+      p.textContent = '[' + new Date().toISOString().slice(11, 16) + 'Z] ' + text;
+      row.appendChild(badge); row.appendChild(p);
+      board.insertBefore(row, board.firstChild);
+      while (board.children.length > 12) board.removeChild(board.lastChild);
+    }
+
+    setInterval(function () { if (!document.hidden) pushMacroUpdate(); }, 9000);
+
+    /* ---------------- PAGE VISIBILITY: pause background work ---------------- */
+    document.addEventListener('visibilitychange', function () {
+      if (document.hidden) {
+        if (state.forexTimer) { clearInterval(state.forexTimer); state.forexTimer = null; }
+      } else {
+        startForexEngine();
+        renderActive(); // repaint with freshest data on return
+      }
+    });
+
     /* ---------------- IGNITION ---------------- */
     seedForex();
     startForexEngine();
     connectBinance();
     renderWalletList();
     setLoader(false);
+    pushMacroUpdate(); // first intel sweep immediately
     aiPrint('> Phase 4 core online. Gemini binding + node matrix + quantum_memory armed.', 'text-neongreen');
     if (quantum_memory.length) {
       aiPrint('> Restored ' + quantum_memory.length + ' cognitive memories from local sandbox.', 'text-slate-500');
     }
-    document.querySelectorAll('footer span')[2].innerHTML =
-      '<i class="fa-solid fa-tower-broadcast text-neonamber mr-1.5" aria-hidden="true"></i>UPLINK: <span class="text-neongreen">ACTIVE</span>';
-    if (getKey()) {
-      document.querySelectorAll('footer span')[3].innerHTML =
-        '<i class="fa-solid fa-lock text-neonmagenta mr-1.5" aria-hidden="true"></i>KEYS: <span class="text-neongreen">DECIPHERED</span>';
-    }
+    setFooterUplink('ACTIVE');
+    if (getKey()) setFooterKeys(true);
   })();
   </script>
 
