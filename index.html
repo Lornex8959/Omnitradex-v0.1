@@ -208,6 +208,14 @@
         <span class="text-slate-500">FEED</span>
         <span id="hud-feed" class="text-neonamber">STANDBY</span>
       </div>
+      <nav class="flex items-center gap-1" aria-label="View switcher">
+        <button id="nav-terminal" class="font-orbitron text-[10px] tracking-widest uppercase rounded-sm px-3 py-2 border border-neoncyan text-neoncyan bg-neoncyan/10" aria-current="page">
+          <i class="fa-solid fa-terminal mr-1.5" aria-hidden="true"></i>Terminal
+        </button>
+        <button id="nav-intel" class="font-orbitron text-[10px] tracking-widest uppercase rounded-sm px-3 py-2 border border-gridline text-slate-500 hover:text-neonamber hover:border-neonamber/40">
+          <i class="fa-solid fa-globe mr-1.5" aria-hidden="true"></i>Global Intel
+        </button>
+      </nav>
       <button id="btn-decipher-keys" class="btn-neon font-orbitron text-xs tracking-widest text-neoncyan rounded-sm px-4 py-2 uppercase">
         <i class="fa-solid fa-key mr-2" aria-hidden="true"></i>Decipher Keys
       </button>
@@ -217,7 +225,7 @@
   <!-- ================================================================ -->
   <!-- MAIN GRID: LEFT / CENTER / RIGHT COLUMNS -->
   <!-- ================================================================ -->
-  <main class="flex-1 grid grid-cols-1 lg:grid-cols-3 gap-3 min-h-0">
+  <main id="view-terminal" class="flex-1 grid grid-cols-1 lg:grid-cols-3 gap-3 min-h-0">
 
     <!-- ============================================================ -->
     <!-- LEFT COLUMN -->
@@ -414,7 +422,20 @@
         </div>
       </div>
 
-      <!-- (2) COGNITIVE AI TERMINAL -->
+      <!-- (2) ELITE TRADE DIRECTIVE (Phase 6 tailored suggestion engine) -->
+      <div class="neon-panel neon-panel-green hud-corners rounded-sm flex flex-col" aria-label="Elite trade directive">
+        <div class="flex items-center justify-between border-b border-gridline px-4 py-2.5">
+          <h2 class="font-orbitron text-xs tracking-[0.25em] text-neongreen uppercase">
+            <i class="fa-solid fa-user-tie mr-2" aria-hidden="true"></i>Elite Trade Directive
+          </h2>
+          <span id="directive-conf" class="font-techmono text-[10px] text-slate-500">CONF // --%</span>
+        </div>
+        <div id="trade-directive" class="px-4 py-3 font-techmono text-[11px] space-y-1.5">
+          <p class="text-slate-500">Calibrating tailored directive from live buffers, MTF gate and learned edge...</p>
+        </div>
+      </div>
+
+      <!-- (3) COGNITIVE AI TERMINAL -->
       <div class="ai-terminal hud-corners rounded-sm flex flex-col h-[320px] bg-paneldeep">
         <div class="flex items-center justify-between border-b border-neonmagenta/25 px-4 py-2.5">
           <h2 class="font-orbitron text-xs tracking-[0.25em] text-neonmagenta glow-magenta uppercase">
@@ -442,6 +463,43 @@
   </main>
 
   <!-- ================================================================ -->
+  <!-- GLOBAL INTEL VIEW (Phase 6): world news, events & impact forecasts -->
+  <!-- ================================================================ -->
+  <section id="view-intel" class="hidden flex-1 flex-col gap-3 min-h-0" aria-label="Global market intelligence">
+
+    <!-- Impact radar strip -->
+    <div class="neon-panel hud-corners rounded-sm px-4 py-3 flex flex-wrap items-center gap-3 font-techmono text-[11px]">
+      <h2 class="font-orbitron text-xs tracking-[0.25em] text-neonamber uppercase mr-2">
+        <i class="fa-solid fa-bullseye mr-2" aria-hidden="true"></i>Impact Radar
+      </h2>
+      <span id="radar-equities" class="border border-gridline rounded-sm px-3 py-1.5 text-slate-500">EQUITIES --</span>
+      <span id="radar-crypto" class="border border-gridline rounded-sm px-3 py-1.5 text-slate-500">CRYPTO --</span>
+      <span id="radar-forex" class="border border-gridline rounded-sm px-3 py-1.5 text-slate-500">FOREX --</span>
+      <span id="radar-commod" class="border border-gridline rounded-sm px-3 py-1.5 text-slate-500">COMMODITIES --</span>
+      <div class="ml-auto flex items-center gap-2">
+        <span id="news-source-badge" class="border border-gridline text-slate-600 text-[9px] px-2 py-1 rounded-sm uppercase">Feed: Simulated</span>
+        <button id="btn-news-refresh" class="btn-neon font-orbitron text-[10px] tracking-widest text-neoncyan rounded-sm px-3 py-1.5 uppercase">
+          <i class="fa-solid fa-rotate mr-1.5" aria-hidden="true"></i>Sweep
+        </button>
+      </div>
+    </div>
+
+    <!-- Category filters -->
+    <div class="flex flex-wrap items-center gap-1.5 font-techmono text-[11px]" role="tablist" aria-label="News category filter">
+      <button data-newscat="all" class="news-cat px-3 py-1.5 border border-neonamber text-neonamber bg-neonamber/10 rounded-sm uppercase" role="tab" aria-selected="true">All</button>
+      <button data-newscat="macro" class="news-cat px-3 py-1.5 border border-gridline text-slate-500 rounded-sm uppercase hover:text-neonamber hover:border-neonamber/40" role="tab" aria-selected="false">Macro</button>
+      <button data-newscat="equities" class="news-cat px-3 py-1.5 border border-gridline text-slate-500 rounded-sm uppercase hover:text-neonamber hover:border-neonamber/40" role="tab" aria-selected="false">Equities</button>
+      <button data-newscat="crypto" class="news-cat px-3 py-1.5 border border-gridline text-slate-500 rounded-sm uppercase hover:text-neonamber hover:border-neonamber/40" role="tab" aria-selected="false">Crypto</button>
+      <button data-newscat="forex" class="news-cat px-3 py-1.5 border border-gridline text-slate-500 rounded-sm uppercase hover:text-neonamber hover:border-neonamber/40" role="tab" aria-selected="false">Forex</button>
+      <button data-newscat="geopolitics" class="news-cat px-3 py-1.5 border border-gridline text-slate-500 rounded-sm uppercase hover:text-neonamber hover:border-neonamber/40" role="tab" aria-selected="false">Geopolitics</button>
+      <span class="ml-auto font-techmono text-[10px] text-slate-600">Add a Finnhub key in the Key Vault for live wire headlines.</span>
+    </div>
+
+    <!-- News grid -->
+    <div id="news-grid" class="flex-1 min-h-0 overflow-y-auto grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-3 pb-1"></div>
+  </section>
+
+  <!-- ================================================================ -->
   <!-- FOOTER TELEMETRY HUD -->
   <!-- ================================================================ -->
   <footer class="neon-panel rounded-sm px-4 py-2 flex flex-wrap items-center gap-x-6 gap-y-1 font-techmono text-[10px] text-slate-500">
@@ -449,14 +507,15 @@
     <span><i class="fa-solid fa-database text-neongreen mr-1.5" aria-hidden="true"></i>STORAGE: <span class="text-neongreen">LOCAL SANDBOX</span></span>
     <span><i class="fa-solid fa-tower-broadcast text-neonamber mr-1.5" aria-hidden="true"></i>UPLINK: <span id="ftr-uplink" class="text-neonamber">DORMANT</span></span>
     <span><i class="fa-solid fa-lock text-neonmagenta mr-1.5" aria-hidden="true"></i>KEYS: <span id="ftr-keys" class="text-neonmagenta">NOT DECIPHERED</span></span>
-    <span class="ml-auto text-slate-600">PHASE 5 // AUTONOMOUS INTELLIGENCE ARMED</span>
+    <span><i class="fa-solid fa-graduation-cap text-neoncyan mr-1.5" aria-hidden="true"></i>LEARN: <span id="ftr-learn" class="text-slate-500">0 SIG // --% EDGE</span></span>
+    <span class="ml-auto text-slate-600">PHASE 6 // SELF-EVOLVING GLOBAL INTELLIGENCE</span>
   </footer>
 
   <!-- ================================================================ -->
   <!-- KEY VAULT MODAL (sovereign credential input) -->
   <!-- ================================================================ -->
   <div id="key-modal" class="fixed inset-0 z-50 hidden items-center justify-center bg-void/80 p-4" role="dialog" aria-modal="true" aria-labelledby="key-modal-title">
-    <div class="neon-panel neon-panel-magenta hud-corners rounded-sm w-full max-w-md p-5 flex flex-col gap-4">
+    <div class="neon-panel neon-panel-magenta hud-corners rounded-sm w-full max-w-md max-h-[90vh] overflow-y-auto p-5 flex flex-col gap-4">
       <div>
         <h2 id="key-modal-title" class="font-orbitron text-sm tracking-[0.25em] text-neonmagenta glow-magenta uppercase">
           <i class="fa-solid fa-key mr-2" aria-hidden="true"></i>Key Vault
@@ -467,6 +526,29 @@
         <label for="key-input" class="sr-only">Gemini API key</label>
         <input id="key-input" type="password" placeholder="GEMINI API KEY" autocomplete="off" spellcheck="false"
           class="bg-paneldeep border border-neonmagenta/40 rounded-sm px-3 py-2 font-techmono text-xs text-neonmagenta placeholder:text-slate-600 focus:outline-none focus:border-neonmagenta/80" />
+        <label for="key-openai" class="sr-only">OpenAI API key</label>
+        <input id="key-openai" type="password" placeholder="OPENAI API KEY (PREMIUM // OPTIONAL)" autocomplete="off" spellcheck="false"
+          class="bg-paneldeep border border-gridline rounded-sm px-3 py-2 font-techmono text-xs text-neoncyan placeholder:text-slate-600 focus:outline-none focus:border-neoncyan/60" />
+        <label for="key-anthropic" class="sr-only">Anthropic API key</label>
+        <input id="key-anthropic" type="password" placeholder="ANTHROPIC API KEY (PREMIUM // OPTIONAL)" autocomplete="off" spellcheck="false"
+          class="bg-paneldeep border border-gridline rounded-sm px-3 py-2 font-techmono text-xs text-neoncyan placeholder:text-slate-600 focus:outline-none focus:border-neoncyan/60" />
+        <label for="key-groq" class="sr-only">Groq API key</label>
+        <input id="key-groq" type="password" placeholder="GROQ API KEY (FAST INFERENCE // OPTIONAL)" autocomplete="off" spellcheck="false"
+          class="bg-paneldeep border border-gridline rounded-sm px-3 py-2 font-techmono text-xs text-neoncyan placeholder:text-slate-600 focus:outline-none focus:border-neoncyan/60" />
+        <label for="key-finnhub" class="sr-only">Finnhub news API key</label>
+        <input id="key-finnhub" type="password" placeholder="FINNHUB KEY (LIVE GLOBAL NEWS // OPTIONAL)" autocomplete="off" spellcheck="false"
+          class="bg-paneldeep border border-gridline rounded-sm px-3 py-2 font-techmono text-xs text-neonamber placeholder:text-slate-600 focus:outline-none focus:border-neonamber/60" />
+        <div>
+          <label for="model-select" class="font-techmono text-[10px] text-slate-500 uppercase block mb-1">Cognitive Engine Model</label>
+          <select id="model-select"
+            class="w-full bg-paneldeep border border-neonmagenta/40 rounded-sm px-3 py-2 font-techmono text-xs text-neonmagenta focus:outline-none focus:border-neonmagenta/80">
+            <option value="gemini-flash">Gemini 2.5 Flash (default)</option>
+            <option value="gemini-pro">Gemini 2.5 Pro (premium)</option>
+            <option value="openai-gpt">OpenAI GPT-4o (premium)</option>
+            <option value="anthropic-claude">Claude Sonnet (premium)</option>
+            <option value="groq-llama">Groq Llama 3.3 70B (fast)</option>
+          </select>
+        </div>
         <div class="flex gap-2">
           <button type="submit" class="btn-neon btn-neon-magenta flex-1 font-orbitron text-[10px] tracking-widest text-neonmagenta rounded-sm py-2 uppercase">Seal Vault</button>
           <button type="button" id="key-purge" class="btn-neon flex-1 font-orbitron text-[10px] tracking-widest text-neonamber rounded-sm py-2 uppercase" style="border-color: rgba(251,191,36,0.5); background: rgba(251,191,36,0.06);">Purge</button>
@@ -731,11 +813,174 @@
         'Whale Wallet Mimicry':       (isCrypto ? 2 : -3) + (aligned ? 2 : 0)
       };
 
+      // Phase 6: apply learned per-strategy edge weights (reinforcement memory)
+      Object.keys(scores).forEach(function (name) {
+        scores[name] += learnedBias(name);
+      });
+
       var best = null, bestScore = -Infinity;
       Object.keys(scores).forEach(function (name) {
         if (scores[name] > bestScore) { bestScore = scores[name]; best = name; }
       });
       return { name: best, score: bestScore, gate: mtf.gate };
+    }
+
+    /* ================================================================
+       PHASE 6 // MODULE 2: ADAPTIVE LEARNING ENGINE
+       Every gated signal is logged, evaluated against the price 60s
+       later, and converted into reinforcement weights per strategy.
+       The system studies its own data stream and evolves its edge —
+       persisted in localStorage across sessions.
+       ================================================================ */
+    var LEARN_SLOT = 'qc3_learning';
+    var learning = { weights: {}, samples: 0, wins: 0, insights: [] };
+    try {
+      var savedLearn = JSON.parse(localStorage.getItem(LEARN_SLOT));
+      if (savedLearn && savedLearn.weights) learning = savedLearn;
+    } catch (e) { /* fresh brain */ }
+
+    function saveLearning() { localStorage.setItem(LEARN_SLOT, JSON.stringify(learning)); }
+    function learnedBias(name) { return learning.weights[name] || 0; }
+    function learnWinRate() { return learning.samples ? (learning.wins / learning.samples) : 0.5; }
+
+    function updateLearnHud() {
+      var s = document.getElementById('ftr-learn');
+      if (!s) return;
+      s.textContent = learning.samples + ' SIG // ' + (learnWinRate() * 100).toFixed(0) + '% EDGE';
+      s.className = learnWinRate() >= 0.5 ? 'text-neongreen' : 'text-neonamber';
+    }
+
+    var pendingSignals = [];
+
+    function learnRegisterSignal(rec, symbol) {
+      if (rec.gate !== 'LONG-OK' && rec.gate !== 'SHORT-OK') return;
+      var d = state.last[symbol];
+      if (d.price == null) return;
+      // avoid stacking duplicate pending evaluations per symbol
+      for (var i = 0; i < pendingSignals.length; i++) {
+        if (pendingSignals[i].symbol === symbol) return;
+      }
+      pendingSignals.push({
+        symbol: symbol,
+        dir: rec.gate === 'LONG-OK' ? 1 : -1,
+        strat: rec.name,
+        price: d.price,
+        t: Date.now()
+      });
+    }
+
+    function learnEvaluate() {
+      var now = Date.now();
+      var remaining = [];
+      pendingSignals.forEach(function (sig) {
+        if (now - sig.t < 60000) { remaining.push(sig); return; }
+        var d = state.last[sig.symbol];
+        if (d.price == null) return;
+        var move = (d.price - sig.price) / sig.price;
+        var win = (move * sig.dir) > 0;
+        learning.samples++;
+        if (win) learning.wins++;
+        var w = learning.weights[sig.strat] || 0;
+        // reinforcement update: reward confirmed edge, decay failed reads
+        learning.weights[sig.strat] = Math.max(-3, Math.min(3, w + (win ? 0.25 : -0.15)));
+        var insight = sig.strat + (win ? ' validated' : ' faded') + ' on ' + ASSETS[sig.symbol].label +
+          ' (' + (move * 100 >= 0 ? '+' : '') + (move * 100).toFixed(3) + '% in 60s)';
+        learning.insights.push(insight);
+        while (learning.insights.length > 8) learning.insights.shift();
+        saveLearning();
+        updateLearnHud();
+        aiPrint('> LEARN: ' + insight + '. Weight[' + sig.strat + '] -> ' + learning.weights[sig.strat].toFixed(2), win ? 'text-neongreen' : 'text-neonamber');
+      });
+      pendingSignals = remaining;
+    }
+
+    function learningContext() {
+      var keys = Object.keys(learning.weights);
+      if (!keys.length) return 'No learned edge yet — cold start.';
+      var ranked = keys.slice().sort(function (a, b) { return learning.weights[b] - learning.weights[a]; });
+      return 'SAMPLES: ' + learning.samples + ' | WIN RATE: ' + (learnWinRate() * 100).toFixed(0) + '%\n' +
+        'LEARNED WEIGHTS: ' + ranked.map(function (k) { return k + '=' + learning.weights[k].toFixed(2); }).join(', ') + '\n' +
+        'RECENT LESSONS: ' + (learning.insights.slice(-3).join(' | ') || 'none');
+    }
+
+    /* ================================================================
+       PHASE 6 // MODULE 3: ELITE TRADE DIRECTIVE ENGINE
+       Synthesizes MTF gate + volatility trail + learned edge into a
+       fully tailored trade card, like a full-time elite desk trader.
+       ================================================================ */
+    function buildTradeDirective() {
+      var symbol = state.active;
+      var d = state.last[symbol];
+      var buf = state.buffers[symbol];
+      if (d.price == null || buf.length < 15) return null;
+      var mtf = computeMTF(symbol);
+      var ts = trailStop(symbol);
+      var rec = state.synthRec;
+      var slPct = ts ? ts.pct : 0.02;
+
+      var stand = state.execPaused || (mtf.gate !== 'LONG-OK' && mtf.gate !== 'SHORT-OK');
+      var dir = mtf.gate === 'LONG-OK' ? 'LONG' : mtf.gate === 'SHORT-OK' ? 'SHORT' : 'STAND ASIDE';
+      var sign = dir === 'SHORT' ? -1 : 1;
+
+      // confidence: alignment strength + learned edge + trap penalty
+      var conf = 40 + Math.min(25, Math.abs(mtf.mid.z) * 8) + Math.min(15, Math.abs(mtf.slow.z) * 5);
+      conf += (learnWinRate() - 0.5) * 40;
+      if (rec) conf += Math.min(10, Math.max(0, rec.score));
+      if (state.execPaused) conf = Math.min(conf, 15);
+      conf = Math.max(5, Math.min(96, Math.round(conf)));
+
+      var entry = d.price;
+      var sl = stand ? null : entry * (1 - sign * slPct);
+      var tp = stand ? null : entry * (1 + sign * slPct * 2); // 2R discipline
+      // risk-based position sizing: 1% account risk / SL distance, scaled by confidence
+      var sizePct = stand ? 0 : Math.min(5, (1 / (slPct * 100)) * (conf / 100) * 2);
+
+      return {
+        symbol: symbol, dir: dir, stand: stand, conf: conf,
+        entry: entry, sl: sl, tp: tp, sizePct: sizePct,
+        strat: rec ? rec.name : activeStrategy(),
+        reason: state.execPaused ? 'Manipulation trap active on monitored node — capital preservation override.' :
+          stand ? 'MTF gate ' + mtf.gate + ' — cross-period confirmation missing. Elite desks wait.' :
+          'MTF aligned ' + dir + ' (mid z=' + mtf.mid.z.toFixed(2) + '), vol-adjusted trail ' + (slPct * 100).toFixed(1) + '%, learned edge ' + (learnWinRate() * 100).toFixed(0) + '%.'
+      };
+    }
+
+    function renderTradeDirective() {
+      var box = document.getElementById('trade-directive');
+      var confEl = document.getElementById('directive-conf');
+      var td = buildTradeDirective();
+      if (!td) return;
+      confEl.textContent = 'CONF // ' + td.conf + '%';
+      confEl.className = 'font-techmono text-[10px] ' + (td.conf >= 65 ? 'text-neongreen' : td.conf >= 40 ? 'text-neonamber' : 'text-neonred');
+      box.innerHTML = '';
+
+      var head = document.createElement('p');
+      head.className = 'font-orbitron text-xs uppercase ' + (td.dir === 'LONG' ? 'text-neongreen glow-green' : td.dir === 'SHORT' ? 'text-neonred' : 'text-neonamber');
+      head.textContent = td.dir + ' // ' + ASSETS[td.symbol].label + ' // ' + td.strat;
+      box.appendChild(head);
+
+      if (!td.stand) {
+        var grid = document.createElement('div');
+        grid.className = 'grid grid-cols-2 gap-x-4 gap-y-0.5 text-slate-400';
+        [['ENTRY', fmtPrice(td.symbol, td.entry)],
+         ['SIZE', td.sizePct.toFixed(1) + '% acct (1% risk)'],
+         ['STOP', fmtPrice(td.symbol, td.sl)],
+         ['TARGET (2R)', fmtPrice(td.symbol, td.tp)]].forEach(function (pair) {
+          var s = document.createElement('span');
+          var lbl = document.createElement('span');
+          lbl.className = 'text-slate-600 uppercase mr-1.5';
+          lbl.textContent = pair[0] + ':';
+          s.appendChild(lbl);
+          s.appendChild(document.createTextNode(pair[1]));
+          grid.appendChild(s);
+        });
+        box.appendChild(grid);
+      }
+
+      var why = document.createElement('p');
+      why.className = 'text-slate-500 leading-relaxed';
+      why.textContent = td.reason;
+      box.appendChild(why);
     }
 
     state.synthRec = null;
@@ -745,6 +990,7 @@
       if (!rec) return;
       var changed = !state.synthRec || state.synthRec.name !== rec.name;
       state.synthRec = rec;
+      learnRegisterSignal(rec, state.active); // Phase 6: feed the adaptive learning loop
       // move the AI-FIT badge to the recommended card
       el.deck.querySelectorAll('.synth-badge').forEach(function (b) { b.remove(); });
       Array.prototype.forEach.call(el.deck.querySelectorAll('.strategy-card'), function (card) {
@@ -1002,44 +1248,92 @@
       });
     });
 
-    /* ---------------- SOVEREIGN KEY VAULT (localStorage only) ---------------- */
+    /* ================================================================
+       PHASE 6 // MODULE 1: SOVEREIGN MULTI-PROVIDER KEY VAULT
+       Premium model credentials (Gemini / OpenAI / Anthropic / Groq)
+       plus the Finnhub news key — ALL locked into localStorage only,
+       transmitted ONLY to their own official provider endpoints.
+       ================================================================ */
     var KEY_SLOT = 'qc3_gemini_key';
-    function getKey() { return localStorage.getItem(KEY_SLOT) || ''; }
+    var VAULT_SLOTS = {
+      gemini: 'qc3_gemini_key',
+      openai: 'qc3_openai_key',
+      anthropic: 'qc3_anthropic_key',
+      groq: 'qc3_groq_key',
+      finnhub: 'qc3_finnhub_key'
+    };
+    var MODEL_SLOT = 'qc3_model';
+
+    function getSlot(name) { return localStorage.getItem(VAULT_SLOTS[name]) || ''; }
+    function getKey() { return getSlot('gemini'); }
+    function activeModelId() { return localStorage.getItem(MODEL_SLOT) || 'gemini-flash'; }
+
+    /* Premium model registry: provider adapters resolve endpoint + auth shape */
+    var MODELS = {
+      'gemini-flash':     { label: 'GEMINI 2.5 FLASH', provider: 'gemini', model: 'gemini-2.5-flash' },
+      'gemini-pro':       { label: 'GEMINI 2.5 PRO',   provider: 'gemini', model: 'gemini-2.5-pro' },
+      'openai-gpt':       { label: 'GPT-4O',           provider: 'openai', model: 'gpt-4o' },
+      'anthropic-claude': { label: 'CLAUDE SONNET',    provider: 'anthropic', model: 'claude-sonnet-4-5' },
+      'groq-llama':       { label: 'GROQ LLAMA-3.3',   provider: 'groq', model: 'llama-3.3-70b-versatile' }
+    };
+    function activeModel() { return MODELS[activeModelId()] || MODELS['gemini-flash']; }
+    function modelKey() {
+      var p = activeModel().provider;
+      return getSlot(p === 'gemini' ? 'gemini' : p);
+    }
+    function anyModelKey() { return !!(getSlot('gemini') || getSlot('openai') || getSlot('anthropic') || getSlot('groq')); }
 
     // Inline modal replaces window.prompt (which is blocked in sandboxed iframes)
     var keyModal = document.getElementById('key-modal');
     var keyForm = document.getElementById('key-form');
     var keyInput = document.getElementById('key-input');
+    var vaultInputs = {
+      gemini: keyInput,
+      openai: document.getElementById('key-openai'),
+      anthropic: document.getElementById('key-anthropic'),
+      groq: document.getElementById('key-groq'),
+      finnhub: document.getElementById('key-finnhub')
+    };
+    var modelSelect = document.getElementById('model-select');
 
     function closeKeyModal() {
       keyModal.classList.add('hidden');
       keyModal.classList.remove('flex');
-      keyInput.value = '';
+      Object.keys(vaultInputs).forEach(function (n) { vaultInputs[n].value = ''; });
       el.keysBtn.focus();
     }
 
     el.keysBtn.addEventListener('click', function () {
       keyModal.classList.remove('hidden');
       keyModal.classList.add('flex');
-      keyInput.value = getKey();
+      Object.keys(vaultInputs).forEach(function (n) { vaultInputs[n].value = getSlot(n); });
+      modelSelect.value = activeModelId();
       keyInput.focus();
     });
 
     keyForm.addEventListener('submit', function (e) {
       e.preventDefault();
-      var val = keyInput.value.trim();
-      if (val) {
-        localStorage.setItem(KEY_SLOT, val);
-        aiPrint('> Key vault sealed. Credential locked to local sandbox.', 'text-neongreen');
-        setFooterKeys(true);
-        setLoader(false); // refresh GEMINI // ARMED status
+      var sealed = 0;
+      Object.keys(vaultInputs).forEach(function (n) {
+        var val = vaultInputs[n].value.trim();
+        if (val) { localStorage.setItem(VAULT_SLOTS[n], val); sealed++; }
+        else localStorage.removeItem(VAULT_SLOTS[n]);
+      });
+      localStorage.setItem(MODEL_SLOT, modelSelect.value);
+      if (sealed) {
+        aiPrint('> Key vault sealed: ' + sealed + ' credential(s) locked to local sandbox.', 'text-neongreen');
+        aiPrint('> Cognitive engine bound: ' + activeModel().label, 'text-neonmagenta');
       }
+      setFooterKeys(anyModelKey());
+      setLoader(false); // refresh ARMED status with the active model label
+      if (typeof refreshNews === 'function') refreshNews();
       closeKeyModal();
     });
 
     document.getElementById('key-purge').addEventListener('click', function () {
-      localStorage.removeItem(KEY_SLOT);
-      aiPrint('> Key vault purged.', 'text-neonamber');
+      Object.keys(VAULT_SLOTS).forEach(function (n) { localStorage.removeItem(VAULT_SLOTS[n]); });
+      localStorage.removeItem(MODEL_SLOT);
+      aiPrint('> Key vault purged: all credentials wiped from local sandbox.', 'text-neonamber');
       setFooterKeys(false);
       setLoader(false);
       closeKeyModal();
@@ -1340,40 +1634,100 @@
           'BEHAVIOR STATE: ' + monitoredNodeState() + '\n' +
           'EXECUTION PAUSE: ' + (state.execPaused ? 'TRUE — manipulation trap active, stand aside' : 'FALSE') + '\n' +
           'TRACKED NODES: ' + walletNodes.length + '\n\n' +
+          '== ADAPTIVE LEARNING ENGINE (self-trained on live outcomes) ==\n' +
+          learningContext() + '\n\n' +
           '== PAST COGNITIVE MEMORIES (last ' + Math.min(quantum_memory.length, 5) + ' decisions — maintain continuity) ==\n' +
           memoryContext()
       };
     }
 
-    /* LIVE API INFERENCE: direct fetch to Gemini with exponential backoff wrapper */
-    function callGemini(payload, attempt) {
-      attempt = attempt || 0;
-      var key = getKey();
-      var url = 'https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=' + encodeURIComponent(key);
+    /* ================================================================
+       PHASE 6 // LIVE MULTI-MODEL INFERENCE
+       Provider adapters route the payload to the OFFICIAL endpoint of
+       the selected premium engine, with exponential backoff retries.
+       ================================================================ */
+    function providerRequest(payload) {
+      var m = activeModel();
+      var key = modelKey();
+      if (m.provider === 'gemini') {
+        return fetch('https://generativelanguage.googleapis.com/v1beta/models/' + m.model + ':generateContent?key=' + encodeURIComponent(key), {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            systemInstruction: { parts: [{ text: payload.systemInstruction }] },
+            contents: [{ parts: [{ text: payload.userQuery }] }]
+          })
+        }).then(function (res) {
+          if (!res.ok) throw new Error('HTTP ' + res.status);
+          return res.json();
+        }).then(function (json) {
+          var text = json.candidates && json.candidates[0] &&
+            json.candidates[0].content && json.candidates[0].content.parts &&
+            json.candidates[0].content.parts[0].text;
+          if (!text) throw new Error('Empty inference payload');
+          return text;
+        });
+      }
+      if (m.provider === 'anthropic') {
+        return fetch('https://api.anthropic.com/v1/messages', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'x-api-key': key,
+            'anthropic-version': '2023-06-01',
+            'anthropic-dangerous-direct-browser-access': 'true'
+          },
+          body: JSON.stringify({
+            model: m.model,
+            max_tokens: 800,
+            system: payload.systemInstruction,
+            messages: [{ role: 'user', content: payload.userQuery }]
+          })
+        }).then(function (res) {
+          if (!res.ok) throw new Error('HTTP ' + res.status);
+          return res.json();
+        }).then(function (json) {
+          var text = json.content && json.content[0] && json.content[0].text;
+          if (!text) throw new Error('Empty inference payload');
+          return text;
+        });
+      }
+      // openai + groq share the OpenAI-compatible chat completions shape
+      var url = m.provider === 'groq'
+        ? 'https://api.groq.com/openai/v1/chat/completions'
+        : 'https://api.openai.com/v1/chat/completions';
       return fetch(url, {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + key },
         body: JSON.stringify({
-          systemInstruction: { parts: [{ text: payload.systemInstruction }] },
-          contents: [{ parts: [{ text: payload.userQuery }] }]
+          model: m.model,
+          max_tokens: 800,
+          messages: [
+            { role: 'system', content: payload.systemInstruction },
+            { role: 'user', content: payload.userQuery }
+          ]
         })
       }).then(function (res) {
         if (!res.ok) throw new Error('HTTP ' + res.status);
         return res.json();
       }).then(function (json) {
-        var text = json.candidates && json.candidates[0] &&
-          json.candidates[0].content && json.candidates[0].content.parts &&
-          json.candidates[0].content.parts[0].text;
+        var text = json.choices && json.choices[0] && json.choices[0].message && json.choices[0].message.content;
         if (!text) throw new Error('Empty inference payload');
         return text;
-      }).catch(function (err) {
+      });
+    }
+
+    function callModel(payload, attempt) {
+      attempt = attempt || 0;
+      return providerRequest(payload).catch(function (err) {
         if (attempt >= 3) throw err;
         var delay = Math.pow(2, attempt) * 1000;
         aiPrint('> Uplink retry in ' + (delay / 1000) + 's (' + err.message + ')...', 'text-neonamber');
         return new Promise(function (resolve) { setTimeout(resolve, delay); })
-          .then(function () { return callGemini(payload, attempt + 1); });
+          .then(function () { return callModel(payload, attempt + 1); });
       });
     }
+    var callGemini = callModel; // legacy alias — routes through the active engine
 
     function extractMemory(fullText) {
       var m = fullText.match(/MEMORY:\s*(.+)$/im);
@@ -1417,7 +1771,8 @@
 
     function setLoader(on) {
       el.loader.style.display = on ? 'block' : 'none';
-      el.aiStatus.textContent = on ? 'GEMINI // INFERRING' : 'GEMINI // ' + (getKey() ? 'ARMED' : 'STANDBY');
+      var label = activeModel().label;
+      el.aiStatus.textContent = on ? label + ' // INFERRING' : label + ' // ' + (modelKey() ? 'ARMED' : 'STANDBY');
       el.aiStatus.className = 'font-techmono text-[10px] ' + (on ? 'text-neonmagenta glow-magenta' : 'text-slate-500');
     }
 
@@ -1441,8 +1796,8 @@
       aiPrint('> Node scrape: ' + activeWallet(), 'text-slate-500');
       aiPrint('> Memory buffer injected: ' + quantum_memory.length + '/5 past decisions.', 'text-slate-500');
 
-      if (!getKey()) {
-        aiPrint('> NO KEY DECIPHERED. Running local heuristic fallback...', 'text-neonamber');
+      if (!modelKey()) {
+        aiPrint('> NO KEY DECIPHERED for ' + activeModel().label + '. Running local heuristic fallback...', 'text-neonamber');
         var d = state.last[state.active];
         var summary = ASSETS[state.active].label + ' ' + (d.delta >= 0 ? 'bullish' : 'bearish') +
           ' bias at ' + fmtPrice(state.active, d.price) + ' via ' + activeStrategy() + '.';
@@ -1532,6 +1887,262 @@
 
     setInterval(function () { if (!document.hidden) pushMacroUpdate(); }, 9000);
 
+    /* ================================================================
+       PHASE 6 // MODULE 4: GLOBAL INTEL — NEWS, EVENTS & IMPACT FORECASTS
+       World events feed (live wire via Finnhub key, simulated fallback),
+       deterministic impact classification per headline, and on-demand
+       AI future-impact predictions via the active premium engine.
+       ================================================================ */
+    var newsItems = [];
+    var newsFilter = 'all';
+
+    var SIM_NEWS = [
+      { cat: 'macro', src: 'FED WIRE', headline: 'Federal Reserve signals two rate cuts by Q4 as core inflation cools to 2.4%', tickers: ['SPY', 'QQQ', 'TLT'] },
+      { cat: 'macro', src: 'ECB DESK', headline: 'ECB holds rates steady; Lagarde warns of persistent services inflation in eurozone', tickers: ['EURUSD', 'DAX'] },
+      { cat: 'equities', src: 'EARNINGS', headline: 'NVIDIA beats estimates with record data-center revenue, raises full-year guidance', tickers: ['NVDA', 'AMD', 'TSM'] },
+      { cat: 'equities', src: 'EARNINGS', headline: 'Apple iPhone shipments miss in China as local competition intensifies', tickers: ['AAPL', 'QQQ'] },
+      { cat: 'equities', src: 'M&A DESK', headline: 'Microsoft announces $40B expansion of AI infrastructure capex through 2027', tickers: ['MSFT', 'NVDA', 'AVGO'] },
+      { cat: 'crypto', src: 'CHAIN WIRE', headline: 'Spot Bitcoin ETFs record largest weekly inflow since launch; exchange reserves hit 5-year low', tickers: ['BTCUSDT', 'COIN', 'MSTR'] },
+      { cat: 'crypto', src: 'CHAIN WIRE', headline: 'Ethereum staking yield compresses as validator queue clears; L2 activity at all-time high', tickers: ['ETHUSDT', 'SOLUSDT'] },
+      { cat: 'crypto', src: 'REG WATCH', headline: 'SEC delays decision on multi-asset crypto index ETF amid custody concerns', tickers: ['BTCUSDT', 'ETHUSDT', 'COIN'] },
+      { cat: 'forex', src: 'FX DESK', headline: 'Bank of Japan intervention alert: USD/JPY breaches defense zone as yields diverge', tickers: ['USDJPY', 'DXY'] },
+      { cat: 'forex', src: 'FX DESK', headline: 'Sterling rallies on stronger UK wage growth; BoE cut bets pushed to next quarter', tickers: ['GBPUSD', 'FTSE'] },
+      { cat: 'geopolitics', src: 'GEO INTEL', headline: 'Middle East shipping disruption escalates; Brent crude spikes above key resistance', tickers: ['BRENT', 'XOM', 'USO'] },
+      { cat: 'geopolitics', src: 'GEO INTEL', headline: 'New semiconductor export controls announced targeting advanced AI chips', tickers: ['NVDA', 'ASML', 'TSM'] },
+      { cat: 'macro', src: 'DATA WIRE', headline: 'US CPI print hotter than expected at 3.1% YoY; rate cut odds repriced sharply lower', tickers: ['SPY', 'TLT', 'DXY'] },
+      { cat: 'equities', src: 'AUTO DESK', headline: 'Tesla unveils lower-cost platform; delivery guidance revised upward for next year', tickers: ['TSLA', 'RIVN'] },
+      { cat: 'geopolitics', src: 'GEO INTEL', headline: 'Major economies agree on critical minerals supply pact, easing battery metal concerns', tickers: ['ALB', 'LIT', 'TSLA'] }
+    ];
+
+    /* Deterministic impact classifier: keyword vectors -> direction + magnitude + rationale */
+    var IMPACT_RULES = [
+      { re: /rate cut|cuts by|dovish|inflation cools|yield compress/i, dir: 'BULLISH', mag: 2, note: 'Easier policy expectations lift risk assets; long-duration and growth names benefit most.' },
+      { re: /hotter than expected|holds rates|persistent .*inflation|repriced .*lower|hawkish/i, dir: 'BEARISH', mag: 2, note: 'Sticky inflation delays easing; pressure on equities and long bonds, USD supported.' },
+      { re: /beats estimates|record .*revenue|raises .*guidance|revised upward|rallies|inflow/i, dir: 'BULLISH', mag: 3, note: 'Positive surprise vs consensus; expect momentum continuation and sector sympathy moves.' },
+      { re: /miss|delays decision|concerns|disruption|controls|breaches defense/i, dir: 'BEARISH', mag: 2, note: 'Negative catalyst; expect de-risking in affected names and elevated implied volatility.' },
+      { re: /spikes|escalates|intervention/i, dir: 'VOLATILE', mag: 3, note: 'Event risk regime: two-sided liquidation risk, widen stops or stand aside intraday.' },
+      { re: /pact|agree|easing .*concerns|clears/i, dir: 'BULLISH', mag: 1, note: 'Risk-reducing development; supportive but mostly priced over days, not minutes.' }
+    ];
+
+    function analyzeImpact(headline) {
+      for (var i = 0; i < IMPACT_RULES.length; i++) {
+        if (IMPACT_RULES[i].re.test(headline)) return IMPACT_RULES[i];
+      }
+      return { dir: 'NEUTRAL', mag: 1, note: 'No dominant directional keyword vector; monitor price reaction for confirmation.' };
+    }
+
+    var IMPACT_CLS = {
+      BULLISH: 'border-neongreen/50 text-neongreen',
+      BEARISH: 'border-neonred/50 text-neonred',
+      VOLATILE: 'border-neonamber/50 text-neonamber',
+      NEUTRAL: 'border-gridline text-slate-500'
+    };
+
+    function updateRadar() {
+      var buckets = { equities: [], crypto: [], forex: [], commod: [] };
+      newsItems.forEach(function (n) {
+        var imp = n.impact;
+        var score = imp.dir === 'BULLISH' ? imp.mag : imp.dir === 'BEARISH' ? -imp.mag : 0;
+        if (n.cat === 'crypto') buckets.crypto.push(score);
+        else if (n.cat === 'forex') buckets.forex.push(score);
+        else if (n.cat === 'geopolitics') buckets.commod.push(score);
+        else buckets.equities.push(score);
+      });
+      [['radar-equities', 'EQUITIES', buckets.equities],
+       ['radar-crypto', 'CRYPTO', buckets.crypto],
+       ['radar-forex', 'FOREX', buckets.forex],
+       ['radar-commod', 'COMMODITIES', buckets.commod]].forEach(function (row) {
+        var elx = document.getElementById(row[0]);
+        var sum = row[2].reduce(function (a, b) { return a + b; }, 0);
+        var mood = row[2].length === 0 ? '--' : sum > 1 ? 'RISK-ON' : sum < -1 ? 'RISK-OFF' : 'MIXED';
+        elx.textContent = row[1] + ' ' + mood;
+        elx.className = 'border rounded-sm px-3 py-1.5 ' +
+          (mood === 'RISK-ON' ? 'border-neongreen/50 text-neongreen' :
+           mood === 'RISK-OFF' ? 'border-neonred/50 text-neonred' :
+           mood === 'MIXED' ? 'border-neonamber/50 text-neonamber' : 'border-gridline text-slate-500');
+      });
+    }
+
+    function newsCard(item, idx) {
+      var card = document.createElement('article');
+      card.className = 'neon-panel rounded-sm p-4 flex flex-col gap-2 font-techmono text-[11px]';
+
+      var top = document.createElement('div');
+      top.className = 'flex items-center gap-2';
+      var catBadge = document.createElement('span');
+      catBadge.className = 'border border-gridline text-slate-500 text-[9px] px-1.5 py-0.5 rounded-sm uppercase';
+      catBadge.textContent = item.cat;
+      var srcSpan = document.createElement('span');
+      srcSpan.className = 'text-slate-600 text-[10px]';
+      srcSpan.textContent = item.src + ' // ' + item.time;
+      var impBadge = document.createElement('span');
+      impBadge.className = 'ml-auto border text-[9px] px-1.5 py-0.5 rounded-sm uppercase font-semibold ' + IMPACT_CLS[item.impact.dir];
+      impBadge.textContent = item.impact.dir + ' ' + '\u25CF'.repeat(item.impact.mag);
+      top.appendChild(catBadge); top.appendChild(srcSpan); top.appendChild(impBadge);
+      card.appendChild(top);
+
+      var h = document.createElement('h3');
+      h.className = 'font-inter text-xs font-semibold text-slate-200 leading-relaxed text-pretty';
+      h.textContent = item.headline;
+      card.appendChild(h);
+
+      var chips = document.createElement('div');
+      chips.className = 'flex flex-wrap gap-1';
+      item.tickers.forEach(function (t) {
+        var c = document.createElement('span');
+        c.className = 'border border-neoncyan/30 text-neoncyan text-[9px] px-1.5 py-0.5 rounded-sm';
+        c.textContent = t;
+        chips.appendChild(c);
+      });
+      card.appendChild(chips);
+
+      var note = document.createElement('p');
+      note.className = 'text-slate-500 leading-relaxed';
+      note.textContent = item.impact.note;
+      card.appendChild(note);
+
+      var fcBox = document.createElement('div');
+      fcBox.className = 'hidden border-t border-neonmagenta/20 pt-2 font-inter text-[11px] leading-relaxed text-slate-300';
+      fcBox.setAttribute('aria-live', 'polite');
+
+      var btn = document.createElement('button');
+      btn.className = 'btn-neon btn-neon-magenta font-orbitron text-[9px] tracking-widest text-neonmagenta rounded-sm px-3 py-1.5 uppercase self-start';
+      btn.textContent = 'AI Impact Forecast';
+      btn.addEventListener('click', function () { forecastNews(item, fcBox, btn); });
+      card.appendChild(btn);
+      card.appendChild(fcBox);
+      return card;
+    }
+
+    function forecastNews(item, box, btn) {
+      box.classList.remove('hidden');
+      if (!modelKey()) {
+        box.textContent = 'Local model: ' + item.impact.dir + ' impact (' + item.impact.mag + '/3) on ' +
+          item.tickers.join(', ') + '. ' + item.impact.note + ' Add a premium key in the Key Vault for a full AI forecast.';
+        return;
+      }
+      btn.disabled = true;
+      btn.classList.add('opacity-50');
+      box.textContent = 'Forecasting with ' + activeModel().label + '...';
+      callModel({
+        systemInstruction:
+          'You are QUANTUM CORE v3 GLOBAL INTEL, an elite macro strategist. In max 90 words of markdown: ' +
+          'state the likely market impact of the given news over the next 1-4 weeks — direction, magnitude, the most affected listed companies/assets, ' +
+          'second-order effects, and one contrarian risk to the consensus read.',
+        userQuery: 'NEWS EVENT: ' + item.headline + '\nCATEGORY: ' + item.cat +
+          '\nAFFECTED TICKERS: ' + item.tickers.join(', ') +
+          '\nDETERMINISTIC READ: ' + item.impact.dir + ' magnitude ' + item.impact.mag + '/3.'
+      }).then(function (text) {
+        renderMarkdown(box, text);
+      }).catch(function (err) {
+        box.textContent = 'Forecast uplink failed: ' + err.message;
+      }).finally(function () {
+        btn.disabled = false;
+        btn.classList.remove('opacity-50');
+      });
+    }
+
+    function renderNews() {
+      var grid = document.getElementById('news-grid');
+      grid.innerHTML = '';
+      var shown = newsItems.filter(function (n) { return newsFilter === 'all' || n.cat === newsFilter; });
+      if (!shown.length) {
+        var empty = document.createElement('p');
+        empty.className = 'font-techmono text-[11px] text-slate-600 col-span-full';
+        empty.textContent = 'No intel in this channel yet. Trigger a sweep.';
+        grid.appendChild(empty);
+        return;
+      }
+      shown.forEach(function (item, idx) { grid.appendChild(newsCard(item, idx)); });
+      updateRadar();
+    }
+
+    function loadSimNews() {
+      var pool = SIM_NEWS.slice().sort(function () { return Math.random() - 0.5; });
+      newsItems = pool.slice(0, 12).map(function (n) {
+        return {
+          cat: n.cat, src: n.src, headline: n.headline, tickers: n.tickers,
+          time: new Date(Date.now() - Math.random() * 6 * 3600000).toISOString().slice(11, 16) + 'Z',
+          impact: analyzeImpact(n.headline)
+        };
+      });
+      document.getElementById('news-source-badge').textContent = 'Feed: Simulated';
+      renderNews();
+    }
+
+    function classifyFinnhubCategory(fnCat, headline) {
+      if (fnCat === 'crypto') return 'crypto';
+      if (fnCat === 'forex') return 'forex';
+      if (/war|sanction|election|geopolit|military|tariff/i.test(headline)) return 'geopolitics';
+      if (/fed|inflation|cpi|gdp|rates|central bank|treasury/i.test(headline)) return 'macro';
+      return 'equities';
+    }
+
+    function refreshNews() {
+      var fk = getSlot('finnhub');
+      if (!fk) { loadSimNews(); return; }
+      document.getElementById('news-source-badge').textContent = 'Feed: Finnhub Live';
+      Promise.all(['general', 'crypto', 'forex'].map(function (cat) {
+        return fetch('https://finnhub.io/api/v1/news?category=' + cat + '&token=' + encodeURIComponent(fk))
+          .then(function (r) { if (!r.ok) throw new Error('HTTP ' + r.status); return r.json(); })
+          .then(function (arr) { return arr.slice(0, 6).map(function (n) { n._fnCat = cat; return n; }); })
+          .catch(function () { return []; });
+      })).then(function (groups) {
+        var flat = groups[0].concat(groups[1], groups[2]);
+        if (!flat.length) { loadSimNews(); return; }
+        newsItems = flat.map(function (n) {
+          var headline = n.headline || n.summary || 'Untitled wire item';
+          return {
+            cat: classifyFinnhubCategory(n._fnCat, headline),
+            src: (n.source || 'WIRE').toUpperCase(),
+            headline: headline,
+            tickers: n.related ? String(n.related).split(',').filter(Boolean).slice(0, 4) : [],
+            time: n.datetime ? new Date(n.datetime * 1000).toISOString().slice(11, 16) + 'Z' : '--:--',
+            impact: analyzeImpact(headline)
+          };
+        }).slice(0, 18);
+        renderNews();
+      });
+    }
+    window.refreshNews = refreshNews;
+
+    document.getElementById('btn-news-refresh').addEventListener('click', refreshNews);
+
+    /* News category filter tabs */
+    Array.prototype.forEach.call(document.querySelectorAll('.news-cat'), function (tab) {
+      tab.addEventListener('click', function () {
+        newsFilter = tab.getAttribute('data-newscat');
+        document.querySelectorAll('.news-cat').forEach(function (t) {
+          var on = t === tab;
+          t.className = 'news-cat px-3 py-1.5 border rounded-sm uppercase ' +
+            (on ? 'border-neonamber text-neonamber bg-neonamber/10' : 'border-gridline text-slate-500 hover:text-neonamber hover:border-neonamber/40');
+          t.setAttribute('aria-selected', on ? 'true' : 'false');
+        });
+        renderNews();
+      });
+    });
+
+    /* ---------------- VIEW SWITCHER: Terminal <-> Global Intel ---------------- */
+    var navTerminal = document.getElementById('nav-terminal');
+    var navIntel = document.getElementById('nav-intel');
+    var viewTerminal = document.getElementById('view-terminal');
+    var viewIntel = document.getElementById('view-intel');
+
+    function switchView(intel) {
+      viewTerminal.classList.toggle('hidden', intel);
+      viewIntel.classList.toggle('hidden', !intel);
+      viewIntel.classList.toggle('flex', intel);
+      navTerminal.className = 'font-orbitron text-[10px] tracking-widest uppercase rounded-sm px-3 py-2 border ' +
+        (!intel ? 'border-neoncyan text-neoncyan bg-neoncyan/10' : 'border-gridline text-slate-500 hover:text-neoncyan hover:border-neoncyan/40');
+      navIntel.className = 'font-orbitron text-[10px] tracking-widest uppercase rounded-sm px-3 py-2 border ' +
+        (intel ? 'border-neonamber text-neonamber bg-neonamber/10' : 'border-gridline text-slate-500 hover:text-neonamber hover:border-neonamber/40');
+      if (intel) navIntel.setAttribute('aria-current', 'page'); else navTerminal.setAttribute('aria-current', 'page');
+      if (intel) { navTerminal.removeAttribute('aria-current'); } else { navIntel.removeAttribute('aria-current'); }
+      if (intel && !newsItems.length) refreshNews();
+    }
+    navTerminal.addEventListener('click', function () { switchView(false); });
+    navIntel.addEventListener('click', function () { switchView(true); });
+
     /* ---------------- PAGE VISIBILITY: pause background work ---------------- */
     document.addEventListener('visibilitychange', function () {
       if (document.hidden) {
@@ -1569,9 +2180,10 @@
       }
     }, 10000);
 
-    // behavior state machine + strategy synthesis loops
+    // behavior state machine + strategy synthesis + Phase 6 cognition loops
     setInterval(function () { if (!document.hidden) rollNodeStates(); }, 20000);
     setInterval(function () { if (!document.hidden) runSynthesis(true); }, 15000);
+    setInterval(function () { if (!document.hidden) { learnEvaluate(); renderTradeDirective(); } }, 10000);
 
     /* ---------------- IGNITION ---------------- */
     seedForex();
@@ -1580,13 +2192,17 @@
     rollNodeStates();
     setLoader(false);
     pushMacroUpdate(); // first intel sweep immediately
-    setTimeout(function () { runSynthesis(true); }, 4000); // first synthesis once buffers warm
-    aiPrint('> Phase 4 core online. Gemini binding + node matrix + quantum_memory armed.', 'text-neongreen');
+    setTimeout(function () { runSynthesis(true); renderTradeDirective(); }, 4000); // first synthesis once buffers warm
+    updateLearnHud();
+    aiPrint('> Phase 6 core online. Multi-model matrix + adaptive learning + global intel armed.', 'text-neongreen');
+    if (learning.samples) {
+      aiPrint('> Learning engine restored: ' + learning.samples + ' evaluated signals, ' + (learnWinRate() * 100).toFixed(0) + '% validated edge.', 'text-slate-500');
+    }
     if (quantum_memory.length) {
       aiPrint('> Restored ' + quantum_memory.length + ' cognitive memories from local sandbox.', 'text-slate-500');
     }
     setFooterUplink('ACTIVE');
-    if (getKey()) setFooterKeys(true);
+    if (anyModelKey()) setFooterKeys(true);
   })();
   </script>
 
