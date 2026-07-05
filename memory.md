@@ -34,7 +34,18 @@ Architecture lock: single-file `index.html` (HTML5 + Tailwind CDN + vanilla JS).
   - MODULE 4: Strategy synthesis — scores all 10 vectors against live conditions (trend, chop, stretch, delta heat, asset class) every 15s; AI-FIT badge on best-fit card; recommendation included in payload.
   - MODULE 5: Hardening — global error + unhandledrejection traps (terminal never crashes), 30s feed-stall watchdog that recycles the socket, 10s inference rate-limit cooldown (respectful throttling, no bypassing).
 
-## Next Candidates (Phase 6)
+- [x] **Phase 6 — Self-Evolving Global Intelligence** (VERIFIED LIVE):
+  - MODULE 1: Sovereign multi-provider Key Vault — model registry (Gemini 2.5 Flash/Pro, GPT-4o, Claude Sonnet, Groq Llama-3.3) with per-provider adapters (`providerRequest()`) resolving endpoint + auth shape; keys stored per-provider in localStorage, transmitted ONLY to each provider's own official endpoint; exponential backoff retained.
+  - MODULE 2: Adaptive Learning Engine — `qc3_learning` slot ({weights, samples, wins, insights}); signal registration hooked into `runSynthesis()`; outcome scoring evolves strategy weights over time.
+  - MODULE 3: Elite Trade Directive Engine — structured directive card (entry / SL / target / confidence) in the AI Terminal, gate-aware.
+  - MODULE 4: Global Intel View — dedicated nav view (GLOBAL INTEL button) with Impact Radar sentiment chips (Equities/Crypto/Forex/Commodities), category filters (ALL/MACRO/EQUITIES/CRYPTO/FOREX/GEOPOLITICS), sentiment-tagged headline cards with affected tickers + AI Impact Forecast triggers; simulated wire feed with optional Finnhub key for live headlines.
+  - FOOTER: learning telemetry HUD (`#ftr-learn`, "N SIG // X% EDGE") wired to the learning slot.
+  - VERIFIED: view toggling terminal↔intel clean, price stream live, learning HUD live, zero runtime errors.
+
+## Additional localStorage Slots (Phase 6)
+- `qc3_learning` — adaptive engine state `{weights, samples, wins, insights}`
+
+## Next Candidates (Phase 7)
 - AI auto-inference scheduling (periodic cognitive sweeps, gate-aware)
 - Order flow depth simulation panel
 - Session P/L simulation ledger tied to trail SL / target hits
