@@ -11,19 +11,20 @@
   <!-- FontAwesome Icons -->
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" />
 
-  <!-- Google Fonts: Orbitron / Share Tech Mono / Inter -->
+  <!-- Google Fonts: Inter (professional financial UI stack) -->
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;700;900&family=Share+Tech+Mono&family=Inter:wght@400;500;600&display=swap" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
 
   <script>
     tailwind.config = {
       theme: {
         extend: {
           fontFamily: {
-            orbitron: ['Orbitron', 'sans-serif'],
-            techmono: ['"Share Tech Mono"', 'monospace'],
-            inter: ['Inter', 'sans-serif'],
+            /* Typography refactor: unified professional financial UI stack */
+            orbitron: ['Inter', 'system-ui', '-apple-system', 'sans-serif'],
+            techmono: ['Inter', 'system-ui', '-apple-system', 'sans-serif'],
+            inter: ['Inter', 'system-ui', '-apple-system', 'sans-serif'],
           },
           colors: {
             void: '#020617',
@@ -42,6 +43,11 @@
   </script>
 
   <style>
+    /* ============ TYPOGRAPHY WEIGHTS (Inter refactor) ============ */
+    /* Headers: bold. Telemetry/data: medium for clean high-contrast readability. */
+    .font-orbitron { font-weight: 700 !important; letter-spacing: 0.06em; }
+    .font-techmono { font-weight: 500; font-variant-numeric: tabular-nums; }
+
     /* ============ GLOBAL BASE ============ */
     body {
       background-color: #020617;
@@ -319,50 +325,21 @@
           <span class="font-techmono text-[10px] text-slate-500">ON-CHAIN // MEM</span>
         </div>
 
-        <!-- Wallet injector form -->
-        <form class="px-4 pt-3 flex gap-2" aria-label="Wallet address injector">
-          <label for="wallet-input" class="sr-only">Wallet address</label>
-          <input id="wallet-input" type="text" placeholder="0x... INJECT WALLET NODE"
-            class="flex-1 bg-paneldeep border border-gridline rounded-sm px-3 py-2 font-techmono text-[11px] text-neongreen placeholder:text-slate-600 focus:outline-none focus:border-neongreen/60" />
-          <button type="button" class="btn-neon font-orbitron text-[10px] tracking-widest text-neongreen border-neongreen/50 rounded-sm px-3 uppercase" style="border-color: rgba(74,222,128,0.5); background: rgba(74,222,128,0.06);">
+        <!-- Wallet / node injector form -->
+        <form id="wallet-form" class="px-4 pt-3 flex gap-2" aria-label="Wallet address injector">
+          <label for="wallet-input" class="sr-only">Wallet address or node identifier</label>
+          <input id="wallet-input" type="text" placeholder="0x... / FX-BLOCK NODE ADDRESS" autocomplete="off"
+            class="flex-1 min-w-0 bg-paneldeep border border-gridline rounded-sm px-3 py-2 font-techmono text-[11px] text-neongreen placeholder:text-slate-600 focus:outline-none focus:border-neongreen/60" />
+          <label for="wallet-tag" class="sr-only">Node tag</label>
+          <input id="wallet-tag" type="text" placeholder="TAG" autocomplete="off"
+            class="w-24 bg-paneldeep border border-gridline rounded-sm px-3 py-2 font-techmono text-[11px] text-neoncyan placeholder:text-slate-600 focus:outline-none focus:border-neoncyan/60" />
+          <button id="wallet-inject-btn" type="submit" class="btn-neon font-orbitron text-[10px] tracking-widest text-neongreen rounded-sm px-3 uppercase" style="border-color: rgba(74,222,128,0.5); background: rgba(74,222,128,0.06);">
             <i class="fa-solid fa-syringe mr-1" aria-hidden="true"></i>Inject
           </button>
         </form>
 
-        <!-- Tracked entities -->
-        <div class="flex-1 overflow-y-auto px-4 py-3 space-y-2 font-techmono text-[11px]">
-          <div class="border border-gridline rounded-sm px-3 py-2 flex items-center justify-between bg-paneldeep">
-            <div class="flex items-center gap-2">
-              <i class="fa-solid fa-fish text-neoncyan" aria-hidden="true"></i>
-              <div>
-                <p class="text-slate-300">WHALE-α // 0x7f3...a9c2</p>
-                <p class="text-[10px] text-slate-600">ROI 30D: <span class="text-neongreen">+---%</span></p>
-              </div>
-            </div>
-            <span class="text-[10px] text-slate-600 uppercase">Dormant</span>
-          </div>
-          <div class="border border-gridline rounded-sm px-3 py-2 flex items-center justify-between bg-paneldeep">
-            <div class="flex items-center gap-2">
-              <i class="fa-solid fa-robot text-neonmagenta" aria-hidden="true"></i>
-              <div>
-                <p class="text-slate-300">MEV-BOT-07 // 0x1b8...44de</p>
-                <p class="text-[10px] text-slate-600">SANDWICH OPS: <span class="text-neonamber">---</span></p>
-              </div>
-            </div>
-            <span class="text-[10px] text-slate-600 uppercase">Dormant</span>
-          </div>
-          <div class="border border-gridline rounded-sm px-3 py-2 flex items-center justify-between bg-paneldeep">
-            <div class="flex items-center gap-2">
-              <i class="fa-solid fa-building-columns text-neonamber" aria-hidden="true"></i>
-              <div>
-                <p class="text-slate-300">FX-ORDERBLOCK // EURUSD-INST</p>
-                <p class="text-[10px] text-slate-600">BLOCK DEPTH: <span class="text-neoncyan">--.-M</span></p>
-              </div>
-            </div>
-            <span class="text-[10px] text-slate-600 uppercase">Dormant</span>
-          </div>
-          <div class="text-center text-slate-600 text-[10px] pt-1">— SIMULATED MEMORY ARRAY // AWAITING PHASE ACTIVATION —</div>
-        </div>
+        <!-- Tracked entities (rendered dynamically) -->
+        <div id="wallet-list" class="flex-1 overflow-y-auto px-4 py-3 space-y-2 font-techmono text-[11px]"></div>
       </div>
 
       <!-- (2) MACRO WORLD SCRAPER -->
@@ -453,20 +430,23 @@
       </div>
 
       <!-- (2) COGNITIVE AI TERMINAL -->
-      <div class="ai-terminal hud-corners rounded-sm flex flex-col h-[240px] bg-paneldeep">
+      <div class="ai-terminal hud-corners rounded-sm flex flex-col h-[320px] bg-paneldeep">
         <div class="flex items-center justify-between border-b border-neonmagenta/25 px-4 py-2.5">
           <h2 class="font-orbitron text-xs tracking-[0.25em] text-neonmagenta glow-magenta uppercase">
             <i class="fa-solid fa-brain mr-2" aria-hidden="true"></i>Cognitive AI Terminal
           </h2>
-          <span class="font-techmono text-[10px] text-slate-500">GEMINI // OFFLINE</span>
+          <span id="ai-status" class="font-techmono text-[10px] text-slate-500">GEMINI // STANDBY</span>
         </div>
-        <div id="ai-log" class="flex-1 overflow-y-auto px-4 py-3 font-techmono text-[11px] space-y-1.5">
+        <div id="ai-log" class="flex-1 min-h-0 overflow-y-auto px-4 py-3 font-techmono text-[11px] space-y-1.5">
           <p class="text-neonmagenta">&gt; QUANTUM CORE v3 cognitive shell mounted.</p>
-          <p class="text-slate-500">&gt; Neural inference engine: STANDBY</p>
-          <p class="text-slate-500">&gt; Strategy vector loaded: [01] ICT LIQUIDITY RECON</p>
-          <p class="text-slate-600">&gt; Awaiting key decryption and Phase 2 uplink...</p>
           <p class="text-neonmagenta/60">&gt; _</p>
         </div>
+        <!-- Inference loader (toggled during network request) -->
+        <div id="terminalLoader" class="border-t border-neonmagenta/25 px-4 py-2 font-techmono text-[11px] text-neonmagenta" style="display: none;" role="status">
+          <i class="fa-solid fa-circle-notch fa-spin mr-2" aria-hidden="true"></i>INFERENCE UPLINK ACTIVE // COMPILING COGNITIVE PAYLOAD...
+        </div>
+        <!-- Parsed AI analysis output -->
+        <div id="aiOutputText" class="max-h-36 overflow-y-auto border-t border-neonmagenta/25 px-4 py-3 font-inter text-xs leading-relaxed text-slate-300" style="display: none;" aria-live="polite"></div>
         <div class="border-t border-neonmagenta/25 px-4 py-2.5">
           <button id="btn-ai-trigger" class="btn-neon btn-neon-magenta w-full font-orbitron text-xs tracking-[0.25em] text-neonmagenta rounded-sm py-2 uppercase">
             <i class="fa-solid fa-bolt-lightning mr-2" aria-hidden="true"></i>Trigger Cognitive Analysis
@@ -484,7 +464,7 @@
     <span><i class="fa-solid fa-database text-neongreen mr-1.5" aria-hidden="true"></i>STORAGE: <span class="text-neongreen">LOCAL SANDBOX</span></span>
     <span><i class="fa-solid fa-tower-broadcast text-neonamber mr-1.5" aria-hidden="true"></i>UPLINK: <span class="text-neonamber">DORMANT</span></span>
     <span><i class="fa-solid fa-lock text-neonmagenta mr-1.5" aria-hidden="true"></i>KEYS: <span class="text-neonmagenta">NOT DECIPHERED</span></span>
-    <span class="ml-auto text-slate-600">PHASE 2 // WEBSOCKET ENGINE ONLINE</span>
+    <span class="ml-auto text-slate-600">PHASE 4 // GEMINI CORE INTEGRATED</span>
   </footer>
 
   <script>
@@ -532,8 +512,15 @@
       standby: document.getElementById('waveform-standby'),
       aiLog: document.getElementById('ai-log'),
       aiBtn: document.getElementById('btn-ai-trigger'),
+      aiStatus: document.getElementById('ai-status'),
+      loader: document.getElementById('terminalLoader'),
+      aiOutput: document.getElementById('aiOutputText'),
       keysBtn: document.getElementById('btn-decipher-keys'),
       deck: document.getElementById('strategy-deck'),
+      walletForm: document.getElementById('wallet-form'),
+      walletInput: document.getElementById('wallet-input'),
+      walletTag: document.getElementById('wallet-tag'),
+      walletList: document.getElementById('wallet-list'),
       tabs: Array.prototype.slice.call(document.querySelectorAll('.asset-tab'))
     };
 
@@ -810,54 +797,217 @@
       while (el.aiLog.children.length > 60) el.aiLog.removeChild(el.aiLog.firstChild);
     }
 
-    function activeStrategy() {
-      var card = el.deck.querySelector('.active-strat');
-      return card ? card.querySelector('p').textContent : 'ICT Liquidity Recon';
-    }
+    /* ---------------- STRATEGY DECK: DEPLOYED STATE ---------------- */
+    var STRATEGY_RULES = {
+      'ICT Liquidity Recon': 'Hunt fair value gaps and liquidity sweeps above/below equal highs-lows; enter on displacement after the sweep.',
+      'Wyckoff Accumulation': 'Identify accumulation phases (PS, SC, AR, ST); enter on spring test with rising volume confirmation.',
+      'HFT Order Book Delta': 'Track bid-ask volume imbalances; follow aggressive delta divergence at key levels.',
+      'MEV Flash Loan Front-Run': 'Monitor on-chain pool exploitation windows; mirror profitable MEV bundle patterns.',
+      'Funding Rate Carry Recon': 'Arbitrage perp-spot basis; long spot / short perp when funding is heavily positive.',
+      'Statistical Mean Reversion': 'Fade moves beyond 3x standard deviation from the 50-tick mean; target reversion to band center.',
+      'Sentiment Correlation': 'Match macro news fear-greed extremes against price divergence; fade euphoria, buy panic.',
+      'Gamma Squeeze Force': 'Locate dealer hedging inflection strikes; ride forced hedging flows into gamma walls.',
+      'Multi-Tier Grid Flow': 'Deploy layered grid orders across sideways range; harvest oscillation with tight spacing.',
+      'Whale Wallet Mimicry': 'Track high-ROI wallet accumulation logs; shadow entries within a controlled slippage window.'
+    };
 
-    // strategy deck selection
+    state.strategy = 'ICT Liquidity Recon'; // active dashboard variable
+
+    function activeStrategy() { return state.strategy; }
+
+    // strategy deck selection: clicking deploys the vector into system state
     Array.prototype.forEach.call(el.deck.querySelectorAll('.strategy-card'), function (card) {
-      card.addEventListener('click', function () {
+      card.setAttribute('role', 'button');
+      card.setAttribute('tabindex', '0');
+      function deploy() {
         el.deck.querySelectorAll('.strategy-card').forEach(function (c) {
           c.classList.remove('active-strat');
+          var badge = c.querySelector('.deploy-badge');
+          if (badge) badge.remove();
           var chk = c.querySelector('.fa-circle-check');
           if (chk) chk.remove();
         });
         card.classList.add('active-strat');
+        var badge = document.createElement('span');
+        badge.className = 'deploy-badge shrink-0 border border-neoncyan/60 text-neoncyan text-[9px] px-1.5 py-0.5 rounded-sm uppercase font-orbitron';
+        badge.textContent = 'Deployed';
+        card.appendChild(badge);
+        state.strategy = card.querySelector('p').textContent;
+        aiPrint('> Strategy vector DEPLOYED: ' + state.strategy.toUpperCase(), 'text-neoncyan');
+      }
+      card.addEventListener('click', deploy);
+      card.addEventListener('keydown', function (e) { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); deploy(); } });
+    });
+    // mark the initially active card as Deployed
+    (function () {
+      var init = el.deck.querySelector('.active-strat');
+      if (init) {
+        var chk = init.querySelector('.fa-circle-check');
+        if (chk) chk.remove();
+        var badge = document.createElement('span');
+        badge.className = 'deploy-badge shrink-0 border border-neoncyan/60 text-neoncyan text-[9px] px-1.5 py-0.5 rounded-sm uppercase font-orbitron';
+        badge.textContent = 'Deployed';
+        init.appendChild(badge);
+      }
+    })();
+
+    /* ---------------- ON-CHAIN & FOREX BLOCK MONITOR ---------------- */
+    var WALLET_SLOT = 'qc3_wallet_nodes';
+    var DEFAULT_NODES = [
+      { addr: '0x7f3d...a9c2', tag: 'WHALE-α', kind: 'whale' },
+      { addr: '0x1b8e...44de', tag: 'MEV-BOT-07', kind: 'mev' },
+      { addr: 'EURUSD-INST', tag: 'FX-ORDERBLOCK', kind: 'fx' }
+    ];
+
+    function loadNodes() {
+      try {
+        var saved = JSON.parse(localStorage.getItem(WALLET_SLOT));
+        if (Array.isArray(saved) && saved.length) return saved;
+      } catch (e) { /* corrupt store: fall through */ }
+      return DEFAULT_NODES.slice();
+    }
+    var walletNodes = loadNodes();
+    state.walletIdx = 0; // active monitored node (dashboard variable)
+
+    // Deterministic simulated metrics per node (stable across renders)
+    function nodeMetrics(node) {
+      var seed = 0;
+      var s = node.addr + node.tag;
+      for (var i = 0; i < s.length; i++) seed = (seed * 31 + s.charCodeAt(i)) >>> 0;
+      var r1 = (seed % 900) / 10 + 12;        // 12.0 - 101.9
+      var r2 = seed % 400 + 40;               // 40 - 439
+      var r3 = ((seed >> 4) % 250) / 10 + 5;  // 5.0 - 29.9
+      if (node.kind === 'mev') return { line: 'SANDWICH OPS: ' + r2, metric: r2 + ' ops/24h', color: 'text-neonamber' };
+      if (node.kind === 'fx') return { line: 'BLOCK DEPTH: ' + r3.toFixed(1) + 'M', metric: r3.toFixed(1) + 'M depth', color: 'text-neoncyan' };
+      return { line: 'ROI 30D: +' + r1.toFixed(1) + '%', metric: '+' + r1.toFixed(1) + '% ROI/30d', color: 'text-neongreen' };
+    }
+
+    function nodeIcon(kind) {
+      if (kind === 'mev') return 'fa-robot text-neonmagenta';
+      if (kind === 'fx') return 'fa-building-columns text-neonamber';
+      return 'fa-fish text-neoncyan';
+    }
+
+    function saveNodes() { localStorage.setItem(WALLET_SLOT, JSON.stringify(walletNodes)); }
+
+    function renderWalletList() {
+      el.walletList.innerHTML = '';
+      walletNodes.forEach(function (node, idx) {
+        var m = nodeMetrics(node);
+        var active = idx === state.walletIdx;
+        var row = document.createElement('div');
+        row.className = 'border rounded-sm px-3 py-2 flex items-center justify-between bg-paneldeep cursor-pointer transition-colors ' +
+          (active ? 'border-neongreen/60' : 'border-gridline hover:border-neongreen/40');
+        row.setAttribute('role', 'button');
+        row.setAttribute('tabindex', '0');
+        row.setAttribute('aria-pressed', String(active));
+
+        var left = document.createElement('div');
+        left.className = 'flex items-center gap-2 min-w-0';
         var icon = document.createElement('i');
-        icon.className = 'fa-solid fa-circle-check text-neoncyan text-xs';
+        icon.className = 'fa-solid ' + nodeIcon(node.kind) + ' shrink-0';
         icon.setAttribute('aria-hidden', 'true');
-        card.appendChild(icon);
-        aiPrint('> Strategy vector reloaded: ' + card.querySelector('p').textContent.toUpperCase(), 'text-neoncyan');
+        var info = document.createElement('div');
+        info.className = 'min-w-0';
+        var title = document.createElement('p');
+        title.className = 'text-slate-300 truncate';
+        title.textContent = node.tag + ' // ' + node.addr;
+        var sub = document.createElement('p');
+        sub.className = 'text-[10px] text-slate-600';
+        sub.innerHTML = '';
+        var subSpan = document.createElement('span');
+        subSpan.className = m.color;
+        subSpan.textContent = m.line;
+        sub.appendChild(subSpan);
+        info.appendChild(title); info.appendChild(sub);
+        left.appendChild(icon); left.appendChild(info);
+
+        var status = document.createElement('span');
+        status.className = 'text-[10px] uppercase shrink-0 ' + (active ? 'text-neongreen' : 'text-slate-600');
+        status.textContent = active ? 'Monitored' : 'Tracked';
+
+        row.appendChild(left); row.appendChild(status);
+        function select() {
+          state.walletIdx = idx;
+          renderWalletList();
+          aiPrint('> Monitor lock: ' + node.tag + ' // ' + node.addr, 'text-neongreen');
+        }
+        row.addEventListener('click', select);
+        row.addEventListener('keydown', function (e) { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); select(); } });
+        el.walletList.appendChild(row);
       });
+    }
+
+    function classifyNode(addr, tag) {
+      var t = (tag + addr).toUpperCase();
+      if (/MEV|BOT/.test(t)) return 'mev';
+      if (/FX|EUR|GBP|JPY|USD-|BLOCK/.test(t)) return 'fx';
+      return 'whale';
+    }
+
+    el.walletForm.addEventListener('submit', function (e) {
+      e.preventDefault();
+      var addr = el.walletInput.value.trim();
+      if (!addr) { el.walletInput.focus(); return; }
+      var tag = el.walletTag.value.trim().toUpperCase() || ('NODE-' + String(walletNodes.length + 1).padStart(2, '0'));
+      // shorten long chain addresses for display: 0x1234...abcd
+      var display = addr.length > 16 ? addr.slice(0, 6) + '...' + addr.slice(-4) : addr;
+      walletNodes.push({ addr: display, tag: tag, kind: classifyNode(addr, tag) });
+      saveNodes();
+      state.walletIdx = walletNodes.length - 1;
+      renderWalletList();
+      aiPrint('> Node injected into tracking matrix: ' + tag + ' // ' + display, 'text-neongreen');
+      el.walletInput.value = '';
+      el.walletTag.value = '';
     });
 
+    function activeWallet() {
+      var node = walletNodes[state.walletIdx] || walletNodes[0];
+      var m = nodeMetrics(node);
+      return node.tag + ' (' + node.addr + ') :: ' + m.metric;
+    }
+
+    /* ---------------- PHASE 4: INFRASTRUCTURE BINDING ---------------- */
+    /* Scrapes ALL active dashboard variables into a compiled inference payload */
     function buildPayload() {
       var symbol = state.active;
       var d = state.last[symbol];
       var buf = state.buffers[symbol];
+
+      // MEMORY BUFFER RETRIEVAL: re-read quantum_memory from localStorage (source of truth)
+      try { quantum_memory = JSON.parse(localStorage.getItem(MEM_SLOT)) || []; }
+      catch (e) { /* keep in-memory copy */ }
+
       return {
         systemInstruction:
           'You are QUANTUM CORE v3, an elite trading intelligence engine. ' +
-          'Respond with a concise tactical market analysis (max 120 words) followed on the final line by "MEMORY:" ' +
-          'and a single-sentence summary of your analysis for your future self.',
+          'Respond in markdown with a concise tactical market analysis (max 120 words): a **BIAS** line (LONG/SHORT/NEUTRAL), ' +
+          '2-3 bullet points of reasoning, and a risk note honoring the provided SL/TP boundaries. ' +
+          'Finish on the final line with "MEMORY:" followed by a single-sentence summary of your analysis for your future self.',
         userQuery:
+          '== LIVE DASHBOARD SCRAPE ==\n' +
           'ASSET: ' + ASSETS[symbol].label + ' (' + ASSETS[symbol].type.toUpperCase() + ')\n' +
-          'LAST TICK: ' + fmtPrice(symbol, d.price) + '\n' +
+          'LIVE SPOT PRICE: ' + fmtPrice(symbol, d.price) + '\n' +
           '24H DELTA: ' + (d.delta || 0).toFixed(2) + '%\n' +
           'TRAIL SL (2%): ' + fmtPrice(symbol, (d.price || 0) * 0.98) + '\n' +
           'TARGET (4%): ' + fmtPrice(symbol, (d.price || 0) * 1.04) + '\n' +
-          'RECENT TICK ARRAY (' + buf.length + 'pt): ' + buf.slice(-10).map(function (v) { return v.toFixed(ASSETS[symbol].decimals); }).join(', ') + '\n' +
-          'ACTIVE STRATEGY VECTOR: ' + activeStrategy() + '\n\n' +
-          'PAST COGNITIVE MEMORIES (your last 5 analyses — maintain continuity with them):\n' + memoryContext()
+          'RECENT TICK ARRAY (' + buf.length + 'pt window, last 10): ' + buf.slice(-10).map(function (v) { return v.toFixed(ASSETS[symbol].decimals); }).join(', ') + '\n\n' +
+          '== ACTIVE STRATEGY MATRIX ==\n' +
+          'DEPLOYED VECTOR: ' + activeStrategy() + '\n' +
+          'RULES: ' + (STRATEGY_RULES[activeStrategy()] || 'Standard discretionary execution.') + '\n\n' +
+          '== MONITORED NODE (ON-CHAIN / FX BLOCK) ==\n' +
+          'ACTIVE MONITOR: ' + activeWallet() + '\n' +
+          'TRACKED NODES: ' + walletNodes.length + '\n\n' +
+          '== PAST COGNITIVE MEMORIES (last ' + Math.min(quantum_memory.length, 5) + ' decisions — maintain continuity) ==\n' +
+          memoryContext()
       };
     }
 
-    /* Gemini inference with exponential backoff */
+    /* LIVE API INFERENCE: direct fetch to Gemini with exponential backoff wrapper */
     function callGemini(payload, attempt) {
       attempt = attempt || 0;
       var key = getKey();
-      var url = 'https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-09-2025:generateContent?key=' + encodeURIComponent(key);
+      var url = 'https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=' + encodeURIComponent(key);
       return fetch(url, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -891,11 +1041,53 @@
       return first.slice(0, 200);
     }
 
+    /* Minimal markdown -> safe DOM parser (bold, italics, bullets, headings) */
+    function renderMarkdown(container, text) {
+      container.innerHTML = '';
+      text.split('\n').forEach(function (rawLine) {
+        var line = rawLine.trim();
+        if (!line) return;
+        var p = document.createElement('p');
+        var isBullet = /^[-*]\s+/.test(line);
+        var isHeading = /^#{1,4}\s+/.test(line);
+        if (isBullet) { line = line.replace(/^[-*]\s+/, ''); p.className = 'pl-3 relative before:content-["\u25B8"] before:absolute before:left-0 before:text-neonmagenta'; }
+        if (isHeading) { line = line.replace(/^#{1,4}\s+/, ''); p.className = 'font-orbitron text-neonmagenta uppercase text-[11px] tracking-widest mt-1'; }
+        if (/^MEMORY:/i.test(line)) p.className = 'text-neonmagenta/80 border-t border-neonmagenta/20 pt-1.5 mt-1.5';
+        // tokenize **bold** and *italic* safely via textContent nodes
+        var parts = line.split(/(\*\*[^*]+\*\*|\*[^*]+\*)/g);
+        parts.forEach(function (part) {
+          if (/^\*\*[^*]+\*\*$/.test(part)) {
+            var b = document.createElement('strong');
+            b.className = 'text-slate-100 font-semibold';
+            b.textContent = part.slice(2, -2);
+            p.appendChild(b);
+          } else if (/^\*[^*]+\*$/.test(part)) {
+            var em = document.createElement('em');
+            em.textContent = part.slice(1, -1);
+            p.appendChild(em);
+          } else if (part) {
+            p.appendChild(document.createTextNode(part));
+          }
+        });
+        container.appendChild(p);
+      });
+    }
+
+    function setLoader(on) {
+      el.loader.style.display = on ? 'block' : 'none';
+      el.aiStatus.textContent = on ? 'GEMINI // INFERRING' : 'GEMINI // ' + (getKey() ? 'ARMED' : 'STANDBY');
+      el.aiStatus.className = 'font-techmono text-[10px] ' + (on ? 'text-neonmagenta glow-magenta' : 'text-slate-500');
+    }
+
+    /* ============ PHASE 4 CORE: triggerCoreAIInference() ============ */
     var aiBusy = false;
-    el.aiBtn.addEventListener('click', function () {
+    function triggerCoreAIInference() {
       if (aiBusy) return;
+
+      // 1. INFRASTRUCTURE BINDING: scrape active dashboard variables
       var payload = buildPayload();
-      aiPrint('> Cognitive analysis triggered :: ' + ASSETS[state.active].label + ' :: ' + activeStrategy().toUpperCase(), 'text-neonmagenta glow-magenta');
+      aiPrint('> Cognitive inference :: ' + ASSETS[state.active].label + ' :: ' + activeStrategy().toUpperCase(), 'text-neonmagenta glow-magenta');
+      aiPrint('> Node scrape: ' + activeWallet(), 'text-slate-500');
       aiPrint('> Memory buffer injected: ' + quantum_memory.length + '/5 past decisions.', 'text-slate-500');
 
       if (!getKey()) {
@@ -903,35 +1095,51 @@
         var d = state.last[state.active];
         var summary = ASSETS[state.active].label + ' ' + (d.delta >= 0 ? 'bullish' : 'bearish') +
           ' bias at ' + fmtPrice(state.active, d.price) + ' via ' + activeStrategy() + '.';
-        aiPrint('> [HEURISTIC] ' + summary + ' Honor 2% trail SL / 4% target discipline.', 'text-slate-300');
+        el.aiOutput.style.display = 'block';
+        renderMarkdown(el.aiOutput,
+          '**BIAS: ' + (d.delta >= 0 ? 'LONG' : 'SHORT') + ' (heuristic)**\n' +
+          '- ' + summary + '\n' +
+          '- Node context: ' + activeWallet() + '\n' +
+          '- Honor 2% trail SL / 4% target discipline.\n' +
+          'MEMORY: ' + summary);
         pushMemory(summary);
         aiPrint('> Memory ' + quantum_memory.length + '/5 committed to quantum_memory.', 'text-neongreen');
         return;
       }
 
+      // 4. TERMINAL INTERFACE: toggle loader during network request
       aiBusy = true;
       el.aiBtn.disabled = true;
       el.aiBtn.classList.add('opacity-50');
+      setLoader(true);
+      el.aiOutput.style.display = 'none';
+
+      // 3 + 5. LIVE API INFERENCE with exponential backoff (inside callGemini)
       callGemini(payload).then(function (text) {
-        text.split('\n').forEach(function (line) {
-          if (line.trim()) aiPrint('> ' + line.trim(), /^MEMORY:/i.test(line.trim()) ? 'text-neonmagenta' : 'text-slate-300');
-        });
+        el.aiOutput.style.display = 'block';
+        renderMarkdown(el.aiOutput, text);
+        // Diagnostic memory summary -> quantum_memory (max 5)
         pushMemory(extractMemory(text));
-        aiPrint('> Memory ' + quantum_memory.length + '/5 committed to quantum_memory.', 'text-neongreen');
+        aiPrint('> Inference parsed. Memory ' + quantum_memory.length + '/5 committed to quantum_memory.', 'text-neongreen');
       }).catch(function (err) {
         aiPrint('> INFERENCE FAILED: ' + err.message + '. Backoff exhausted.', 'text-neonred');
       }).finally(function () {
         aiBusy = false;
         el.aiBtn.disabled = false;
         el.aiBtn.classList.remove('opacity-50');
+        setLoader(false);
       });
-    });
+    }
+    window.triggerCoreAIInference = triggerCoreAIInference;
+    el.aiBtn.addEventListener('click', triggerCoreAIInference);
 
     /* ---------------- IGNITION ---------------- */
     seedForex();
     startForexEngine();
     connectBinance();
-    aiPrint('> Phase 2 engine online. WebSocket uplink + quantum_memory buffer armed.', 'text-neongreen');
+    renderWalletList();
+    setLoader(false);
+    aiPrint('> Phase 4 core online. Gemini binding + node matrix + quantum_memory armed.', 'text-neongreen');
     if (quantum_memory.length) {
       aiPrint('> Restored ' + quantum_memory.length + ' cognitive memories from local sandbox.', 'text-slate-500');
     }
