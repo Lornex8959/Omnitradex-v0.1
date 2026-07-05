@@ -56,8 +56,23 @@ Architecture lock: single-file `index.html` (HTML5 + Tailwind CDN + vanilla JS).
 - `qc3_arena` — arena `{season, stats:{botId:{equity,wins,losses}}}`
 - `qc3_mentor` — mentor chat history (last 12 messages)
 
-## Next Candidates (Phase 8)
+- [x] **Phase 8 — OmniTradeX Rebrand + Pilot Profiles + Dual Theme** (VERIFIED LIVE):
+  - REBRAND: product renamed **OMNITRADEX ENGINE** (title, meta description, header identity, footer CORE tag, mentor system prompt, boot line). "Quantum Core v3" retained as the engine codename subtitle.
+  - MODULE 1: Dual theme engine — Night Ops (dark, default) / Solar Deck (light) via `html.light` CSS override layer (~30 scoped rules: panels, text ramp, neon→deep accent remap, scrollbars, modal backdrop); waveform screen intentionally stays a dark neon display in light mode; toggle button in header (moon/sun icon), persisted in `otx_theme`, smooth 0.35s transitions.
+  - MODULE 2: Pilot Profiles — sovereign local accounts (NO backend, per architecture lock): salted SHA-256 passphrase hashing via WebCrypto (djb2 fallback for non-secure contexts); register/login/logout modal; per-pilot progress snapshots (`otx_profile_<name>`) covering ledger/learning/arena/mentor/memory/wallet-node slots; login restores snapshot + full reload re-ignition; logout saves + resets guest desk; 60s autosave.
+  - MODULE 3: XP & rank ladder — XP hooks on closed sim trades (+15 win / +5 loss — discipline pays either way) and mentor questions (+2); level = floor(sqrt(xp/25))+1; ranks CADET→OPERATOR→SPECIALIST→VETERAN→COMMANDER→QUANTUM ELITE; header chip (NAME // LVn) + footer PILOT telemetry.
+  - FIX: light-mode invisible text on `text-slate-100/200/white` elements (deployed strategy card title) → mapped to near-black.
+  - VERIFIED: full cycle signup→XP(30, OPERATOR)→logout(clean guest)→login(restored) + wrong-passphrase rejection + both themes screenshot-checked, zero runtime errors.
+
+## Phase 8 localStorage Slots
+- `otx_theme` — 'dark' | 'light'
+- `otx_pilots` — `{name: {salt, hash, created, xp}}`
+- `otx_session` — active pilot callsign
+- `otx_profile_<name>` — per-pilot snapshot of all progress slots
+
+## Next Candidates (Phase 9)
 - Backtest Replay Engine (Binance klines REST replayed through MTF gate + synthesis)
 - Multi-model consensus mode (2-3 providers vote on the same payload)
 - AI post-mortem journal (auto-analysis of each closed sim trade)
 - Browser notifications / audio alerts on gate flips, fills, and traps
+- Social layer: shareable read-only "desk card" (encoded stats permalink)
