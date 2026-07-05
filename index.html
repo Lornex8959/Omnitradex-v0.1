@@ -261,6 +261,15 @@
           </div>
         </div>
 
+        <!-- Multi-timeframe alignment strip (Phase 5) -->
+        <div class="px-4 pt-2 flex items-center gap-2 font-techmono text-[10px]" aria-label="Multi-timeframe trend alignment">
+          <span class="text-slate-600 uppercase tracking-widest shrink-0">MTF</span>
+          <span id="mtf-fast" class="border border-gridline text-slate-600 px-2 py-0.5 rounded-sm uppercase">Fast --</span>
+          <span id="mtf-mid" class="border border-gridline text-slate-600 px-2 py-0.5 rounded-sm uppercase">Mid --</span>
+          <span id="mtf-slow" class="border border-gridline text-slate-600 px-2 py-0.5 rounded-sm uppercase">Slow --</span>
+          <span id="mtf-gate" class="ml-auto border border-gridline text-slate-600 px-2 py-0.5 rounded-sm uppercase font-semibold">Gate: WAIT</span>
+        </div>
+
         <!-- Chart canvas: responsive min-height container keeps it visible pre-script -->
         <div class="flex-1 px-4 py-3">
           <div id="waveform-wrap" class="relative w-full h-full min-h-[140px] md:min-h-[170px] lg:min-h-[190px] border border-gridline/60 rounded-sm bg-paneldeep overflow-hidden">
@@ -272,7 +281,7 @@
         <!-- Risk boundaries -->
         <div class="grid grid-cols-2 gap-2 px-4 pb-4 font-techmono text-[11px]">
           <div class="border border-neonred/30 bg-neonred/5 rounded-sm px-3 py-2 flex items-center justify-between">
-            <span class="text-slate-500 uppercase"><i class="fa-solid fa-shield-halved text-neonred mr-1.5" aria-hidden="true"></i>Trail SL 2%</span>
+            <span class="text-slate-500 uppercase"><i class="fa-solid fa-shield-halved text-neonred mr-1.5" aria-hidden="true"></i><span id="risk-sl-label">Trail SL 2%</span></span>
             <span id="risk-sl" class="text-neonred">$--,---.--</span>
           </div>
           <div class="border border-neongreen/30 bg-neongreen/5 rounded-sm px-3 py-2 flex items-center justify-between">
@@ -440,7 +449,7 @@
     <span><i class="fa-solid fa-database text-neongreen mr-1.5" aria-hidden="true"></i>STORAGE: <span class="text-neongreen">LOCAL SANDBOX</span></span>
     <span><i class="fa-solid fa-tower-broadcast text-neonamber mr-1.5" aria-hidden="true"></i>UPLINK: <span id="ftr-uplink" class="text-neonamber">DORMANT</span></span>
     <span><i class="fa-solid fa-lock text-neonmagenta mr-1.5" aria-hidden="true"></i>KEYS: <span id="ftr-keys" class="text-neonmagenta">NOT DECIPHERED</span></span>
-    <span class="ml-auto text-slate-600">PHASE 4 // GEMINI CORE INTEGRATED</span>
+    <span class="ml-auto text-slate-600">PHASE 5 // AUTONOMOUS INTELLIGENCE ARMED</span>
   </footer>
 
   <!-- ================================================================ -->
@@ -596,6 +605,161 @@
       }
     }
 
+    /* ================================================================
+       PHASE 5 // MODULE 1: MULTI-TIMEFRAME FILTERING ENGINE
+       Synthetic fast/mid/slow trend windows from the live tick buffer,
+       with a cross-period alignment gate that blocks unconfirmed signals.
+       ================================================================ */
+    var MTF_WINDOWS = { fast: 10, mid: 25, slow: 50 };
+
+    function windowTrend(buf, n) {
+      if (buf.length < Math.min(n, 8)) return { dir: 'WAIT', z: 0 };
+      var win = buf.slice(-n);
+      var moves = [];
+      for (var i = 1; i < win.length; i++) moves.push((win[i] - win[i - 1]) / win[i - 1]);
+      var mean = 0, k;
+      for (k = 0; k < moves.length; k++) mean += moves[k];
+      mean /= moves.length;
+      var variance = 0;
+      for (k = 0; k < moves.length; k++) variance += Math.pow(moves[k] - mean, 2);
+      var sd = Math.sqrt(variance / moves.length);
+      var total = (win[win.length - 1] - win[0]) / win[0];
+      if (!sd) return { dir: 'FLAT', z: 0 };
+      var z = total / (sd * Math.sqrt(moves.length)); // normalized drift vs noise
+      if (z > 0.8) return { dir: 'BULL', z: z };
+      if (z < -0.8) return { dir: 'BEAR', z: z };
+      return { dir: 'FLAT', z: z };
+    }
+
+    function computeMTF(symbol) {
+      var buf = state.buffers[symbol];
+      var fast = windowTrend(buf, MTF_WINDOWS.fast);
+      var mid = windowTrend(buf, MTF_WINDOWS.mid);
+      var slow = windowTrend(buf, MTF_WINDOWS.slow);
+      var gate = 'BLOCKED';
+      if (fast.dir === 'BULL' && mid.dir === 'BULL' && slow.dir !== 'BEAR') gate = 'LONG-OK';
+      else if (fast.dir === 'BEAR' && mid.dir === 'BEAR' && slow.dir !== 'BULL') gate = 'SHORT-OK';
+      else if (fast.dir === 'WAIT' || mid.dir === 'WAIT') gate = 'WAIT';
+      return { fast: fast, mid: mid, slow: slow, gate: gate };
+    }
+
+    var MTF_CLS = {
+      BULL: 'border-neongreen/50 text-neongreen',
+      BEAR: 'border-neonred/50 text-neonred',
+      FLAT: 'border-gridline text-slate-500',
+      WAIT: 'border-gridline text-slate-600'
+    };
+
+    function updateMtfUI(mtf) {
+      var base = 'border px-2 py-0.5 rounded-sm uppercase ';
+      document.getElementById('mtf-fast').className = base + MTF_CLS[mtf.fast.dir];
+      document.getElementById('mtf-fast').textContent = 'Fast ' + mtf.fast.dir;
+      document.getElementById('mtf-mid').className = base + MTF_CLS[mtf.mid.dir];
+      document.getElementById('mtf-mid').textContent = 'Mid ' + mtf.mid.dir;
+      document.getElementById('mtf-slow').className = base + MTF_CLS[mtf.slow.dir];
+      document.getElementById('mtf-slow').textContent = 'Slow ' + mtf.slow.dir;
+      var gateEl = document.getElementById('mtf-gate');
+      var gateCls = mtf.gate === 'LONG-OK' ? 'border-neongreen/60 text-neongreen' :
+                    mtf.gate === 'SHORT-OK' ? 'border-neonred/60 text-neonred' :
+                    'border-neonamber/50 text-neonamber';
+      gateEl.className = 'ml-auto font-semibold ' + base + gateCls;
+      gateEl.textContent = 'Gate: ' + mtf.gate;
+    }
+
+    /* ================================================================
+       PHASE 5 // MODULE 2: DYNAMIC VOLATILITY-ADJUSTED TRAILING SL
+       Trail distance scales with realized tick volatility (ATR-style)
+       and ratchets from the peak price — never loosens once tightened.
+       ================================================================ */
+    var trail = {}; // symbol -> { peak, pct }
+
+    function updateTrail(symbol, price) {
+      var buf = state.buffers[symbol];
+      var t = trail[symbol] || (trail[symbol] = { peak: price, pct: 0.02 });
+      if (price > t.peak) t.peak = price; // ratchet with confirmed highs
+
+      if (buf.length >= 15) {
+        var win = buf.slice(-20);
+        var moves = [];
+        for (var i = 1; i < win.length; i++) moves.push(Math.abs((win[i] - win[i - 1]) / win[i - 1]));
+        var mean = 0;
+        for (var j = 0; j < moves.length; j++) mean += moves[j];
+        mean /= moves.length;
+        // volatility-scaled trail: 12x mean abs tick move, clamped 0.5% - 4%
+        t.pct = Math.min(0.04, Math.max(0.005, mean * 12));
+      }
+      return t;
+    }
+
+    function trailStop(symbol) {
+      var t = trail[symbol];
+      var d = state.last[symbol];
+      if (!t || d.price == null) return null;
+      return { sl: t.peak * (1 - t.pct), pct: t.pct, peak: t.peak };
+    }
+
+    /* ================================================================
+       PHASE 5 // MODULE 4: STRATEGY SYNTHESIS ENGINE
+       Scores all 10 vectors against live buffer conditions and
+       recommends the statistically best-fit deployment.
+       ================================================================ */
+    function synthesizeStrategy() {
+      var symbol = state.active;
+      var buf = state.buffers[symbol];
+      if (buf.length < 15) return null;
+      var mtf = computeMTF(symbol);
+      var d = state.last[symbol];
+      var isCrypto = ASSETS[symbol].type === 'crypto';
+
+      // condition metrics
+      var trending = Math.abs(mtf.slow.z) > 1.2 && mtf.gate !== 'BLOCKED';
+      var choppy = mtf.fast.dir === 'FLAT' && mtf.mid.dir === 'FLAT';
+      var stretched = Math.abs(mtf.fast.z) > 2.2; // fast move far beyond noise
+      var aligned = mtf.gate === 'LONG-OK' || mtf.gate === 'SHORT-OK';
+      var hotDelta = Math.abs(d.delta || 0) > 3;
+
+      var scores = {
+        'ICT Liquidity Recon':        (aligned ? 3 : 0) + (stretched ? 2 : 0) + (isCrypto ? 0 : 1),
+        'Wyckoff Accumulation':       (choppy ? 3 : 0) + (mtf.slow.dir === 'FLAT' ? 2 : 0),
+        'HFT Order Book Delta':       (trending ? 2 : 0) + (hotDelta ? 2 : 0) + (isCrypto ? 1 : 0),
+        'MEV Flash Loan Front-Run':   (isCrypto ? 2 : -5) + (stretched ? 1 : 0),
+        'Funding Rate Carry Recon':   (isCrypto ? 2 : -5) + (choppy ? 2 : 0),
+        'Statistical Mean Reversion': (stretched ? 4 : 0) + (choppy ? 1 : 0) + (aligned ? -2 : 0),
+        'Sentiment Correlation':      (hotDelta ? 3 : 0) + (trending ? 1 : 0),
+        'Gamma Squeeze Force':        (isCrypto ? 1 : 0) + (trending && hotDelta ? 3 : 0),
+        'Multi-Tier Grid Flow':       (choppy ? 4 : 0) + (trending ? -2 : 0),
+        'Whale Wallet Mimicry':       (isCrypto ? 2 : -3) + (aligned ? 2 : 0)
+      };
+
+      var best = null, bestScore = -Infinity;
+      Object.keys(scores).forEach(function (name) {
+        if (scores[name] > bestScore) { bestScore = scores[name]; best = name; }
+      });
+      return { name: best, score: bestScore, gate: mtf.gate };
+    }
+
+    state.synthRec = null;
+
+    function runSynthesis(announce) {
+      var rec = synthesizeStrategy();
+      if (!rec) return;
+      var changed = !state.synthRec || state.synthRec.name !== rec.name;
+      state.synthRec = rec;
+      // move the AI-FIT badge to the recommended card
+      el.deck.querySelectorAll('.synth-badge').forEach(function (b) { b.remove(); });
+      Array.prototype.forEach.call(el.deck.querySelectorAll('.strategy-card'), function (card) {
+        if (card.querySelector('p').textContent === rec.name) {
+          var badge = document.createElement('span');
+          badge.className = 'synth-badge shrink-0 border border-neonamber/60 text-neonamber text-[9px] px-1.5 py-0.5 rounded-sm uppercase font-orbitron';
+          badge.textContent = 'AI-Fit';
+          card.appendChild(badge);
+        }
+      });
+      if (announce && changed) {
+        aiPrint('> SYNTHESIS: best-fit vector for live conditions -> ' + rec.name.toUpperCase() + ' (gate ' + rec.gate + ')', 'text-neonamber');
+      }
+    }
+
     /* ---------------- TICK INGESTION ---------------- */
     function ingestTick(symbol, price, deltaPct) {
       var buf = state.buffers[symbol];
@@ -603,6 +767,7 @@
       buf.push(price);
       if (buf.length > MAX_POINTS) buf.shift();
       state.last[symbol] = { price: price, delta: deltaPct };
+      updateTrail(symbol, price);
       if (symbol === state.active && !document.hidden) renderActive();
     }
 
@@ -632,8 +797,16 @@
       el.delta.className = 'font-techmono text-sm ' + (up ? 'text-neongreen' : 'text-neonred');
       el.price.className = 'font-orbitron text-3xl font-700 ' + (up ? 'text-neongreen glow-green' : 'text-neonred');
 
-      el.sl.textContent = fmtPrice(symbol, d.price * 0.98);
+      // Phase 5: volatility-adjusted trailing SL (ratcheted from peak)
+      var ts = trailStop(symbol);
+      if (ts) {
+        el.sl.textContent = fmtPrice(symbol, ts.sl);
+        document.getElementById('risk-sl-label').textContent = 'Trail SL ' + (ts.pct * 100).toFixed(1) + '%';
+      } else {
+        el.sl.textContent = fmtPrice(symbol, d.price * 0.98);
+      }
       el.tp.textContent = fmtPrice(symbol, d.price * 1.04);
+      updateMtfUI(computeMTF(symbol));
       drawWaveform();
     }
 
@@ -753,6 +926,7 @@
           var msg = JSON.parse(evt.data);
           var t = msg.data;
           if (t && t.s && ASSETS[t.s]) {
+            state.lastTickAt = Date.now(); // heartbeat for the stall watchdog
             // true feed latency: local clock vs Binance event timestamp (t.E, ms epoch)
             if (t.E) {
               var lat = Math.max(0, Math.min(9999, Date.now() - t.E));
@@ -999,6 +1173,45 @@
 
     function saveNodes() { localStorage.setItem(WALLET_SLOT, JSON.stringify(walletNodes)); }
 
+    /* ================================================================
+       PHASE 5 // MODULE 3: PREDATORY BOT & WHALE BEHAVIOR TRACKING
+       Simulated behavior state machine per node. A TRAP-DETECTED state
+       on the monitored node raises the execution-pause flag fed to AI.
+       ================================================================ */
+    var NODE_STATES = ['DORMANT', 'ACCUMULATING', 'DISTRIBUTING', 'TRAP-DETECTED'];
+    var NODE_STATE_CLS = {
+      'DORMANT': 'text-slate-600',
+      'ACCUMULATING': 'text-neongreen',
+      'DISTRIBUTING': 'text-neonamber',
+      'TRAP-DETECTED': 'text-neonred font-semibold'
+    };
+    var nodeStates = {}; // idx -> state
+    state.execPaused = false;
+
+    function rollNodeStates() {
+      var changedMonitored = false;
+      walletNodes.forEach(function (node, idx) {
+        var prev = nodeStates[idx] || 'DORMANT';
+        // weighted transition: mostly benign, occasional trap
+        var r = Math.random();
+        var next = r < 0.45 ? 'DORMANT' : r < 0.70 ? 'ACCUMULATING' : r < 0.92 ? 'DISTRIBUTING' : 'TRAP-DETECTED';
+        nodeStates[idx] = next;
+        if (idx === state.walletIdx && next !== prev) {
+          changedMonitored = true;
+          if (next === 'TRAP-DETECTED') {
+            aiPrint('> MANIPULATION TRAP flagged on ' + node.tag + ' — EXECUTION PAUSED.', 'text-neonred');
+            logAnomaly(state.active, 'TRAP', node.tag + ' predatory pattern detected — signals suspended');
+          } else if (prev === 'TRAP-DETECTED') {
+            aiPrint('> Trap cleared on ' + node.tag + '. Execution window reopened.', 'text-neongreen');
+          }
+        }
+      });
+      state.execPaused = nodeStates[state.walletIdx] === 'TRAP-DETECTED';
+      if (changedMonitored || true) renderWalletList();
+    }
+
+    function monitoredNodeState() { return nodeStates[state.walletIdx] || 'DORMANT'; }
+
     function renderWalletList() {
       el.walletList.innerHTML = '';
       walletNodes.forEach(function (node, idx) {
@@ -1031,13 +1244,22 @@
         info.appendChild(title); info.appendChild(sub);
         left.appendChild(icon); left.appendChild(info);
 
+        var behavior = nodeStates[idx] || 'DORMANT';
         var status = document.createElement('span');
-        status.className = 'text-[10px] uppercase shrink-0 ' + (active ? 'text-neongreen' : 'text-slate-600');
-        status.textContent = active ? 'Monitored' : 'Tracked';
+        status.className = 'text-[10px] uppercase shrink-0 text-right';
+        var stateLine = document.createElement('span');
+        stateLine.className = 'block ' + NODE_STATE_CLS[behavior];
+        stateLine.textContent = behavior;
+        var roleLine = document.createElement('span');
+        roleLine.className = 'block ' + (active ? 'text-neongreen' : 'text-slate-600');
+        roleLine.textContent = active ? 'Monitored' : 'Tracked';
+        status.appendChild(stateLine);
+        status.appendChild(roleLine);
 
         row.appendChild(left); row.appendChild(status);
         function select() {
           state.walletIdx = idx;
+          state.execPaused = (nodeStates[idx] || 'DORMANT') === 'TRAP-DETECTED';
           renderWalletList();
           aiPrint('> Monitor lock: ' + node.tag + ' // ' + node.addr, 'text-neongreen');
         }
@@ -1087,25 +1309,36 @@
       try { quantum_memory = JSON.parse(localStorage.getItem(MEM_SLOT)) || []; }
       catch (e) { /* keep in-memory copy */ }
 
+      var mtf = computeMTF(symbol);
+      var ts = trailStop(symbol);
+      var rec = state.synthRec;
+
       return {
         systemInstruction:
           'You are QUANTUM CORE v3, an elite trading intelligence engine. ' +
           'Respond in markdown with a concise tactical market analysis (max 120 words): a **BIAS** line (LONG/SHORT/NEUTRAL), ' +
           '2-3 bullet points of reasoning, and a risk note honoring the provided SL/TP boundaries. ' +
+          'HARD RULE: if the MTF GATE is BLOCKED or EXECUTION PAUSE is TRUE, your bias MUST be NEUTRAL/stand-aside. ' +
           'Finish on the final line with "MEMORY:" followed by a single-sentence summary of your analysis for your future self.',
         userQuery:
           '== LIVE DASHBOARD SCRAPE ==\n' +
           'ASSET: ' + ASSETS[symbol].label + ' (' + ASSETS[symbol].type.toUpperCase() + ')\n' +
           'LIVE SPOT PRICE: ' + fmtPrice(symbol, d.price) + '\n' +
           '24H DELTA: ' + (d.delta || 0).toFixed(2) + '%\n' +
-          'TRAIL SL (2%): ' + fmtPrice(symbol, (d.price || 0) * 0.98) + '\n' +
+          'DYNAMIC TRAIL SL (' + (ts ? (ts.pct * 100).toFixed(1) : '2.0') + '% vol-adjusted, peak-ratcheted): ' + fmtPrice(symbol, ts ? ts.sl : (d.price || 0) * 0.98) + '\n' +
           'TARGET (4%): ' + fmtPrice(symbol, (d.price || 0) * 1.04) + '\n' +
           'RECENT TICK ARRAY (' + buf.length + 'pt window, last 10): ' + buf.slice(-10).map(function (v) { return v.toFixed(ASSETS[symbol].decimals); }).join(', ') + '\n\n' +
+          '== MULTI-TIMEFRAME FILTER ==\n' +
+          'FAST(' + MTF_WINDOWS.fast + 't): ' + mtf.fast.dir + ' (z=' + mtf.fast.z.toFixed(2) + ') | MID(' + MTF_WINDOWS.mid + 't): ' + mtf.mid.dir + ' (z=' + mtf.mid.z.toFixed(2) + ') | SLOW(' + MTF_WINDOWS.slow + 't): ' + mtf.slow.dir + ' (z=' + mtf.slow.z.toFixed(2) + ')\n' +
+          'ALIGNMENT GATE: ' + mtf.gate + '\n\n' +
           '== ACTIVE STRATEGY MATRIX ==\n' +
           'DEPLOYED VECTOR: ' + activeStrategy() + '\n' +
-          'RULES: ' + (STRATEGY_RULES[activeStrategy()] || 'Standard discretionary execution.') + '\n\n' +
+          'RULES: ' + (STRATEGY_RULES[activeStrategy()] || 'Standard discretionary execution.') + '\n' +
+          'SYNTHESIS ENGINE BEST-FIT: ' + (rec ? rec.name + ' (score ' + rec.score + ')' : 'pending data') + '\n\n' +
           '== MONITORED NODE (ON-CHAIN / FX BLOCK) ==\n' +
           'ACTIVE MONITOR: ' + activeWallet() + '\n' +
+          'BEHAVIOR STATE: ' + monitoredNodeState() + '\n' +
+          'EXECUTION PAUSE: ' + (state.execPaused ? 'TRUE — manipulation trap active, stand aside' : 'FALSE') + '\n' +
           'TRACKED NODES: ' + walletNodes.length + '\n\n' +
           '== PAST COGNITIVE MEMORIES (last ' + Math.min(quantum_memory.length, 5) + ' decisions — maintain continuity) ==\n' +
           memoryContext()
@@ -1190,8 +1423,17 @@
 
     /* ============ PHASE 4 CORE: triggerCoreAIInference() ============ */
     var aiBusy = false;
+    var lastInferenceAt = 0;
+    var INFERENCE_COOLDOWN = 10000; // respectful rate limiting: min 10s between API calls
+
     function triggerCoreAIInference() {
       if (aiBusy) return;
+      var since = Date.now() - lastInferenceAt;
+      if (since < INFERENCE_COOLDOWN) {
+        aiPrint('> Rate limiter: cooldown active. Retry in ' + Math.ceil((INFERENCE_COOLDOWN - since) / 1000) + 's.', 'text-neonamber');
+        return;
+      }
+      lastInferenceAt = Date.now();
 
       // 1. INFRASTRUCTURE BINDING: scrape active dashboard variables
       var payload = buildPayload();
@@ -1300,13 +1542,45 @@
       }
     });
 
+    /* ================================================================
+       PHASE 5 // MODULE 5: SYSTEM HARDENING
+       Global error trap, feed stall watchdog, self-healing timers.
+       ================================================================ */
+    // global error trap: the terminal must never crash silently
+    window.addEventListener('error', function (e) {
+      try {
+        aiPrint('> SYS-TRAP: ' + (e.message || 'unknown fault') + ' — terminal integrity preserved.', 'text-neonred');
+      } catch (ignore) { /* aiLog itself unavailable: nothing else to do */ }
+    });
+    window.addEventListener('unhandledrejection', function (e) {
+      try {
+        aiPrint('> SYS-TRAP (async): ' + (e.reason && e.reason.message ? e.reason.message : 'rejected promise') + '.', 'text-neonred');
+      } catch (ignore) { /* ignore */ }
+      e.preventDefault();
+    });
+
+    // feed stall watchdog: force-recycle the socket if LIVE but silent > 30s
+    setInterval(function () {
+      if (document.hidden) return;
+      if (el.hudFeed.textContent === 'LIVE' && state.lastTickAt && Date.now() - state.lastTickAt > 30000) {
+        setFeed('STALLED', 'text-neonred');
+        aiPrint('> Watchdog: feed stall detected. Recycling uplink...', 'text-neonamber');
+        try { if (state.ws) state.ws.close(); } catch (e) { /* onclose handles reconnect */ }
+      }
+    }, 10000);
+
+    // behavior state machine + strategy synthesis loops
+    setInterval(function () { if (!document.hidden) rollNodeStates(); }, 20000);
+    setInterval(function () { if (!document.hidden) runSynthesis(true); }, 15000);
+
     /* ---------------- IGNITION ---------------- */
     seedForex();
     startForexEngine();
     connectBinance();
-    renderWalletList();
+    rollNodeStates();
     setLoader(false);
     pushMacroUpdate(); // first intel sweep immediately
+    setTimeout(function () { runSynthesis(true); }, 4000); // first synthesis once buffers warm
     aiPrint('> Phase 4 core online. Gemini binding + node matrix + quantum_memory armed.', 'text-neongreen');
     if (quantum_memory.length) {
       aiPrint('> Restored ' + quantum_memory.length + ' cognitive memories from local sandbox.', 'text-slate-500');

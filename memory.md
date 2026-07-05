@@ -27,7 +27,14 @@ Architecture lock: single-file `index.html` (HTML5 + Tailwind CDN + vanilla JS).
   - ACTIVATED: Macro World Scraper — rotating simulated Macro/Crypto/Forex intel board (9s cadence, GEO counter, capped 12 rows).
   - PERF: Page Visibility API pauses forex timer, macro feed, and chart repaints when tab hidden.
 
-## Next Candidates (Phase 5)
-- Latency-aware feed health diagnostics / uptime meter
-- AI auto-inference scheduling (periodic cognitive sweeps)
+- [x] **Phase 5 — Autonomous Intelligence Layer** (adapted to single-file JS per architecture lock; backend/HF/CI directives rejected):
+  - MODULE 1: Multi-timeframe filter — fast(10t)/mid(25t)/slow(50t) drift-vs-noise z-score trends with cross-period ALIGNMENT GATE (LONG-OK / SHORT-OK / BLOCKED / WAIT) rendered as an MTF strip in the Price HUD and enforced as a HARD RULE in the AI system instruction.
+  - MODULE 2: Dynamic trailing SL — volatility-scaled trail (12x mean abs tick move, clamped 0.5%-4%) ratcheted from peak price per symbol; label + payload show live trail %.
+  - MODULE 3: Bot/whale behavior tracking — per-node state machine (DORMANT / ACCUMULATING / DISTRIBUTING / TRAP-DETECTED, 20s cadence); TRAP on the monitored node raises `state.execPaused`, logs to Anomalous Stream, and forces AI stand-aside.
+  - MODULE 4: Strategy synthesis — scores all 10 vectors against live conditions (trend, chop, stretch, delta heat, asset class) every 15s; AI-FIT badge on best-fit card; recommendation included in payload.
+  - MODULE 5: Hardening — global error + unhandledrejection traps (terminal never crashes), 30s feed-stall watchdog that recycles the socket, 10s inference rate-limit cooldown (respectful throttling, no bypassing).
+
+## Next Candidates (Phase 6)
+- AI auto-inference scheduling (periodic cognitive sweeps, gate-aware)
 - Order flow depth simulation panel
+- Session P/L simulation ledger tied to trail SL / target hits
