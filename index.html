@@ -227,11 +227,20 @@
           <span class="font-techmono text-[10px] text-slate-500">CH-01 // SPOT</span>
         </div>
 
-        <!-- Asset selector tabs -->
-        <div class="flex gap-1 px-4 pt-3 font-techmono text-[11px]" role="tablist" aria-label="Asset selector">
-          <button class="px-3 py-1 border border-neoncyan text-neoncyan bg-neoncyan/10 rounded-sm" role="tab" aria-selected="true">BTCUSDT</button>
-          <button class="px-3 py-1 border border-gridline text-slate-500 rounded-sm hover:text-neoncyan hover:border-neoncyan/40" role="tab" aria-selected="false">ETHUSDT</button>
-          <button class="px-3 py-1 border border-gridline text-slate-500 rounded-sm hover:text-neoncyan hover:border-neoncyan/40" role="tab" aria-selected="false">SOLUSDT</button>
+        <!-- Asset selector tabs: Crypto + Forex groups -->
+        <div class="px-4 pt-3 flex flex-col gap-1.5 font-techmono text-[11px]">
+          <div class="flex flex-wrap items-center gap-1" role="tablist" aria-label="Crypto asset selector">
+            <span class="text-[9px] tracking-[0.2em] text-slate-600 uppercase w-12 shrink-0">Crypto</span>
+            <button data-asset="BTCUSDT" class="asset-tab px-3 py-1 border border-neoncyan text-neoncyan bg-neoncyan/10 rounded-sm" role="tab" aria-selected="true">BTC</button>
+            <button data-asset="ETHUSDT" class="asset-tab px-3 py-1 border border-gridline text-slate-500 rounded-sm hover:text-neoncyan hover:border-neoncyan/40" role="tab" aria-selected="false">ETH</button>
+            <button data-asset="SOLUSDT" class="asset-tab px-3 py-1 border border-gridline text-slate-500 rounded-sm hover:text-neoncyan hover:border-neoncyan/40" role="tab" aria-selected="false">SOL</button>
+          </div>
+          <div class="flex flex-wrap items-center gap-1" role="tablist" aria-label="Forex asset selector">
+            <span class="text-[9px] tracking-[0.2em] text-slate-600 uppercase w-12 shrink-0">Forex</span>
+            <button data-asset="EURUSD" class="asset-tab px-3 py-1 border border-gridline text-slate-500 rounded-sm hover:text-neonamber hover:border-neonamber/40" role="tab" aria-selected="false">EUR/USD</button>
+            <button data-asset="GBPUSD" class="asset-tab px-3 py-1 border border-gridline text-slate-500 rounded-sm hover:text-neonamber hover:border-neonamber/40" role="tab" aria-selected="false">GBP/USD</button>
+            <button data-asset="USDJPY" class="asset-tab px-3 py-1 border border-gridline text-slate-500 rounded-sm hover:text-neonamber hover:border-neonamber/40" role="tab" aria-selected="false">USD/JPY</button>
+          </div>
         </div>
 
         <!-- Live price readout -->
@@ -246,9 +255,12 @@
           </div>
         </div>
 
-        <!-- Chart canvas -->
-        <div class="flex-1 px-4 py-3 min-h-[130px]">
-          <canvas id="waveform-canvas" class="w-full h-full min-h-[120px] border border-gridline/60 rounded-sm bg-paneldeep" aria-label="Price waveform chart placeholder"></canvas>
+        <!-- Chart canvas: responsive min-height container keeps it visible pre-script -->
+        <div class="flex-1 px-4 py-3">
+          <div id="waveform-wrap" class="relative w-full h-full min-h-[140px] md:min-h-[170px] lg:min-h-[190px] border border-gridline/60 rounded-sm bg-paneldeep overflow-hidden">
+            <canvas id="waveform-canvas" class="absolute inset-0 w-full h-full" aria-label="Price waveform chart placeholder"></canvas>
+            <span class="absolute inset-0 flex items-center justify-center font-techmono text-[10px] tracking-[0.3em] text-slate-700 uppercase pointer-events-none">Waveform Standby</span>
+          </div>
         </div>
 
         <!-- Risk boundaries -->
@@ -395,7 +407,7 @@
           </h2>
           <span class="font-techmono text-[10px] text-slate-500">VECTOR // SELECT</span>
         </div>
-        <div id="strategy-deck" class="flex-1 overflow-y-auto px-3 py-3 space-y-1.5 font-techmono text-[11px]">
+        <div id="strategy-deck" class="flex-1 max-h-[340px] lg:max-h-[400px] overflow-y-auto px-3 py-3 space-y-1.5 font-techmono text-[11px]">
           <div class="strategy-card active-strat border border-gridline rounded-sm px-3 py-2 flex items-center gap-3">
             <span class="text-neoncyan font-orbitron text-xs w-6">01</span>
             <div class="flex-1"><p class="text-slate-200">ICT Liquidity Recon</p><p class="text-[10px] text-slate-600">Fair value gaps &amp; sweeps</p></div>
