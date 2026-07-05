@@ -251,7 +251,7 @@
           </div>
           <div class="pb-1">
             <p class="font-techmono text-[10px] text-slate-500 uppercase">24h Delta</p>
-            <p class="font-techmono text-sm text-neongreen">+ -.-- %</p>
+            <p id="ticker-delta" class="font-techmono text-sm text-neongreen">+ -.-- %</p>
           </div>
         </div>
 
@@ -259,7 +259,7 @@
         <div class="flex-1 px-4 py-3">
           <div id="waveform-wrap" class="relative w-full h-full min-h-[140px] md:min-h-[170px] lg:min-h-[190px] border border-gridline/60 rounded-sm bg-paneldeep overflow-hidden">
             <canvas id="waveform-canvas" class="absolute inset-0 w-full h-full" aria-label="Price waveform chart placeholder"></canvas>
-            <span class="absolute inset-0 flex items-center justify-center font-techmono text-[10px] tracking-[0.3em] text-slate-700 uppercase pointer-events-none">Waveform Standby</span>
+            <span id="waveform-standby" class="absolute inset-0 flex items-center justify-center font-techmono text-[10px] tracking-[0.3em] text-slate-700 uppercase pointer-events-none">Waveform Standby</span>
           </div>
         </div>
 
@@ -484,8 +484,465 @@
     <span><i class="fa-solid fa-database text-neongreen mr-1.5" aria-hidden="true"></i>STORAGE: <span class="text-neongreen">LOCAL SANDBOX</span></span>
     <span><i class="fa-solid fa-tower-broadcast text-neonamber mr-1.5" aria-hidden="true"></i>UPLINK: <span class="text-neonamber">DORMANT</span></span>
     <span><i class="fa-solid fa-lock text-neonmagenta mr-1.5" aria-hidden="true"></i>KEYS: <span class="text-neonmagenta">NOT DECIPHERED</span></span>
-    <span class="ml-auto text-slate-600">PHASE 1 // STRUCTURAL SHELL ANCHORED</span>
+    <span class="ml-auto text-slate-600">PHASE 2 // WEBSOCKET ENGINE ONLINE</span>
   </footer>
+
+  <script>
+  /* ================================================================
+     QUANTUM CORE v3 // PHASE 2: WEBSOCKET ENGINE & COGNITIVE MEMORY
+     ================================================================ */
+  (function () {
+    'use strict';
+
+    /* ---------------- ASSET REGISTRY ---------------- */
+    var ASSETS = {
+      BTCUSDT: { type: 'crypto', label: 'BTC/USDT', decimals: 2, prefix: '$' },
+      ETHUSDT: { type: 'crypto', label: 'ETH/USDT', decimals: 2, prefix: '$' },
+      SOLUSDT: { type: 'crypto', label: 'SOL/USDT', decimals: 2, prefix: '$' },
+      EURUSD:  { type: 'forex', label: 'EUR/USD', decimals: 5, prefix: '', base: 1.0842 },
+      GBPUSD:  { type: 'forex', label: 'GBP/USD', decimals: 5, prefix: '', base: 1.2718 },
+      USDJPY:  { type: 'forex', label: 'USD/JPY', decimals: 3, prefix: '', base: 157.42 }
+    };
+
+    var MAX_POINTS = 50;
+    var state = {
+      active: 'BTCUSDT',
+      buffers: {},   // symbol -> [prices] (max 50)
+      last: {},      // symbol -> { price, delta }
+      forexTimer: null,
+      ws: null,
+      lastTickAt: 0
+    };
+    Object.keys(ASSETS).forEach(function (s) {
+      state.buffers[s] = [];
+      state.last[s] = { price: null, delta: 0 };
+    });
+
+    /* ---------------- DOM HOOKS ---------------- */
+    var el = {
+      price: document.getElementById('ticker-price'),
+      delta: document.getElementById('ticker-delta'),
+      sl: document.getElementById('risk-sl'),
+      tp: document.getElementById('risk-tp'),
+      hudPair: document.getElementById('hud-pair'),
+      hudFeed: document.getElementById('hud-feed'),
+      hudLatency: document.getElementById('hud-latency'),
+      canvas: document.getElementById('waveform-canvas'),
+      wrap: document.getElementById('waveform-wrap'),
+      standby: document.getElementById('waveform-standby'),
+      aiLog: document.getElementById('ai-log'),
+      aiBtn: document.getElementById('btn-ai-trigger'),
+      keysBtn: document.getElementById('btn-decipher-keys'),
+      deck: document.getElementById('strategy-deck'),
+      tabs: Array.prototype.slice.call(document.querySelectorAll('.asset-tab'))
+    };
+
+    /* ---------------- FORMATTERS ---------------- */
+    function fmtPrice(symbol, price) {
+      var a = ASSETS[symbol];
+      if (price == null) return a.prefix + '--.--';
+      return a.prefix + price.toLocaleString('en-US', {
+        minimumFractionDigits: a.decimals,
+        maximumFractionDigits: a.decimals
+      });
+    }
+
+    /* ---------------- TICK INGESTION ---------------- */
+    function ingestTick(symbol, price, deltaPct) {
+      var buf = state.buffers[symbol];
+      buf.push(price);
+      if (buf.length > MAX_POINTS) buf.shift();
+      state.last[symbol] = { price: price, delta: deltaPct };
+      if (symbol === state.active) renderActive();
+    }
+
+    function renderActive() {
+      var symbol = state.active;
+      var a = ASSETS[symbol];
+      var d = state.last[symbol];
+      if (d.price == null) return;
+
+      if (el.standby) { el.standby.style.display = 'none'; el.standby = null; }
+
+      el.price.textContent = fmtPrice(symbol, d.price);
+      var up = d.delta >= 0;
+      el.delta.textContent = (up ? '+ ' : '- ') + Math.abs(d.delta).toFixed(2) + ' %';
+      el.delta.className = 'font-techmono text-sm ' + (up ? 'text-neongreen' : 'text-neonred');
+      el.price.className = 'font-orbitron text-3xl font-700 ' + (up ? 'text-neongreen glow-green' : 'text-neonred');
+
+      el.sl.textContent = fmtPrice(symbol, d.price * 0.98);
+      el.tp.textContent = fmtPrice(symbol, d.price * 1.04);
+      el.hudPair.textContent = a.label;
+      drawWaveform();
+    }
+
+    /* ---------------- NEON WAVEFORM RENDERER ---------------- */
+    var ctx = el.canvas.getContext('2d');
+    function sizeCanvas() {
+      var dpr = window.devicePixelRatio || 1;
+      var r = el.wrap.getBoundingClientRect();
+      el.canvas.width = Math.max(1, Math.floor(r.width * dpr));
+      el.canvas.height = Math.max(1, Math.floor(r.height * dpr));
+      ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+    }
+    window.addEventListener('resize', function () { sizeCanvas(); drawWaveform(); });
+    sizeCanvas();
+
+    function drawWaveform() {
+      var buf = state.buffers[state.active];
+      var w = el.canvas.width / (window.devicePixelRatio || 1);
+      var h = el.canvas.height / (window.devicePixelRatio || 1);
+      ctx.clearRect(0, 0, w, h);
+
+      // faint grid
+      ctx.strokeStyle = 'rgba(30, 41, 59, 0.55)';
+      ctx.lineWidth = 1;
+      for (var gx = 0; gx <= w; gx += 34) {
+        ctx.beginPath(); ctx.moveTo(gx, 0); ctx.lineTo(gx, h); ctx.stroke();
+      }
+      for (var gy = 0; gy <= h; gy += 26) {
+        ctx.beginPath(); ctx.moveTo(0, gy); ctx.lineTo(w, gy); ctx.stroke();
+      }
+      if (buf.length < 2) return;
+
+      var min = Math.min.apply(null, buf);
+      var max = Math.max.apply(null, buf);
+      var range = (max - min) || (min * 0.0005) || 1;
+      var padY = 14;
+      function px(i) { return (i / (MAX_POINTS - 1)) * w; }
+      function py(v) { return h - padY - ((v - min) / range) * (h - padY * 2); }
+
+      var rising = buf[buf.length - 1] >= buf[0];
+      var lineColor = rising ? '#4ade80' : '#f87171';
+      var glowColor = rising ? 'rgba(74,222,128,0.85)' : 'rgba(248,113,113,0.85)';
+
+      // area fill
+      ctx.beginPath();
+      ctx.moveTo(px(0), py(buf[0]));
+      for (var i = 1; i < buf.length; i++) {
+        var xc = (px(i - 1) + px(i)) / 2;
+        var yc = (py(buf[i - 1]) + py(buf[i])) / 2;
+        ctx.quadraticCurveTo(px(i - 1), py(buf[i - 1]), xc, yc);
+      }
+      ctx.lineTo(px(buf.length - 1), py(buf[buf.length - 1]));
+      var grad = ctx.createLinearGradient(0, 0, 0, h);
+      grad.addColorStop(0, rising ? 'rgba(74,222,128,0.16)' : 'rgba(248,113,113,0.16)');
+      grad.addColorStop(1, 'rgba(2,6,23,0)');
+      ctx.lineTo(px(buf.length - 1), h);
+      ctx.lineTo(px(0), h);
+      ctx.closePath();
+      ctx.fillStyle = grad;
+      ctx.fill();
+
+      // glowing neon line (smooth quadratic)
+      ctx.save();
+      ctx.shadowColor = glowColor;
+      ctx.shadowBlur = 10;
+      ctx.strokeStyle = lineColor;
+      ctx.lineWidth = 1.8;
+      ctx.lineJoin = 'round';
+      ctx.beginPath();
+      ctx.moveTo(px(0), py(buf[0]));
+      for (var j = 1; j < buf.length; j++) {
+        var xc2 = (px(j - 1) + px(j)) / 2;
+        var yc2 = (py(buf[j - 1]) + py(buf[j])) / 2;
+        ctx.quadraticCurveTo(px(j - 1), py(buf[j - 1]), xc2, yc2);
+      }
+      ctx.lineTo(px(buf.length - 1), py(buf[buf.length - 1]));
+      ctx.stroke();
+      ctx.restore();
+
+      // last tick beacon
+      ctx.beginPath();
+      ctx.arc(px(buf.length - 1), py(buf[buf.length - 1]), 3, 0, Math.PI * 2);
+      ctx.fillStyle = '#22d3ee';
+      ctx.shadowColor = 'rgba(34,211,238,0.9)';
+      ctx.shadowBlur = 8;
+      ctx.fill();
+      ctx.shadowBlur = 0;
+    }
+
+    /* ---------------- BINANCE WEBSOCKET (CRYPTO) ---------------- */
+    function setFeed(text, color) {
+      el.hudFeed.textContent = text;
+      el.hudFeed.className = color;
+    }
+
+    var WS_ENDPOINTS = [
+      'wss://stream.binance.com:9443/stream?streams=',
+      'wss://stream.binance.us:9443/stream?streams='  // failover for geo-restricted regions (HTTP 451)
+    ];
+    var wsEndpointIdx = 0;
+    var wsEverOpened = false;
+
+    function connectBinance() {
+      var streams = 'btcusdt@ticker/ethusdt@ticker/solusdt@ticker';
+      var ws = new WebSocket(WS_ENDPOINTS[wsEndpointIdx] + streams);
+      state.ws = ws;
+
+      ws.onopen = function () {
+        wsEverOpened = true;
+        setFeed('LIVE', 'text-neongreen glow-green');
+      };
+      ws.onmessage = function (evt) {
+        var now = performance.now();
+        if (state.lastTickAt) {
+          var lat = Math.min(999, Math.round(now - state.lastTickAt));
+          el.hudLatency.textContent = lat + ' ms';
+        }
+        state.lastTickAt = now;
+        try {
+          var msg = JSON.parse(evt.data);
+          var t = msg.data;
+          if (t && t.s && ASSETS[t.s]) {
+            ingestTick(t.s, parseFloat(t.c), parseFloat(t.P));
+          }
+        } catch (e) { /* malformed frame: ignore */ }
+      };
+      ws.onclose = function () {
+        if (!wsEverOpened) {
+          // never connected on this endpoint: rotate to failover
+          wsEndpointIdx = (wsEndpointIdx + 1) % WS_ENDPOINTS.length;
+          setFeed('FAILOVER-' + (wsEndpointIdx + 1), 'text-neonamber');
+        } else {
+          setFeed('RECONNECTING', 'text-neonamber');
+        }
+        setTimeout(connectBinance, 2500);
+      };
+      ws.onerror = function () { ws.close(); };
+    }
+
+    /* ---------------- FOREX MOCK GENERATOR ---------------- */
+    function seedForex() {
+      Object.keys(ASSETS).forEach(function (s) {
+        if (ASSETS[s].type !== 'forex') return;
+        var p = ASSETS[s].base;
+        for (var i = 0; i < MAX_POINTS; i++) {
+          p += p * (Math.random() - 0.5) * 0.00012; // fractions of a pip
+          state.buffers[s].push(p);
+          if (state.buffers[s].length > MAX_POINTS) state.buffers[s].shift();
+        }
+        state.last[s] = { price: p, delta: ((p - ASSETS[s].base) / ASSETS[s].base) * 100 };
+      });
+    }
+
+    function startForexEngine() {
+      if (state.forexTimer) return;
+      state.forexTimer = setInterval(function () {
+        Object.keys(ASSETS).forEach(function (s) {
+          if (ASSETS[s].type !== 'forex') return;
+          var prev = state.last[s].price || ASSETS[s].base;
+          // random walk: small fraction of a pip per 2s cycle
+          var next = prev + prev * (Math.random() - 0.5) * 0.00018;
+          var delta = ((next - ASSETS[s].base) / ASSETS[s].base) * 100;
+          ingestTick(s, next, delta);
+        });
+      }, 2000);
+    }
+
+    /* ---------------- ASSET TAB SWITCHING ---------------- */
+    var TAB_IDLE = 'asset-tab px-3 py-1 border border-gridline text-slate-500 rounded-sm hover:text-neoncyan hover:border-neoncyan/40';
+    var TAB_IDLE_FX = 'asset-tab px-3 py-1 border border-gridline text-slate-500 rounded-sm hover:text-neonamber hover:border-neonamber/40';
+    var TAB_ACTIVE = 'asset-tab px-3 py-1 border border-neoncyan text-neoncyan bg-neoncyan/10 rounded-sm';
+    var TAB_ACTIVE_FX = 'asset-tab px-3 py-1 border border-neonamber text-neonamber bg-neonamber/10 rounded-sm';
+
+    el.tabs.forEach(function (btn) {
+      btn.addEventListener('click', function () {
+        var symbol = btn.getAttribute('data-asset');
+        if (!ASSETS[symbol]) return;
+        state.active = symbol;
+        el.tabs.forEach(function (b) {
+          var s = b.getAttribute('data-asset');
+          var isFx = ASSETS[s].type === 'forex';
+          var isActive = s === symbol;
+          b.className = isActive ? (isFx ? TAB_ACTIVE_FX : TAB_ACTIVE) : (isFx ? TAB_IDLE_FX : TAB_IDLE);
+          b.setAttribute('aria-selected', String(isActive));
+        });
+        renderActive();
+      });
+    });
+
+    /* ---------------- SOVEREIGN KEY VAULT (localStorage only) ---------------- */
+    var KEY_SLOT = 'qc3_gemini_key';
+    function getKey() { return localStorage.getItem(KEY_SLOT) || ''; }
+
+    el.keysBtn.addEventListener('click', function () {
+      var current = getKey();
+      var input = window.prompt('QUANTUM CORE v3 // Enter Gemini API key (stored ONLY in this browser localStorage):', current);
+      if (input === null) return;
+      if (input.trim()) {
+        localStorage.setItem(KEY_SLOT, input.trim());
+        aiPrint('> Key vault sealed. Credential locked to local sandbox.', 'text-neongreen');
+        document.querySelectorAll('footer span')[3].innerHTML =
+          '<i class="fa-solid fa-lock text-neonmagenta mr-1.5" aria-hidden="true"></i>KEYS: <span class="text-neongreen">DECIPHERED</span>';
+      } else {
+        localStorage.removeItem(KEY_SLOT);
+        aiPrint('> Key vault purged.', 'text-neonamber');
+      }
+    });
+
+    /* ---------------- QUANTUM MEMORY BUFFER (self-learning) ---------------- */
+    var MEM_SLOT = 'quantum_memory';
+    var quantum_memory = [];
+    try { quantum_memory = JSON.parse(localStorage.getItem(MEM_SLOT)) || []; }
+    catch (e) { quantum_memory = []; }
+
+    function pushMemory(summary) {
+      quantum_memory.push({ t: new Date().toISOString(), s: String(summary).slice(0, 220) });
+      while (quantum_memory.length > 5) quantum_memory.shift();
+      localStorage.setItem(MEM_SLOT, JSON.stringify(quantum_memory));
+    }
+
+    function memoryContext() {
+      if (!quantum_memory.length) return 'No prior cognitive memories recorded.';
+      return quantum_memory.map(function (m, i) {
+        return (i + 1) + '. [' + m.t.slice(11, 19) + ' UTC] ' + m.s;
+      }).join('\n');
+    }
+
+    /* ---------------- AI TERMINAL ---------------- */
+    function aiPrint(text, cls) {
+      var p = document.createElement('p');
+      p.className = cls || 'text-slate-400';
+      p.textContent = text;
+      el.aiLog.appendChild(p);
+      el.aiLog.scrollTop = el.aiLog.scrollHeight;
+      while (el.aiLog.children.length > 60) el.aiLog.removeChild(el.aiLog.firstChild);
+    }
+
+    function activeStrategy() {
+      var card = el.deck.querySelector('.active-strat');
+      return card ? card.querySelector('p').textContent : 'ICT Liquidity Recon';
+    }
+
+    // strategy deck selection
+    Array.prototype.forEach.call(el.deck.querySelectorAll('.strategy-card'), function (card) {
+      card.addEventListener('click', function () {
+        el.deck.querySelectorAll('.strategy-card').forEach(function (c) {
+          c.classList.remove('active-strat');
+          var chk = c.querySelector('.fa-circle-check');
+          if (chk) chk.remove();
+        });
+        card.classList.add('active-strat');
+        var icon = document.createElement('i');
+        icon.className = 'fa-solid fa-circle-check text-neoncyan text-xs';
+        icon.setAttribute('aria-hidden', 'true');
+        card.appendChild(icon);
+        aiPrint('> Strategy vector reloaded: ' + card.querySelector('p').textContent.toUpperCase(), 'text-neoncyan');
+      });
+    });
+
+    function buildPayload() {
+      var symbol = state.active;
+      var d = state.last[symbol];
+      var buf = state.buffers[symbol];
+      return {
+        systemInstruction:
+          'You are QUANTUM CORE v3, an elite trading intelligence engine. ' +
+          'Respond with a concise tactical market analysis (max 120 words) followed on the final line by "MEMORY:" ' +
+          'and a single-sentence summary of your analysis for your future self.',
+        userQuery:
+          'ASSET: ' + ASSETS[symbol].label + ' (' + ASSETS[symbol].type.toUpperCase() + ')\n' +
+          'LAST TICK: ' + fmtPrice(symbol, d.price) + '\n' +
+          '24H DELTA: ' + (d.delta || 0).toFixed(2) + '%\n' +
+          'TRAIL SL (2%): ' + fmtPrice(symbol, (d.price || 0) * 0.98) + '\n' +
+          'TARGET (4%): ' + fmtPrice(symbol, (d.price || 0) * 1.04) + '\n' +
+          'RECENT TICK ARRAY (' + buf.length + 'pt): ' + buf.slice(-10).map(function (v) { return v.toFixed(ASSETS[symbol].decimals); }).join(', ') + '\n' +
+          'ACTIVE STRATEGY VECTOR: ' + activeStrategy() + '\n\n' +
+          'PAST COGNITIVE MEMORIES (your last 5 analyses — maintain continuity with them):\n' + memoryContext()
+      };
+    }
+
+    /* Gemini inference with exponential backoff */
+    function callGemini(payload, attempt) {
+      attempt = attempt || 0;
+      var key = getKey();
+      var url = 'https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-09-2025:generateContent?key=' + encodeURIComponent(key);
+      return fetch(url, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          systemInstruction: { parts: [{ text: payload.systemInstruction }] },
+          contents: [{ parts: [{ text: payload.userQuery }] }]
+        })
+      }).then(function (res) {
+        if (!res.ok) throw new Error('HTTP ' + res.status);
+        return res.json();
+      }).then(function (json) {
+        var text = json.candidates && json.candidates[0] &&
+          json.candidates[0].content && json.candidates[0].content.parts &&
+          json.candidates[0].content.parts[0].text;
+        if (!text) throw new Error('Empty inference payload');
+        return text;
+      }).catch(function (err) {
+        if (attempt >= 3) throw err;
+        var delay = Math.pow(2, attempt) * 1000;
+        aiPrint('> Uplink retry in ' + (delay / 1000) + 's (' + err.message + ')...', 'text-neonamber');
+        return new Promise(function (resolve) { setTimeout(resolve, delay); })
+          .then(function () { return callGemini(payload, attempt + 1); });
+      });
+    }
+
+    function extractMemory(fullText) {
+      var m = fullText.match(/MEMORY:\s*(.+)$/im);
+      if (m) return m[1].trim();
+      // fallback: first sentence of the analysis
+      var first = fullText.split(/(?<=[.!?])\s/)[0] || fullText;
+      return first.slice(0, 200);
+    }
+
+    var aiBusy = false;
+    el.aiBtn.addEventListener('click', function () {
+      if (aiBusy) return;
+      var payload = buildPayload();
+      aiPrint('> Cognitive analysis triggered :: ' + ASSETS[state.active].label + ' :: ' + activeStrategy().toUpperCase(), 'text-neonmagenta glow-magenta');
+      aiPrint('> Memory buffer injected: ' + quantum_memory.length + '/5 past decisions.', 'text-slate-500');
+
+      if (!getKey()) {
+        aiPrint('> NO KEY DECIPHERED. Running local heuristic fallback...', 'text-neonamber');
+        var d = state.last[state.active];
+        var summary = ASSETS[state.active].label + ' ' + (d.delta >= 0 ? 'bullish' : 'bearish') +
+          ' bias at ' + fmtPrice(state.active, d.price) + ' via ' + activeStrategy() + '.';
+        aiPrint('> [HEURISTIC] ' + summary + ' Honor 2% trail SL / 4% target discipline.', 'text-slate-300');
+        pushMemory(summary);
+        aiPrint('> Memory ' + quantum_memory.length + '/5 committed to quantum_memory.', 'text-neongreen');
+        return;
+      }
+
+      aiBusy = true;
+      el.aiBtn.disabled = true;
+      el.aiBtn.classList.add('opacity-50');
+      callGemini(payload).then(function (text) {
+        text.split('\n').forEach(function (line) {
+          if (line.trim()) aiPrint('> ' + line.trim(), /^MEMORY:/i.test(line.trim()) ? 'text-neonmagenta' : 'text-slate-300');
+        });
+        pushMemory(extractMemory(text));
+        aiPrint('> Memory ' + quantum_memory.length + '/5 committed to quantum_memory.', 'text-neongreen');
+      }).catch(function (err) {
+        aiPrint('> INFERENCE FAILED: ' + err.message + '. Backoff exhausted.', 'text-neonred');
+      }).finally(function () {
+        aiBusy = false;
+        el.aiBtn.disabled = false;
+        el.aiBtn.classList.remove('opacity-50');
+      });
+    });
+
+    /* ---------------- IGNITION ---------------- */
+    seedForex();
+    startForexEngine();
+    connectBinance();
+    aiPrint('> Phase 2 engine online. WebSocket uplink + quantum_memory buffer armed.', 'text-neongreen');
+    if (quantum_memory.length) {
+      aiPrint('> Restored ' + quantum_memory.length + ' cognitive memories from local sandbox.', 'text-slate-500');
+    }
+    document.querySelectorAll('footer span')[2].innerHTML =
+      '<i class="fa-solid fa-tower-broadcast text-neonamber mr-1.5" aria-hidden="true"></i>UPLINK: <span class="text-neongreen">ACTIVE</span>';
+    if (getKey()) {
+      document.querySelectorAll('footer span')[3].innerHTML =
+        '<i class="fa-solid fa-lock text-neonmagenta mr-1.5" aria-hidden="true"></i>KEYS: <span class="text-neongreen">DECIPHERED</span>';
+    }
+  })();
+  </script>
 
 </body>
 </html>
