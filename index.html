@@ -271,7 +271,16 @@
         <button id="nav-mentor" class="font-orbitron text-[10px] tracking-widest uppercase rounded-sm px-3 py-2 border border-gridline text-slate-500 hover:text-neongreen hover:border-neongreen/40">
           <i class="fa-solid fa-user-graduate mr-1.5" aria-hidden="true"></i>Mentor
         </button>
+        <button id="nav-replay" class="font-orbitron text-[10px] tracking-widest uppercase rounded-sm px-3 py-2 border border-gridline text-slate-500 hover:text-neonamber hover:border-neonamber/40">
+          <i class="fa-solid fa-clock-rotate-left mr-1.5" aria-hidden="true"></i>Replay
+        </button>
+        <button id="nav-journal" class="font-orbitron text-[10px] tracking-widest uppercase rounded-sm px-3 py-2 border border-gridline text-slate-500 hover:text-neoncyan hover:border-neoncyan/40">
+          <i class="fa-solid fa-book mr-1.5" aria-hidden="true"></i>Journal
+        </button>
       </nav>
+      <button id="btn-alerts" class="btn-neon font-orbitron text-xs tracking-widest text-slate-500 rounded-sm px-3 py-2 uppercase" aria-label="Toggle sound and notification alerts" title="Toggle alerts">
+        <i id="alerts-icon" class="fa-solid fa-bell-slash" aria-hidden="true"></i>
+      </button>
       <button id="btn-theme" class="btn-neon font-orbitron text-xs tracking-widest text-neonamber rounded-sm px-3 py-2 uppercase" style="border-color: rgba(251,191,36,0.5); background: rgba(251,191,36,0.06);" aria-label="Toggle light and dark theme" title="Toggle theme">
         <i id="theme-icon" class="fa-solid fa-moon" aria-hidden="true"></i>
       </button>
@@ -527,9 +536,12 @@
         </div>
         <!-- Parsed AI analysis output -->
         <div id="aiOutputText" class="max-h-36 overflow-y-auto border-t border-neonmagenta/25 px-4 py-3 font-inter text-xs leading-relaxed text-slate-300" style="display: none;" aria-live="polite"></div>
-        <div class="border-t border-neonmagenta/25 px-4 py-2.5">
-          <button id="btn-ai-trigger" class="btn-neon btn-neon-magenta w-full font-orbitron text-xs tracking-[0.25em] text-neonmagenta rounded-sm py-2 uppercase">
+        <div class="border-t border-neonmagenta/25 px-4 py-2.5 flex gap-2">
+          <button id="btn-ai-trigger" class="btn-neon btn-neon-magenta flex-1 font-orbitron text-xs tracking-[0.25em] text-neonmagenta rounded-sm py-2 uppercase">
             <i class="fa-solid fa-bolt-lightning mr-2" aria-hidden="true"></i>Trigger Cognitive Analysis
+          </button>
+          <button id="btn-ai-consensus" class="btn-neon font-orbitron text-xs tracking-widest text-neonamber rounded-sm px-3 py-2 uppercase" style="border-color: rgba(251,191,36,0.5); background: rgba(251,191,36,0.06);" title="Multi-model consensus vote">
+            <i class="fa-solid fa-check-to-slot mr-1.5" aria-hidden="true"></i>Vote
           </button>
         </div>
       </div>
@@ -668,6 +680,93 @@
   </section>
 
   <!-- ================================================================ -->
+  <!-- BACKTEST REPLAY VIEW (Phase 9): session time machine + SMA model -->
+  <!-- ================================================================ -->
+  <section id="view-replay" class="hidden flex-1 flex-col gap-3 min-h-0" aria-label="Backtest replay engine">
+    <div class="neon-panel hud-corners rounded-sm flex flex-col flex-1 min-h-0">
+      <div class="flex items-center justify-between border-b border-gridline px-4 py-2.5">
+        <h2 class="font-orbitron text-xs tracking-[0.25em] text-neonamber uppercase">
+          <i class="fa-solid fa-clock-rotate-left mr-2" aria-hidden="true"></i>Backtest Replay // Time Machine
+        </h2>
+        <span id="replay-status" class="font-techmono text-[10px] text-slate-500">TAPE // EMPTY</span>
+      </div>
+
+      <div class="px-4 pt-3 flex flex-wrap items-center gap-2 font-techmono text-[11px]">
+        <button id="replay-load" class="btn-neon font-orbitron text-[10px] tracking-widest text-neonamber rounded-sm px-3 py-1.5 uppercase" style="border-color: rgba(251,191,36,0.5); background: rgba(251,191,36,0.06);">
+          <i class="fa-solid fa-download mr-1.5" aria-hidden="true"></i>Load Session Tape
+        </button>
+        <button id="replay-play" class="btn-neon font-orbitron text-[10px] tracking-widest text-neongreen rounded-sm px-3 py-1.5 uppercase" style="border-color: rgba(74,222,128,0.5); background: rgba(74,222,128,0.06);">
+          <i id="replay-play-icon" class="fa-solid fa-play mr-1.5" aria-hidden="true"></i><span id="replay-play-label">Play</span>
+        </button>
+        <label for="replay-speed" class="text-slate-600 uppercase ml-1">Speed</label>
+        <select id="replay-speed" class="bg-paneldeep border border-gridline rounded-sm px-2 py-1.5 text-slate-300 focus:outline-none focus:border-neonamber/60">
+          <option value="1">1x</option>
+          <option value="4" selected>4x</option>
+          <option value="10">10x</option>
+        </select>
+        <span id="replay-pos" class="ml-auto text-slate-500">TICK 0 / 0</span>
+      </div>
+
+      <div class="px-4 pt-2">
+        <label for="replay-scrub" class="sr-only">Replay scrub position</label>
+        <input id="replay-scrub" type="range" min="0" max="0" value="0" class="w-full accent-amber-400" />
+      </div>
+
+      <div class="flex-1 px-4 py-3 min-h-0">
+        <div id="replay-wrap" class="relative w-full h-full min-h-[200px] border border-gridline/60 rounded-sm bg-paneldeep overflow-hidden">
+          <canvas id="replay-canvas" class="absolute inset-0 w-full h-full" aria-label="Backtest replay chart"></canvas>
+          <span id="replay-standby" class="absolute inset-0 flex items-center justify-center font-techmono text-[10px] tracking-[0.3em] text-slate-700 uppercase pointer-events-none">Load a session tape to begin replay</span>
+        </div>
+      </div>
+
+      <div class="grid grid-cols-2 md:grid-cols-4 gap-2 px-4 pb-3 font-techmono text-[11px]">
+        <div class="border border-gridline rounded-sm px-3 py-2">
+          <p class="text-slate-600 uppercase text-[9px] tracking-widest">Signals Fired</p>
+          <p id="replay-trades" class="text-neonamber font-orbitron text-sm">0</p>
+        </div>
+        <div class="border border-gridline rounded-sm px-3 py-2">
+          <p class="text-slate-600 uppercase text-[9px] tracking-widest">Win Rate</p>
+          <p id="replay-winrate" class="text-neoncyan font-orbitron text-sm">--%</p>
+        </div>
+        <div class="border border-gridline rounded-sm px-3 py-2">
+          <p class="text-slate-600 uppercase text-[9px] tracking-widest">Model P/L</p>
+          <p id="replay-pnl" class="text-slate-300 font-orbitron text-sm">0.00%</p>
+        </div>
+        <div class="border border-gridline rounded-sm px-3 py-2">
+          <p class="text-slate-600 uppercase text-[9px] tracking-widest">Model</p>
+          <p class="text-neonmagenta font-orbitron text-sm">SMA 8/21 X</p>
+        </div>
+      </div>
+      <p class="px-4 pb-3 font-techmono text-[10px] text-slate-600">Replays the live tick tape recorded this session for the active Terminal asset. Green markers = model long entries, red = shorts. Educational simulation only.</p>
+    </div>
+  </section>
+
+  <!-- ================================================================ -->
+  <!-- TRADE JOURNAL VIEW (Phase 9): auto post-mortem on every close -->
+  <!-- ================================================================ -->
+  <section id="view-journal" class="hidden flex-1 flex-col gap-3 min-h-0" aria-label="Trade journal">
+    <div class="neon-panel neon-panel-green hud-corners rounded-sm flex flex-col flex-1 min-h-0">
+      <div class="flex items-center justify-between border-b border-gridline px-4 py-2.5">
+        <h2 class="font-orbitron text-xs tracking-[0.25em] text-neongreen uppercase">
+          <i class="fa-solid fa-book mr-2" aria-hidden="true"></i>Trade Journal // Post-Mortem Log
+        </h2>
+        <div class="flex items-center gap-2 font-techmono text-[10px]">
+          <button id="journal-export" class="btn-neon rounded-sm px-2.5 py-1 text-neoncyan uppercase">Export JSON</button>
+          <button id="journal-clear" class="btn-neon rounded-sm px-2.5 py-1 text-neonred uppercase" style="border-color: rgba(248,113,113,0.4);">Clear</button>
+        </div>
+      </div>
+
+      <div id="journal-stats" class="grid grid-cols-2 md:grid-cols-6 gap-2 px-4 pt-3 pb-1 font-techmono text-[11px]">
+        <!-- stats cells injected by renderJournal() -->
+      </div>
+
+      <div id="journal-list" class="flex-1 min-h-0 overflow-y-auto px-4 py-3 space-y-2 font-techmono text-[11px]">
+        <p class="text-slate-500">No closed sim trades yet. Every trade the desk closes is auto-journaled here with a post-mortem.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ================================================================ -->
   <!-- FOOTER TELEMETRY HUD -->
   <!-- ================================================================ -->
   <footer class="neon-panel rounded-sm px-4 py-2 flex flex-wrap items-center gap-x-6 gap-y-1 font-techmono text-[10px] text-slate-500">
@@ -678,7 +777,7 @@
     <span><i class="fa-solid fa-lock text-neonmagenta mr-1.5" aria-hidden="true"></i>KEYS: <span id="ftr-keys" class="text-neonmagenta">NOT DECIPHERED</span></span>
     <span><i class="fa-solid fa-graduation-cap text-neoncyan mr-1.5" aria-hidden="true"></i>LEARN: <span id="ftr-learn" class="text-slate-500">0 SIG // --% EDGE</span></span>
     <span><i class="fa-solid fa-sack-dollar text-neongreen mr-1.5" aria-hidden="true"></i>SIM P/L: <span id="ftr-pnl" class="text-slate-500">$0.00</span></span>
-    <span class="ml-auto text-slate-600">PHASE 8 // OMNITRADEX REBRAND + PILOT PROFILES + DUAL THEME</span>
+    <span class="ml-auto text-slate-600">PHASE 9 // REPLAY + CONSENSUS + JOURNAL + ALERTS</span>
   </footer>
 
   <!-- ================================================================ -->
@@ -1223,6 +1322,11 @@
       if (buf.length) detectAnomaly(symbol, price);
       buf.push(price);
       if (buf.length > MAX_POINTS) buf.shift();
+      // Phase 9: session tape — longer memory than the HUD buffer, feeds the backtest replay
+      if (!state.tape) state.tape = {};
+      if (!state.tape[symbol]) state.tape[symbol] = [];
+      state.tape[symbol].push(price);
+      if (state.tape[symbol].length > 900) state.tape[symbol].shift();
       state.last[symbol] = { price: price, delta: deltaPct };
       updateTrail(symbol, price);
       if (symbol === state.active && !document.hidden) renderActive();
@@ -1857,9 +1961,7 @@
        Provider adapters route the payload to the OFFICIAL endpoint of
        the selected premium engine, with exponential backoff retries.
        ================================================================ */
-    function providerRequest(payload) {
-      var m = activeModel();
-      var key = modelKey();
+    function providerRequestFor(m, key, payload) {
       if (m.provider === 'gemini') {
         return fetch('https://generativelanguage.googleapis.com/v1beta/models/' + m.model + ':generateContent?key=' + encodeURIComponent(key), {
           method: 'POST',
@@ -1927,6 +2029,9 @@
         return text;
       });
     }
+
+    // default path: route to the pilot's active engine (Phase 9 consensus calls providerRequestFor directly)
+    function providerRequest(payload) { return providerRequestFor(activeModel(), modelKey(), payload); }
 
     function callModel(payload, attempt) {
       attempt = attempt || 0;
@@ -2408,6 +2513,7 @@
       aiPrint('> SIM FILL: ' + td.dir + ' ' + ASSETS[td.symbol].label + ' @ ' + fmtPrice(td.symbol, td.entry) +
         ' | SL ' + fmtPrice(td.symbol, td.sl) + ' | TP ' + fmtPrice(td.symbol, td.tp) + ' | risk 1%', 'text-neongreen');
       arenaTape('YOU', td.dir + ' ' + ASSETS[td.symbol].label + ' @ ' + fmtPrice(td.symbol, td.entry), 'text-neongreen');
+      otxAlert('fill', 'SIM FILL', td.dir + ' ' + ASSETS[td.symbol].label + ' @ ' + fmtPrice(td.symbol, td.entry)); // Phase 9 alert
     }
     document.getElementById('btn-sim-exec').addEventListener('click', openSimTrade);
 
@@ -2417,6 +2523,7 @@
       if (pnl >= 0) ledger.wins++; else ledger.losses++;
       if (window.__otxPilotXP) window.__otxPilotXP(pnl >= 0 ? 15 : 5); // discipline pays either way
       ledger.closed.push({ symbol: pos.symbol, dir: pos.dir, pnl: pnl, why: why, t: Date.now() });
+      journalRecord(pos, exit, why, pnl); // Phase 9: auto post-mortem journal
       while (ledger.closed.length > 30) ledger.closed.shift();
       saveLedger();
       updateSimHud();
@@ -2424,9 +2531,11 @@
       var msg = why + ' ' + ASSETS[pos.symbol].label + ' -> ' + fmtUsd(pnl);
       aiPrint('> SIM ' + (pnl >= 0 ? 'WIN' : 'LOSS') + ': ' + msg, pnl >= 0 ? 'text-neongreen' : 'text-neonred');
       arenaTape('YOU', msg, pnl >= 0 ? 'text-neongreen' : 'text-neonred');
+      otxAlert(pnl >= 0 ? 'win' : 'loss', 'SIM ' + (pnl >= 0 ? 'WIN' : 'LOSS'), msg); // Phase 9 alert
       if (breakerTripped()) {
         document.getElementById('arena-breaker').innerHTML = 'CIRCUIT: <span class="text-neonred">TRIPPED</span>';
         aiPrint('> CIRCUIT BREAKER TRIPPED: -3% daily. All new sim entries locked. Walk away — best trade today is no trade.', 'text-neonred');
+        otxAlert('breaker', 'CIRCUIT BREAKER', 'Daily -3% limit hit. Desk locked until next session.');
       }
     }
 
@@ -2822,7 +2931,7 @@
        ================================================================ */
     var PILOTS_SLOT = 'otx_pilots';
     var SESSION_SLOT = 'otx_session';
-    var PROGRESS_SLOTS = ['qc3_ledger', 'qc3_learning', 'qc3_arena', 'qc3_mentor', 'quantum_memory', 'qc3_wallet_nodes'];
+    var PROGRESS_SLOTS = ['qc3_ledger', 'qc3_learning', 'qc3_arena', 'qc3_mentor', 'quantum_memory', 'qc3_wallet_nodes', 'otx_journal'];
     var RANKS = ['CADET', 'OPERATOR', 'SPECIALIST', 'VETERAN', 'COMMANDER', 'QUANTUM ELITE'];
 
     function loadPilots() {
@@ -2984,12 +3093,527 @@
     }, 60000);
     renderPilotHud();
 
+    /* ================================================================
+       PHASE 9 // MODULE 1: SOUND & NOTIFICATION ALERTS
+       WebAudio tones (no external assets) + optional browser
+       notifications when the tab is hidden. Toggle persists locally.
+       ================================================================ */
+    var ALERTS_SLOT = 'otx_alerts';
+    var alertsOn = localStorage.getItem(ALERTS_SLOT) === '1';
+    var audioCtx = null;
+
+    function beep(freq, startOffset, dur) {
+      try {
+        if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+        if (audioCtx.state === 'suspended') audioCtx.resume();
+        var t0 = audioCtx.currentTime + startOffset;
+        var osc = audioCtx.createOscillator();
+        var g = audioCtx.createGain();
+        osc.type = 'sine';
+        osc.frequency.value = freq;
+        g.gain.setValueAtTime(0.0001, t0);
+        g.gain.exponentialRampToValueAtTime(0.12, t0 + 0.02);
+        g.gain.exponentialRampToValueAtTime(0.0001, t0 + dur);
+        osc.connect(g);
+        g.connect(audioCtx.destination);
+        osc.start(t0);
+        osc.stop(t0 + dur + 0.05);
+      } catch (e) { /* audio unavailable in this context: stay silent */ }
+    }
+
+    function alertTone(kind) {
+      if (kind === 'fill') { beep(660, 0, 0.09); beep(880, 0.11, 0.09); }
+      else if (kind === 'win') { beep(523, 0, 0.1); beep(659, 0.12, 0.1); beep(784, 0.24, 0.16); }
+      else if (kind === 'loss') { beep(392, 0, 0.12); beep(262, 0.15, 0.2); }
+      else if (kind === 'breaker') { beep(220, 0, 0.18); beep(220, 0.25, 0.18); beep(220, 0.5, 0.3); }
+      else beep(990, 0, 0.07);
+    }
+
+    function otxAlert(kind, title, body) {
+      if (!alertsOn) return;
+      alertTone(kind);
+      if (document.hidden && 'Notification' in window && Notification.permission === 'granted') {
+        try { new Notification('OmniTradeX — ' + title, { body: body }); } catch (e) { /* blocked */ }
+      }
+    }
+
+    function renderAlertsBtn() {
+      var icon = document.getElementById('alerts-icon');
+      var btn = document.getElementById('btn-alerts');
+      if (!icon || !btn) return;
+      icon.className = alertsOn ? 'fa-solid fa-bell' : 'fa-solid fa-bell-slash';
+      btn.className = 'btn-neon font-orbitron text-xs tracking-widest rounded-sm px-3 py-2 uppercase ' + (alertsOn ? 'text-neongreen' : 'text-slate-500');
+      btn.style.borderColor = alertsOn ? 'rgba(74,222,128,0.5)' : '';
+      btn.style.background = alertsOn ? 'rgba(74,222,128,0.06)' : '';
+    }
+
+    document.getElementById('btn-alerts').addEventListener('click', function () {
+      alertsOn = !alertsOn;
+      localStorage.setItem(ALERTS_SLOT, alertsOn ? '1' : '0');
+      renderAlertsBtn();
+      if (alertsOn) {
+        alertTone('fill'); // audible confirmation (also unlocks the AudioContext via this gesture)
+        if ('Notification' in window && Notification.permission === 'default') {
+          Notification.requestPermission();
+        }
+        aiPrint('> ALERTS ARMED: sim fills, wins, losses and circuit breakers now ping audio + notifications.', 'text-neongreen');
+      } else {
+        aiPrint('> ALERTS MUTED: desk returns to silent running.', 'text-slate-500');
+      }
+    });
+    renderAlertsBtn();
+
+    /* ================================================================
+       PHASE 9 // MODULE 2: AUTO TRADE JOURNAL — POST-MORTEM LOG
+       Every closed sim trade is journaled with R-multiple, hold time
+       and an automatic post-mortem note. Profile-bound via localStorage.
+       ================================================================ */
+    var JOURNAL_SLOT = 'otx_journal';
+    var journal = [];
+    try { journal = JSON.parse(localStorage.getItem(JOURNAL_SLOT)) || []; } catch (e) { journal = []; }
+    function saveJournal() { localStorage.setItem(JOURNAL_SLOT, JSON.stringify(journal)); }
+
+    function fmtHold(ms) {
+      var s = Math.round(ms / 1000);
+      if (s < 60) return s + 's';
+      if (s < 3600) return Math.floor(s / 60) + 'm ' + (s % 60) + 's';
+      return Math.floor(s / 3600) + 'h ' + Math.floor((s % 3600) / 60) + 'm';
+    }
+
+    function postMortem(r, why, holdMs, strat) {
+      var s = strat ? ' Vector: ' + strat + '.' : '';
+      if (why === 'TARGET') {
+        if (holdMs < 120000) return 'Clean execution — target hit fast. Momentum read was right. Do not oversize the next one out of euphoria.' + s;
+        return 'Plan executed to completion: entry, hold, target. This is the trade to replicate — process over outcome.' + s;
+      }
+      if (holdMs < 120000) return 'Stopped out within minutes. Entry likely chased momentum instead of waiting for structure. Review the MTF gate state at entry.' + s;
+      if (r > -1.05 && r < -0.95) return 'Stop respected — loss capped at exactly 1R. That is discipline working, not failure. Log the setup and move on.' + s;
+      return 'Stop hit after an extended hold. The thesis degraded slowly — consider tightening trail rules when MTF alignment flips.' + s;
+    }
+
+    function journalRecord(pos, exit, why, pnl) {
+      var riskAmt = pos.qty * Math.abs(pos.entry - pos.sl) || 1;
+      var r = pnl / riskAmt;
+      var holdMs = Date.now() - pos.t;
+      journal.push({
+        symbol: pos.symbol, dir: pos.dir, entry: pos.entry, exit: exit,
+        pnl: pnl, r: r, why: why, strat: pos.strat || '', hold: holdMs,
+        t: Date.now(), note: postMortem(r, why, holdMs, pos.strat)
+      });
+      while (journal.length > 200) journal.shift();
+      saveJournal();
+      renderJournal();
+    }
+
+    function journalStatCell(label, value, cls) {
+      var d = document.createElement('div');
+      d.className = 'border border-gridline rounded-sm px-3 py-2';
+      var p1 = document.createElement('p');
+      p1.className = 'text-slate-600 uppercase text-[9px] tracking-widest';
+      p1.textContent = label;
+      var p2 = document.createElement('p');
+      p2.className = 'font-orbitron text-sm ' + cls;
+      p2.textContent = value;
+      d.appendChild(p1); d.appendChild(p2);
+      return d;
+    }
+
+    function renderJournal() {
+      var stats = document.getElementById('journal-stats');
+      var list = document.getElementById('journal-list');
+      if (!stats || !list) return;
+      stats.innerHTML = '';
+      list.innerHTML = '';
+
+      if (!journal.length) {
+        var empty = document.createElement('p');
+        empty.className = 'text-slate-500';
+        empty.textContent = 'No closed sim trades yet. Every trade the desk closes is auto-journaled here with a post-mortem.';
+        list.appendChild(empty);
+        stats.appendChild(journalStatCell('Trades', '0', 'text-slate-400'));
+        return;
+      }
+
+      var wins = 0, grossW = 0, grossL = 0, sumR = 0, best = journal[0], worst = journal[0];
+      journal.forEach(function (j) {
+        if (j.pnl >= 0) { wins++; grossW += j.pnl; } else { grossL += Math.abs(j.pnl); }
+        sumR += j.r;
+        if (j.pnl > best.pnl) best = j;
+        if (j.pnl < worst.pnl) worst = j;
+      });
+      var wr = (wins / journal.length) * 100;
+      var pf = grossL > 0 ? (grossW / grossL) : (grossW > 0 ? Infinity : 0);
+
+      stats.appendChild(journalStatCell('Trades', String(journal.length), 'text-slate-200'));
+      stats.appendChild(journalStatCell('Win Rate', wr.toFixed(0) + '%', wr >= 50 ? 'text-neongreen' : 'text-neonamber'));
+      stats.appendChild(journalStatCell('Profit Factor', pf === Infinity ? 'INF' : pf.toFixed(2), pf >= 1 ? 'text-neongreen' : 'text-neonred'));
+      stats.appendChild(journalStatCell('Avg R', (sumR / journal.length).toFixed(2) + 'R', sumR >= 0 ? 'text-neoncyan' : 'text-neonred'));
+      stats.appendChild(journalStatCell('Best', fmtUsd(best.pnl), 'text-neongreen'));
+      stats.appendChild(journalStatCell('Worst', fmtUsd(worst.pnl), 'text-neonred'));
+
+      journal.slice().reverse().forEach(function (j) {
+        var card = document.createElement('div');
+        card.className = 'border rounded-sm px-3 py-2 space-y-1 ' + (j.pnl >= 0 ? 'border-neongreen/25 bg-neongreen/5' : 'border-neonred/25 bg-neonred/5');
+
+        var top = document.createElement('div');
+        top.className = 'flex flex-wrap items-center gap-x-3 gap-y-1';
+        var dirEl = document.createElement('span');
+        dirEl.className = 'font-orbitron text-[10px] uppercase ' + (j.dir === 1 ? 'text-neongreen' : 'text-neonred');
+        dirEl.textContent = (j.dir === 1 ? 'LONG' : 'SHORT') + ' ' + (ASSETS[j.symbol] ? ASSETS[j.symbol].label : j.symbol);
+        var whyEl = document.createElement('span');
+        whyEl.className = 'text-slate-500 uppercase text-[10px]';
+        whyEl.textContent = j.why + ' // held ' + fmtHold(j.hold);
+        var pnlEl = document.createElement('span');
+        pnlEl.className = 'ml-auto font-orbitron text-xs ' + (j.pnl >= 0 ? 'text-neongreen' : 'text-neonred');
+        pnlEl.textContent = fmtUsd(j.pnl) + ' (' + (j.r >= 0 ? '+' : '') + j.r.toFixed(2) + 'R)';
+        top.appendChild(dirEl); top.appendChild(whyEl); top.appendChild(pnlEl);
+
+        var meta = document.createElement('p');
+        meta.className = 'text-slate-600 text-[10px]';
+        meta.textContent = new Date(j.t).toLocaleString() + (j.strat ? ' // ' + j.strat : '');
+
+        var note = document.createElement('p');
+        note.className = 'text-slate-400 leading-relaxed';
+        note.textContent = 'POST-MORTEM: ' + j.note;
+
+        card.appendChild(top); card.appendChild(meta); card.appendChild(note);
+        list.appendChild(card);
+      });
+    }
+
+    document.getElementById('journal-export').addEventListener('click', function () {
+      var blob = new Blob([JSON.stringify(journal, null, 2)], { type: 'application/json' });
+      var url = URL.createObjectURL(blob);
+      var a = document.createElement('a');
+      a.href = url;
+      a.download = 'omnitradex-journal-' + new Date().toISOString().slice(0, 10) + '.json';
+      document.body.appendChild(a);
+      a.click();
+      a.remove();
+      URL.revokeObjectURL(url);
+      aiPrint('> JOURNAL EXPORTED: ' + journal.length + ' entries downloaded as JSON.', 'text-neoncyan');
+    });
+
+    // two-step clear (window.confirm is blocked in sandboxed frames)
+    var journalClearArmed = false;
+    document.getElementById('journal-clear').addEventListener('click', function () {
+      var btn = this;
+      if (!journalClearArmed) {
+        journalClearArmed = true;
+        btn.textContent = 'Confirm?';
+        setTimeout(function () { journalClearArmed = false; btn.textContent = 'Clear'; }, 3000);
+        return;
+      }
+      journal = [];
+      saveJournal();
+      renderJournal();
+      journalClearArmed = false;
+      btn.textContent = 'Clear';
+      aiPrint('> JOURNAL PURGED: post-mortem log wiped from local sandbox.', 'text-neonamber');
+    });
+
+    /* ================================================================
+       PHASE 9 // MODULE 3: MULTI-MODEL CONSENSUS VOTING
+       Every provider with a sealed key votes LONG / SHORT / STAND on
+       the active asset. Majority verdict, confidence-weighted.
+       ================================================================ */
+    var CONSENSUS_ENGINES = [
+      { name: 'gemini', modelId: 'gemini-flash' },
+      { name: 'openai', modelId: 'openai-gpt' },
+      { name: 'anthropic', modelId: 'anthropic-claude' },
+      { name: 'groq', modelId: 'groq-llama' }
+    ];
+
+    function consensusPayload() {
+      var s = state.active;
+      var d = state.last[s];
+      var buf = state.buffers[s] || [];
+      var rec = state.synthRec;
+      return {
+        systemInstruction: 'You are one voting member of a multi-model trading committee analyzing simulated market data for education. Respond with EXACTLY one line in this format and nothing else: VOTE: LONG or SHORT or STAND | CONF: <integer 0-100> | WHY: <max 12 words>',
+        userQuery: 'Asset: ' + (ASSETS[s] ? ASSETS[s].label : s) +
+          '. Last price: ' + d.price + '. 24h delta: ' + d.delta + '%.' +
+          ' Recent ticks (oldest to newest): [' + buf.slice(-20).map(function (p) { return Number(p.toFixed(6)); }).join(', ') + '].' +
+          ' Suggested strategy vector: ' + (rec ? rec.name + ' (gate ' + rec.gate + ')' : 'none yet') + '. Cast your vote.'
+      };
+    }
+
+    function parseVote(text) {
+      var v = String(text).match(/VOTE:\s*(LONG|SHORT|STAND)/i);
+      var c = String(text).match(/CONF:\s*(\d{1,3})/i);
+      var w = String(text).match(/WHY:\s*(.+)$/im);
+      if (!v) return null;
+      return {
+        vote: v[1].toUpperCase(),
+        conf: c ? Math.min(100, parseInt(c[1], 10)) : 50,
+        why: w ? w[1].trim().slice(0, 90) : 'no reason given'
+      };
+    }
+
+    var consensusBusy = false;
+    function runConsensus() {
+      if (consensusBusy) return;
+      var d = state.last[state.active];
+      if (!d || d.price == null) {
+        aiPrint('> CONSENSUS: no live data on the active asset yet. Wait for the feed.', 'text-neonamber');
+        return;
+      }
+      var engines = CONSENSUS_ENGINES.filter(function (e) { return !!getSlot(e.name); });
+      if (!engines.length) {
+        aiPrint('> CONSENSUS: no engine keys sealed. Open Decipher Keys and add at least two providers.', 'text-neonamber');
+        return;
+      }
+      if (engines.length < 2) {
+        aiPrint('> CONSENSUS: only 1 engine armed (' + engines[0].name.toUpperCase() + '). A committee needs 2+ — add another key for true consensus. Running solo vote anyway...', 'text-neonamber');
+      }
+      consensusBusy = true;
+      var payload = consensusPayload();
+      aiPrint('> CONSENSUS VOTE CALLED: ' + engines.length + ' engine(s) deliberating on ' + ASSETS[state.active].label + '...', 'text-neonamber');
+
+      var pending = engines.map(function (e) {
+        var m = MODELS[e.modelId];
+        return providerRequestFor(m, getSlot(e.name), payload)
+          .then(function (text) { return { engine: m.label, result: parseVote(text) }; })
+          .catch(function (err) { return { engine: m.label, error: err.message }; });
+      });
+
+      Promise.all(pending).then(function (results) {
+        var tally = { LONG: 0, SHORT: 0, STAND: 0 };
+        var weights = { LONG: 0, SHORT: 0, STAND: 0 };
+        var counted = 0;
+        results.forEach(function (r) {
+          if (r.error) {
+            aiPrint('> [' + r.engine + '] uplink failed: ' + r.error, 'text-neonred');
+            return;
+          }
+          if (!r.result) {
+            aiPrint('> [' + r.engine + '] returned an unparseable ballot — vote discarded.', 'text-neonred');
+            return;
+          }
+          counted++;
+          tally[r.result.vote]++;
+          weights[r.result.vote] += r.result.conf;
+          var col = r.result.vote === 'LONG' ? 'text-neongreen' : r.result.vote === 'SHORT' ? 'text-neonred' : 'text-slate-400';
+          aiPrint('> [' + r.engine + '] ' + r.result.vote + ' @ ' + r.result.conf + '% — ' + r.result.why, col);
+        });
+        if (!counted) {
+          aiPrint('> CONSENSUS ABORTED: no valid ballots returned.', 'text-neonred');
+        } else {
+          var verdict = 'STAND';
+          if (weights.LONG > weights.SHORT && weights.LONG > weights.STAND) verdict = 'LONG';
+          else if (weights.SHORT > weights.LONG && weights.SHORT > weights.STAND) verdict = 'SHORT';
+          var avgConf = Math.round((weights.LONG + weights.SHORT + weights.STAND) / counted);
+          var vCol = verdict === 'LONG' ? 'text-neongreen' : verdict === 'SHORT' ? 'text-neonred' : 'text-neonamber';
+          aiPrint('> ══ COMMITTEE VERDICT: ' + verdict + ' ══ (' + tally.LONG + 'L / ' + tally.SHORT + 'S / ' + tally.STAND + ' stand, avg conf ' + avgConf + '%)', vCol);
+          if (verdict === 'STAND') aiPrint('> Committee says patience. The directive stands aside — so should you.', 'text-slate-400');
+          if (window.__otxPilotXP) window.__otxPilotXP(3); // seeking second opinions earns XP
+        }
+        consensusBusy = false;
+      });
+    }
+    document.getElementById('btn-ai-consensus').addEventListener('click', runConsensus);
+
+    /* ================================================================
+       PHASE 9 // MODULE 4: BACKTEST REPLAY ENGINE — TIME MACHINE
+       Replays the session tick tape for the active asset through an
+       SMA 8/21 crossover model with play / scrub / speed transport.
+       ================================================================ */
+    var replay = { data: [], idx: 0, playing: false, timer: null, trades: [], symbol: '' };
+    var rc = document.getElementById('replay-canvas');
+    var rWrap = document.getElementById('replay-wrap');
+    var rCtx = rc.getContext('2d');
+
+    function sizeReplayCanvas() {
+      var dpr = window.devicePixelRatio || 1;
+      var r = rWrap.getBoundingClientRect();
+      if (!r.width || !r.height) return;
+      rc.width = Math.max(1, Math.floor(r.width * dpr));
+      rc.height = Math.max(1, Math.floor(r.height * dpr));
+      rCtx.setTransform(dpr, 0, 0, dpr, 0, 0);
+    }
+    window.addEventListener('resize', function () {
+      if (!VIEWS || !VIEWS.replay || VIEWS.replay.el.classList.contains('hidden')) return;
+      sizeReplayCanvas();
+      drawReplay();
+    });
+
+    function sma(arr, i, n) {
+      if (i + 1 < n) return null;
+      var sum = 0;
+      for (var k = i - n + 1; k <= i; k++) sum += arr[k];
+      return sum / n;
+    }
+
+    function backtestTape(data) {
+      // SMA 8/21 crossover: flip position on each cross, tally closed trades
+      var trades = [];
+      var pos = null;
+      for (var i = 21; i < data.length; i++) {
+        var fPrev = sma(data, i - 1, 8), sPrev = sma(data, i - 1, 21);
+        var fNow = sma(data, i, 8), sNow = sma(data, i, 21);
+        if (fPrev == null || sPrev == null) continue;
+        var crossUp = fPrev <= sPrev && fNow > sNow;
+        var crossDn = fPrev >= sPrev && fNow < sNow;
+        if (!crossUp && !crossDn) continue;
+        var dir = crossUp ? 1 : -1;
+        if (pos && pos.dir !== dir) {
+          pos.exitIdx = i;
+          pos.pnlPct = ((data[i] - data[pos.entryIdx]) / data[pos.entryIdx]) * 100 * pos.dir;
+          trades.push(pos);
+          pos = null;
+        }
+        if (!pos) pos = { dir: dir, entryIdx: i, exitIdx: null, pnlPct: null };
+      }
+      return trades;
+    }
+
+    function replaySetStatus(text, cls) {
+      var el9 = document.getElementById('replay-status');
+      el9.textContent = text;
+      el9.className = 'font-techmono text-[10px] ' + (cls || 'text-slate-500');
+    }
+
+    function replayLoad() {
+      var sym = state.active;
+      var tape = (state.tape && state.tape[sym]) || [];
+      if (tape.length < 40) {
+        replaySetStatus('TAPE // TOO SHORT (' + tape.length + ' ticks)', 'text-neonamber');
+        aiPrint('> REPLAY: only ' + tape.length + ' ticks taped for ' + ASSETS[sym].label + '. Leave the Terminal running a bit longer, then reload the tape.', 'text-neonamber');
+        return;
+      }
+      replayStop();
+      replay.data = tape.slice();
+      replay.symbol = sym;
+      replay.trades = backtestTape(replay.data);
+      replay.idx = 22;
+      var scrub = document.getElementById('replay-scrub');
+      scrub.max = String(replay.data.length - 1);
+      scrub.value = String(replay.idx);
+      var standby = document.getElementById('replay-standby');
+      if (standby) standby.style.display = 'none';
+      sizeReplayCanvas();
+      replaySetStatus('TAPE // ' + ASSETS[sym].label + ' — ' + replay.data.length + ' TICKS', 'text-neonamber');
+      drawReplay();
+    }
+
+    function replayStop() {
+      replay.playing = false;
+      if (replay.timer) { clearInterval(replay.timer); replay.timer = null; }
+      document.getElementById('replay-play-icon').className = 'fa-solid fa-play mr-1.5';
+      document.getElementById('replay-play-label').textContent = 'Play';
+    }
+
+    function replayTogglePlay() {
+      if (!replay.data.length) { replayLoad(); if (!replay.data.length) return; }
+      if (replay.playing) { replayStop(); return; }
+      if (replay.idx >= replay.data.length - 1) replay.idx = 22; // rewind at end
+      replay.playing = true;
+      document.getElementById('replay-play-icon').className = 'fa-solid fa-pause mr-1.5';
+      document.getElementById('replay-play-label').textContent = 'Pause';
+      replay.timer = setInterval(function () {
+        var speed = parseInt(document.getElementById('replay-speed').value, 10) || 1;
+        replay.idx = Math.min(replay.idx + speed, replay.data.length - 1);
+        document.getElementById('replay-scrub').value = String(replay.idx);
+        drawReplay();
+        if (replay.idx >= replay.data.length - 1) {
+          replayStop();
+          replaySetStatus('TAPE // REPLAY COMPLETE', 'text-neongreen');
+        }
+      }, 90);
+    }
+
+    function drawReplay() {
+      if (!replay.data.length) return;
+      var data = replay.data;
+      var idx = replay.idx;
+      var w = rc.width / (window.devicePixelRatio || 1);
+      var h = rc.height / (window.devicePixelRatio || 1);
+      rCtx.clearRect(0, 0, w, h);
+
+      // grid
+      rCtx.strokeStyle = 'rgba(30, 41, 59, 0.55)';
+      rCtx.lineWidth = 1;
+      for (var gx = 0; gx <= w; gx += 34) { rCtx.beginPath(); rCtx.moveTo(gx, 0); rCtx.lineTo(gx, h); rCtx.stroke(); }
+      for (var gy = 0; gy <= h; gy += 26) { rCtx.beginPath(); rCtx.moveTo(0, gy); rCtx.lineTo(w, gy); rCtx.stroke(); }
+
+      var slice = data.slice(0, idx + 1);
+      var min = Math.min.apply(null, data);
+      var max = Math.max.apply(null, data);
+      var range = (max - min) || (min * 0.0005) || 1;
+      var padY = 14;
+      var span = Math.max(data.length - 1, 1);
+      function px(i) { return (i / span) * w; }
+      function py(v) { return h - padY - ((v - min) / range) * (h - padY * 2); }
+
+      // price line up to the playhead
+      rCtx.save();
+      rCtx.shadowColor = 'rgba(251,191,36,0.7)';
+      rCtx.shadowBlur = 8;
+      rCtx.strokeStyle = '#fbbf24';
+      rCtx.lineWidth = 1.6;
+      rCtx.lineJoin = 'round';
+      rCtx.beginPath();
+      rCtx.moveTo(px(0), py(slice[0]));
+      for (var i = 1; i < slice.length; i++) rCtx.lineTo(px(i), py(slice[i]));
+      rCtx.stroke();
+      rCtx.restore();
+
+      // trade markers already revealed by the playhead
+      var closed = 0, wins = 0, pnl = 0;
+      replay.trades.forEach(function (t) {
+        if (t.entryIdx <= idx) {
+          rCtx.beginPath();
+          rCtx.arc(px(t.entryIdx), py(data[t.entryIdx]), 3.5, 0, Math.PI * 2);
+          rCtx.fillStyle = t.dir === 1 ? '#4ade80' : '#f87171';
+          rCtx.fill();
+        }
+        if (t.exitIdx != null && t.exitIdx <= idx) {
+          closed++;
+          if (t.pnlPct >= 0) wins++;
+          pnl += t.pnlPct;
+          rCtx.beginPath();
+          rCtx.arc(px(t.exitIdx), py(data[t.exitIdx]), 2.5, 0, Math.PI * 2);
+          rCtx.strokeStyle = '#22d3ee';
+          rCtx.lineWidth = 1.4;
+          rCtx.stroke();
+        }
+      });
+
+      // playhead beacon
+      rCtx.beginPath();
+      rCtx.arc(px(idx), py(data[idx]), 4, 0, Math.PI * 2);
+      rCtx.fillStyle = '#22d3ee';
+      rCtx.shadowColor = 'rgba(34,211,238,0.9)';
+      rCtx.shadowBlur = 8;
+      rCtx.fill();
+      rCtx.shadowBlur = 0;
+
+      // stats readout
+      document.getElementById('replay-pos').textContent = 'TICK ' + idx + ' / ' + (data.length - 1);
+      document.getElementById('replay-trades').textContent = String(closed);
+      document.getElementById('replay-winrate').textContent = closed ? Math.round((wins / closed) * 100) + '%' : '--%';
+      var pnlEl9 = document.getElementById('replay-pnl');
+      pnlEl9.textContent = (pnl >= 0 ? '+' : '') + pnl.toFixed(2) + '%';
+      pnlEl9.className = 'font-orbitron text-sm ' + (pnl >= 0 ? 'text-neongreen' : 'text-neonred');
+    }
+
+    document.getElementById('replay-load').addEventListener('click', replayLoad);
+    document.getElementById('replay-play').addEventListener('click', replayTogglePlay);
+    document.getElementById('replay-scrub').addEventListener('input', function () {
+      if (!replay.data.length) return;
+      replayStop();
+      replay.idx = Math.max(22, parseInt(this.value, 10) || 22);
+      drawReplay();
+    });
+
     /* ---------------- VIEW SWITCHER: Terminal / Intel / Arena / Mentor ---------------- */
     var VIEWS = {
       terminal: { nav: document.getElementById('nav-terminal'), el: document.getElementById('view-terminal'), accent: 'neoncyan' },
       intel:    { nav: document.getElementById('nav-intel'),    el: document.getElementById('view-intel'),    accent: 'neonamber' },
       arena:    { nav: document.getElementById('nav-arena'),    el: document.getElementById('view-arena'),    accent: 'neonmagenta' },
-      mentor:   { nav: document.getElementById('nav-mentor'),   el: document.getElementById('view-mentor'),   accent: 'neongreen' }
+      mentor:   { nav: document.getElementById('nav-mentor'),   el: document.getElementById('view-mentor'),   accent: 'neongreen' },
+      replay:   { nav: document.getElementById('nav-replay'),   el: document.getElementById('view-replay'),   accent: 'neonamber' },
+      journal:  { nav: document.getElementById('nav-journal'),  el: document.getElementById('view-journal'),  accent: 'neoncyan' }
     };
 
     function switchView(name) {
@@ -3005,6 +3629,11 @@
       });
       if (name === 'intel' && !newsItems.length) refreshNews();
       if (name === 'arena') { renderArena(); renderDesk(); }
+      if (name === 'journal') renderJournal();
+      if (name === 'replay') {
+        sizeReplayCanvas();
+        if (replay.data.length) drawReplay();
+      }
     }
     Object.keys(VIEWS).forEach(function (k) {
       VIEWS[k].nav.addEventListener('click', function () { switchView(k); });
@@ -3068,7 +3697,9 @@
     updateSimHud();
     renderDesk();
     renderArena();
-    aiPrint('> OMNITRADEX ENGINE online. Phase 8: pilot profiles + dual theme armed. Fly with discipline.', 'text-neongreen');
+    aiPrint('> OMNITRADEX ENGINE online. Phase 9: replay, consensus voting, auto journal + alerts armed. Fly with discipline.', 'text-neongreen');
+    renderJournal();
+    if (journal.length) aiPrint('> Journal restored: ' + journal.length + ' post-mortem entries from local sandbox.', 'text-slate-500');
     if (learning.samples) {
       aiPrint('> Learning engine restored: ' + learning.samples + ' evaluated signals, ' + (learnWinRate() * 100).toFixed(0) + '% validated edge.', 'text-slate-500');
     }
