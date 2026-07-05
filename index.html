@@ -215,6 +215,12 @@
         <button id="nav-intel" class="font-orbitron text-[10px] tracking-widest uppercase rounded-sm px-3 py-2 border border-gridline text-slate-500 hover:text-neonamber hover:border-neonamber/40">
           <i class="fa-solid fa-globe mr-1.5" aria-hidden="true"></i>Global Intel
         </button>
+        <button id="nav-arena" class="font-orbitron text-[10px] tracking-widest uppercase rounded-sm px-3 py-2 border border-gridline text-slate-500 hover:text-neonmagenta hover:border-neonmagenta/40">
+          <i class="fa-solid fa-robot mr-1.5" aria-hidden="true"></i>AI Arena
+        </button>
+        <button id="nav-mentor" class="font-orbitron text-[10px] tracking-widest uppercase rounded-sm px-3 py-2 border border-gridline text-slate-500 hover:text-neongreen hover:border-neongreen/40">
+          <i class="fa-solid fa-user-graduate mr-1.5" aria-hidden="true"></i>Mentor
+        </button>
       </nav>
       <button id="btn-decipher-keys" class="btn-neon font-orbitron text-xs tracking-widest text-neoncyan rounded-sm px-4 py-2 uppercase">
         <i class="fa-solid fa-key mr-2" aria-hidden="true"></i>Decipher Keys
@@ -248,12 +254,18 @@
             <button data-asset="BTCUSDT" class="asset-tab px-3 py-1 border border-neoncyan text-neoncyan bg-neoncyan/10 rounded-sm" role="tab" aria-selected="true">BTC</button>
             <button data-asset="ETHUSDT" class="asset-tab px-3 py-1 border border-gridline text-slate-500 rounded-sm hover:text-neoncyan hover:border-neoncyan/40" role="tab" aria-selected="false">ETH</button>
             <button data-asset="SOLUSDT" class="asset-tab px-3 py-1 border border-gridline text-slate-500 rounded-sm hover:text-neoncyan hover:border-neoncyan/40" role="tab" aria-selected="false">SOL</button>
+            <button data-asset="XRPUSDT" class="asset-tab px-3 py-1 border border-gridline text-slate-500 rounded-sm hover:text-neoncyan hover:border-neoncyan/40" role="tab" aria-selected="false">XRP</button>
+            <button data-asset="BNBUSDT" class="asset-tab px-3 py-1 border border-gridline text-slate-500 rounded-sm hover:text-neoncyan hover:border-neoncyan/40" role="tab" aria-selected="false">BNB</button>
+            <button data-asset="DOGEUSDT" class="asset-tab px-3 py-1 border border-gridline text-slate-500 rounded-sm hover:text-neoncyan hover:border-neoncyan/40" role="tab" aria-selected="false">DOGE</button>
           </div>
           <div class="flex flex-wrap items-center gap-1" role="tablist" aria-label="Forex asset selector">
             <span class="text-[9px] tracking-[0.2em] text-slate-600 uppercase w-12 shrink-0">Forex</span>
             <button data-asset="EURUSD" class="asset-tab px-3 py-1 border border-gridline text-slate-500 rounded-sm hover:text-neonamber hover:border-neonamber/40" role="tab" aria-selected="false">EUR/USD</button>
             <button data-asset="GBPUSD" class="asset-tab px-3 py-1 border border-gridline text-slate-500 rounded-sm hover:text-neonamber hover:border-neonamber/40" role="tab" aria-selected="false">GBP/USD</button>
             <button data-asset="USDJPY" class="asset-tab px-3 py-1 border border-gridline text-slate-500 rounded-sm hover:text-neonamber hover:border-neonamber/40" role="tab" aria-selected="false">USD/JPY</button>
+            <button data-asset="AUDUSD" class="asset-tab px-3 py-1 border border-gridline text-slate-500 rounded-sm hover:text-neonamber hover:border-neonamber/40" role="tab" aria-selected="false">AUD/USD</button>
+            <button data-asset="USDCHF" class="asset-tab px-3 py-1 border border-gridline text-slate-500 rounded-sm hover:text-neonamber hover:border-neonamber/40" role="tab" aria-selected="false">USD/CHF</button>
+            <button data-asset="USDCAD" class="asset-tab px-3 py-1 border border-gridline text-slate-500 rounded-sm hover:text-neonamber hover:border-neonamber/40" role="tab" aria-selected="false">USD/CAD</button>
           </div>
         </div>
 
@@ -433,6 +445,12 @@
         <div id="trade-directive" class="px-4 py-3 font-techmono text-[11px] space-y-1.5">
           <p class="text-slate-500">Calibrating tailored directive from live buffers, MTF gate and learned edge...</p>
         </div>
+        <div class="border-t border-gridline px-4 py-2 flex items-center gap-2">
+          <button id="btn-sim-exec" class="btn-neon flex-1 font-orbitron text-[10px] tracking-widest text-neongreen rounded-sm py-1.5 uppercase" style="border-color: rgba(74,222,128,0.5); background: rgba(74,222,128,0.06);">
+            <i class="fa-solid fa-play mr-1.5" aria-hidden="true"></i>Execute Sim Trade
+          </button>
+          <span id="sim-equity" class="font-techmono text-[10px] text-slate-500 shrink-0">EQ $10,000</span>
+        </div>
       </div>
 
       <!-- (3) COGNITIVE AI TERMINAL -->
@@ -500,6 +518,100 @@
   </section>
 
   <!-- ================================================================ -->
+  <!-- AI ARENA VIEW (Phase 7): competing AI trader bots + your sim desk -->
+  <!-- ================================================================ -->
+  <section id="view-arena" class="hidden flex-1 flex-col gap-3 min-h-0" aria-label="AI trading arena">
+
+    <!-- Arena status strip -->
+    <div class="neon-panel neon-panel-magenta hud-corners rounded-sm px-4 py-3 flex flex-wrap items-center gap-3 font-techmono text-[11px]">
+      <h2 class="font-orbitron text-xs tracking-[0.25em] text-neonmagenta glow-magenta uppercase mr-2">
+        <i class="fa-solid fa-robot mr-2" aria-hidden="true"></i>AI Arena // Quantum Colosseum
+      </h2>
+      <span class="border border-gridline rounded-sm px-3 py-1.5 text-slate-500">MODE: <span class="text-neongreen">PAPER SIM</span></span>
+      <span id="arena-session" class="border border-gridline rounded-sm px-3 py-1.5 text-slate-500">SESSION: --</span>
+      <span id="arena-breaker" class="border border-gridline rounded-sm px-3 py-1.5 text-slate-500">CIRCUIT: ARMED</span>
+      <div class="ml-auto flex items-center gap-2">
+        <button id="btn-arena-reset" class="btn-neon font-orbitron text-[10px] tracking-widest text-neonamber rounded-sm px-3 py-1.5 uppercase" style="border-color: rgba(251,191,36,0.5); background: rgba(251,191,36,0.06);">
+          <i class="fa-solid fa-rotate-left mr-1.5" aria-hidden="true"></i>Reset Season
+        </button>
+      </div>
+    </div>
+
+    <div class="flex-1 min-h-0 grid grid-cols-1 lg:grid-cols-3 gap-3">
+      <!-- Leaderboard -->
+      <div class="neon-panel hud-corners rounded-sm flex flex-col min-h-[300px] lg:col-span-2">
+        <div class="flex items-center justify-between border-b border-gridline px-4 py-2.5">
+          <h3 class="font-orbitron text-xs tracking-[0.25em] text-neoncyan uppercase">
+            <i class="fa-solid fa-trophy mr-2" aria-hidden="true"></i>Live Leaderboard
+          </h3>
+          <span class="font-techmono text-[10px] text-slate-500">EQUITY // WIN RATE // TRADES</span>
+        </div>
+        <div id="arena-board" class="flex-1 overflow-y-auto px-3 py-3 space-y-1.5 font-techmono text-[11px]"></div>
+      </div>
+
+      <!-- Trade tape + your desk -->
+      <div class="flex flex-col gap-3 min-h-0">
+        <div class="neon-panel neon-panel-green hud-corners rounded-sm flex flex-col flex-1 min-h-[160px]">
+          <div class="flex items-center justify-between border-b border-gridline px-4 py-2.5">
+            <h3 class="font-orbitron text-xs tracking-[0.25em] text-neongreen uppercase">
+              <i class="fa-solid fa-user-astronaut mr-2" aria-hidden="true"></i>Your Sim Desk
+            </h3>
+            <span id="desk-stats" class="font-techmono text-[10px] text-slate-500">0W / 0L</span>
+          </div>
+          <div id="desk-panel" class="flex-1 overflow-y-auto px-4 py-3 font-techmono text-[11px] space-y-1.5">
+            <p class="text-slate-500">No sim positions. Fire &quot;Execute Sim Trade&quot; on the Terminal directive card.</p>
+          </div>
+        </div>
+        <div class="neon-panel hud-corners rounded-sm flex flex-col flex-1 min-h-[160px]">
+          <div class="flex items-center justify-between border-b border-gridline px-4 py-2.5">
+            <h3 class="font-orbitron text-xs tracking-[0.25em] text-neonamber uppercase">
+              <i class="fa-solid fa-receipt mr-2" aria-hidden="true"></i>Arena Tape
+            </h3>
+            <span class="font-techmono text-[10px] text-slate-500">LIVE FILLS</span>
+          </div>
+          <div id="arena-tape" class="flex-1 overflow-y-auto px-4 py-3 font-techmono text-[10px] space-y-1.5">
+            <p class="text-slate-500">Bots warming up on live tick buffers...</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ================================================================ -->
+  <!-- AI MENTOR VIEW (Phase 7): discipline & risk chatbot partner -->
+  <!-- ================================================================ -->
+  <section id="view-mentor" class="hidden flex-1 flex-col gap-3 min-h-0" aria-label="AI trading mentor chat">
+    <div class="neon-panel neon-panel-green hud-corners rounded-sm flex flex-col flex-1 min-h-0">
+      <div class="flex items-center justify-between border-b border-gridline px-4 py-2.5">
+        <h2 class="font-orbitron text-xs tracking-[0.25em] text-neongreen uppercase">
+          <i class="fa-solid fa-user-graduate mr-2" aria-hidden="true"></i>Mentor // Discipline Partner
+        </h2>
+        <span id="mentor-status" class="font-techmono text-[10px] text-slate-500">CONTEXT-AWARE // STANDBY</span>
+      </div>
+      <div id="mentor-log" class="flex-1 min-h-0 overflow-y-auto px-4 py-4 space-y-3 font-inter text-xs leading-relaxed" aria-live="polite">
+        <div class="max-w-[85%] border border-neongreen/30 bg-neongreen/5 rounded-sm px-3 py-2 text-slate-300">
+          <p class="font-orbitron text-[9px] tracking-widest text-neongreen uppercase mb-1">Mentor</p>
+          <p>Hey, I&apos;m your desk partner. Ask me about today&apos;s market, position sizing, risk management, or when you feel like revenge trading — I&apos;ll keep you disciplined. What&apos;s on your mind?</p>
+        </div>
+      </div>
+      <div class="border-t border-gridline px-4 py-2 flex flex-wrap gap-1.5 font-techmono text-[10px]">
+        <button class="mentor-chip btn-neon rounded-sm px-2.5 py-1 text-neoncyan uppercase" data-q="What is the market looking like right now?">Market Now</button>
+        <button class="mentor-chip btn-neon rounded-sm px-2.5 py-1 text-neoncyan uppercase" data-q="How should I size my next position?">Position Size</button>
+        <button class="mentor-chip btn-neon rounded-sm px-2.5 py-1 text-neoncyan uppercase" data-q="I just took a loss and want to trade again immediately.">After a Loss</button>
+        <button class="mentor-chip btn-neon rounded-sm px-2.5 py-1 text-neoncyan uppercase" data-q="Review my sim trading performance and tell me what to improve.">Review My Trades</button>
+      </div>
+      <form id="mentor-form" class="border-t border-gridline px-4 py-3 flex gap-2">
+        <label for="mentor-input" class="sr-only">Ask the mentor</label>
+        <input id="mentor-input" type="text" placeholder="Ask about markets, risk, discipline..." autocomplete="off"
+          class="flex-1 min-w-0 bg-paneldeep border border-gridline rounded-sm px-3 py-2 font-techmono text-xs text-slate-200 placeholder:text-slate-600 focus:outline-none focus:border-neongreen/60" />
+        <button type="submit" class="btn-neon font-orbitron text-[10px] tracking-widest text-neongreen rounded-sm px-4 uppercase" style="border-color: rgba(74,222,128,0.5); background: rgba(74,222,128,0.06);">
+          <i class="fa-solid fa-paper-plane mr-1.5" aria-hidden="true"></i>Send
+        </button>
+      </form>
+    </div>
+  </section>
+
+  <!-- ================================================================ -->
   <!-- FOOTER TELEMETRY HUD -->
   <!-- ================================================================ -->
   <footer class="neon-panel rounded-sm px-4 py-2 flex flex-wrap items-center gap-x-6 gap-y-1 font-techmono text-[10px] text-slate-500">
@@ -508,7 +620,8 @@
     <span><i class="fa-solid fa-tower-broadcast text-neonamber mr-1.5" aria-hidden="true"></i>UPLINK: <span id="ftr-uplink" class="text-neonamber">DORMANT</span></span>
     <span><i class="fa-solid fa-lock text-neonmagenta mr-1.5" aria-hidden="true"></i>KEYS: <span id="ftr-keys" class="text-neonmagenta">NOT DECIPHERED</span></span>
     <span><i class="fa-solid fa-graduation-cap text-neoncyan mr-1.5" aria-hidden="true"></i>LEARN: <span id="ftr-learn" class="text-slate-500">0 SIG // --% EDGE</span></span>
-    <span class="ml-auto text-slate-600">PHASE 6 // SELF-EVOLVING GLOBAL INTELLIGENCE</span>
+    <span><i class="fa-solid fa-sack-dollar text-neongreen mr-1.5" aria-hidden="true"></i>SIM P/L: <span id="ftr-pnl" class="text-slate-500">$0.00</span></span>
+    <span class="ml-auto text-slate-600">PHASE 7 // EXECUTION SIM + AI ARENA + MENTOR</span>
   </footer>
 
   <!-- ================================================================ -->
@@ -567,12 +680,18 @@
 
     /* ---------------- ASSET REGISTRY ---------------- */
     var ASSETS = {
-      BTCUSDT: { type: 'crypto', label: 'BTC/USDT', decimals: 2, prefix: '$' },
-      ETHUSDT: { type: 'crypto', label: 'ETH/USDT', decimals: 2, prefix: '$' },
-      SOLUSDT: { type: 'crypto', label: 'SOL/USDT', decimals: 2, prefix: '$' },
+      BTCUSDT:  { type: 'crypto', label: 'BTC/USDT',  decimals: 2, prefix: '$' },
+      ETHUSDT:  { type: 'crypto', label: 'ETH/USDT',  decimals: 2, prefix: '$' },
+      SOLUSDT:  { type: 'crypto', label: 'SOL/USDT',  decimals: 2, prefix: '$' },
+      XRPUSDT:  { type: 'crypto', label: 'XRP/USDT',  decimals: 4, prefix: '$' },
+      BNBUSDT:  { type: 'crypto', label: 'BNB/USDT',  decimals: 2, prefix: '$' },
+      DOGEUSDT: { type: 'crypto', label: 'DOGE/USDT', decimals: 5, prefix: '$' },
       EURUSD:  { type: 'forex', label: 'EUR/USD', decimals: 5, prefix: '', base: 1.0842 },
       GBPUSD:  { type: 'forex', label: 'GBP/USD', decimals: 5, prefix: '', base: 1.2718 },
-      USDJPY:  { type: 'forex', label: 'USD/JPY', decimals: 3, prefix: '', base: 157.42 }
+      USDJPY:  { type: 'forex', label: 'USD/JPY', decimals: 3, prefix: '', base: 157.42 },
+      AUDUSD:  { type: 'forex', label: 'AUD/USD', decimals: 5, prefix: '', base: 0.6641 },
+      USDCHF:  { type: 'forex', label: 'USD/CHF', decimals: 5, prefix: '', base: 0.8934 },
+      USDCAD:  { type: 'forex', label: 'USD/CAD', decimals: 5, prefix: '', base: 1.3712 }
     };
 
     var MAX_POINTS = 50;
@@ -1157,7 +1276,7 @@
     var wsFailStreak = 0; // consecutive connections that never opened
 
     function connectBinance() {
-      var streams = 'btcusdt@ticker/ethusdt@ticker/solusdt@ticker';
+      var streams = 'btcusdt@ticker/ethusdt@ticker/solusdt@ticker/xrpusdt@ticker/bnbusdt@ticker/dogeusdt@ticker';
       var ws = new WebSocket(WS_ENDPOINTS[wsEndpointIdx] + streams);
       state.ws = ws;
       var openedThisConn = false;
@@ -2122,26 +2241,493 @@
       });
     });
 
-    /* ---------------- VIEW SWITCHER: Terminal <-> Global Intel ---------------- */
-    var navTerminal = document.getElementById('nav-terminal');
-    var navIntel = document.getElementById('nav-intel');
-    var viewTerminal = document.getElementById('view-terminal');
-    var viewIntel = document.getElementById('view-intel');
+    /* ================================================================
+       PHASE 7 // MODULE 1: EXECUTION SIMULATION & RISK COMMAND
+       Paper-trading ledger with 1%-risk position sizing, SL/TP fill
+       engine against live ticks, and a 3% daily-loss circuit breaker.
+       ================================================================ */
+    var LEDGER_SLOT = 'qc3_ledger';
+    var ledger = { equity: 10000, dayKey: '', dayStart: 10000, wins: 0, losses: 0, open: [], closed: [] };
+    try {
+      var savedLedger = JSON.parse(localStorage.getItem(LEDGER_SLOT));
+      if (savedLedger && typeof savedLedger.equity === 'number') ledger = savedLedger;
+    } catch (e) { /* fresh desk */ }
 
-    function switchView(intel) {
-      viewTerminal.classList.toggle('hidden', intel);
-      viewIntel.classList.toggle('hidden', !intel);
-      viewIntel.classList.toggle('flex', intel);
-      navTerminal.className = 'font-orbitron text-[10px] tracking-widest uppercase rounded-sm px-3 py-2 border ' +
-        (!intel ? 'border-neoncyan text-neoncyan bg-neoncyan/10' : 'border-gridline text-slate-500 hover:text-neoncyan hover:border-neoncyan/40');
-      navIntel.className = 'font-orbitron text-[10px] tracking-widest uppercase rounded-sm px-3 py-2 border ' +
-        (intel ? 'border-neonamber text-neonamber bg-neonamber/10' : 'border-gridline text-slate-500 hover:text-neonamber hover:border-neonamber/40');
-      if (intel) navIntel.setAttribute('aria-current', 'page'); else navTerminal.setAttribute('aria-current', 'page');
-      if (intel) { navTerminal.removeAttribute('aria-current'); } else { navIntel.removeAttribute('aria-current'); }
-      if (intel && !newsItems.length) refreshNews();
+    function saveLedger() { localStorage.setItem(LEDGER_SLOT, JSON.stringify(ledger)); }
+
+    function rollLedgerDay() {
+      var today = new Date().toISOString().slice(0, 10);
+      if (ledger.dayKey !== today) {
+        ledger.dayKey = today;
+        ledger.dayStart = ledger.equity;
+        saveLedger();
+      }
     }
-    navTerminal.addEventListener('click', function () { switchView(false); });
-    navIntel.addEventListener('click', function () { switchView(true); });
+
+    function breakerTripped() {
+      rollLedgerDay();
+      return ledger.equity <= ledger.dayStart * 0.97; // 3% daily loss lockout
+    }
+
+    function fmtUsd(v) {
+      return (v < 0 ? '-$' : '$') + Math.abs(v).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+    }
+
+    function updateSimHud() {
+      var eq = document.getElementById('sim-equity');
+      if (eq) eq.textContent = 'EQ ' + fmtUsd(ledger.equity);
+      var pnl = ledger.equity - 10000;
+      var f = document.getElementById('ftr-pnl');
+      if (f) {
+        f.textContent = fmtUsd(pnl);
+        f.className = pnl >= 0 ? 'text-neongreen' : 'text-neonred';
+      }
+      var ds = document.getElementById('desk-stats');
+      if (ds) ds.textContent = ledger.wins + 'W / ' + ledger.losses + 'L';
+    }
+
+    function openSimTrade() {
+      var td = buildTradeDirective();
+      if (!td || td.stand) {
+        aiPrint('> SIM DESK: directive is STAND ASIDE — no trade taken. Discipline preserved.', 'text-neonamber');
+        return;
+      }
+      if (breakerTripped()) {
+        aiPrint('> CIRCUIT BREAKER: 3% daily loss limit hit. Desk locked until next session.', 'text-neonred');
+        return;
+      }
+      for (var i = 0; i < ledger.open.length; i++) {
+        if (ledger.open[i].symbol === td.symbol) {
+          aiPrint('> SIM DESK: position already open on ' + ASSETS[td.symbol].label + '.', 'text-neonamber');
+          return;
+        }
+      }
+      var riskAmt = ledger.equity * 0.01; // hard 1% risk per trade
+      var dist = Math.abs(td.entry - td.sl);
+      if (!dist) return;
+      var qty = riskAmt / dist;
+      ledger.open.push({
+        symbol: td.symbol, dir: td.dir === 'LONG' ? 1 : -1, entry: td.entry,
+        sl: td.sl, tp: td.tp, qty: qty, strat: td.strat, t: Date.now()
+      });
+      saveLedger();
+      updateSimHud();
+      renderDesk();
+      aiPrint('> SIM FILL: ' + td.dir + ' ' + ASSETS[td.symbol].label + ' @ ' + fmtPrice(td.symbol, td.entry) +
+        ' | SL ' + fmtPrice(td.symbol, td.sl) + ' | TP ' + fmtPrice(td.symbol, td.tp) + ' | risk 1%', 'text-neongreen');
+      arenaTape('YOU', td.dir + ' ' + ASSETS[td.symbol].label + ' @ ' + fmtPrice(td.symbol, td.entry), 'text-neongreen');
+    }
+    document.getElementById('btn-sim-exec').addEventListener('click', openSimTrade);
+
+    function closeSimTrade(pos, exit, why) {
+      var pnl = (exit - pos.entry) * pos.qty * pos.dir;
+      ledger.equity += pnl;
+      if (pnl >= 0) ledger.wins++; else ledger.losses++;
+      ledger.closed.push({ symbol: pos.symbol, dir: pos.dir, pnl: pnl, why: why, t: Date.now() });
+      while (ledger.closed.length > 30) ledger.closed.shift();
+      saveLedger();
+      updateSimHud();
+      renderDesk();
+      var msg = why + ' ' + ASSETS[pos.symbol].label + ' -> ' + fmtUsd(pnl);
+      aiPrint('> SIM ' + (pnl >= 0 ? 'WIN' : 'LOSS') + ': ' + msg, pnl >= 0 ? 'text-neongreen' : 'text-neonred');
+      arenaTape('YOU', msg, pnl >= 0 ? 'text-neongreen' : 'text-neonred');
+      if (breakerTripped()) {
+        document.getElementById('arena-breaker').innerHTML = 'CIRCUIT: <span class="text-neonred">TRIPPED</span>';
+        aiPrint('> CIRCUIT BREAKER TRIPPED: -3% daily. All new sim entries locked. Walk away — best trade today is no trade.', 'text-neonred');
+      }
+    }
+
+    function manageSimTrades() {
+      var still = [];
+      ledger.open.forEach(function (pos) {
+        var d = state.last[pos.symbol];
+        if (!d || d.price == null) { still.push(pos); return; }
+        var p = d.price;
+        if (pos.dir === 1 && p <= pos.sl) return closeSimTrade(pos, pos.sl, 'STOP');
+        if (pos.dir === 1 && p >= pos.tp) return closeSimTrade(pos, pos.tp, 'TARGET');
+        if (pos.dir === -1 && p >= pos.sl) return closeSimTrade(pos, pos.sl, 'STOP');
+        if (pos.dir === -1 && p <= pos.tp) return closeSimTrade(pos, pos.tp, 'TARGET');
+        still.push(pos);
+      });
+      if (still.length !== ledger.open.length) {
+        ledger.open = still;
+        saveLedger();
+      } else {
+        ledger.open = still;
+      }
+    }
+
+    function renderDesk() {
+      var box = document.getElementById('desk-panel');
+      if (!box) return;
+      box.innerHTML = '';
+      if (!ledger.open.length && !ledger.closed.length) {
+        var e0 = document.createElement('p');
+        e0.className = 'text-slate-500';
+        e0.textContent = 'No sim positions. Fire "Execute Sim Trade" on the Terminal directive card.';
+        box.appendChild(e0);
+        return;
+      }
+      ledger.open.forEach(function (pos) {
+        var d = state.last[pos.symbol];
+        var upnl = d && d.price != null ? (d.price - pos.entry) * pos.qty * pos.dir : 0;
+        var row = document.createElement('div');
+        row.className = 'border border-gridline rounded-sm px-2.5 py-1.5 flex items-center justify-between gap-2';
+        var l = document.createElement('span');
+        l.className = pos.dir === 1 ? 'text-neongreen' : 'text-neonred';
+        l.textContent = (pos.dir === 1 ? 'LONG ' : 'SHORT ') + ASSETS[pos.symbol].label;
+        var r = document.createElement('span');
+        r.className = upnl >= 0 ? 'text-neongreen' : 'text-neonred';
+        r.textContent = fmtUsd(upnl);
+        row.appendChild(l); row.appendChild(r);
+        box.appendChild(row);
+      });
+      ledger.closed.slice(-5).reverse().forEach(function (c) {
+        var row = document.createElement('div');
+        row.className = 'flex items-center justify-between gap-2 text-slate-500';
+        var l = document.createElement('span');
+        l.textContent = c.why + ' ' + ASSETS[c.symbol].label;
+        var r = document.createElement('span');
+        r.className = c.pnl >= 0 ? 'text-neongreen' : 'text-neonred';
+        r.textContent = fmtUsd(c.pnl);
+        row.appendChild(l); row.appendChild(r);
+        box.appendChild(row);
+      });
+    }
+
+    /* ================================================================
+       PHASE 7 // MODULE 2: AI ARENA — QUANTUM COLOSSEUM
+       Six AI trader personas battle on the SAME live tick buffers,
+       each with a distinct strategy brain. Paper-only, ranked live.
+       ================================================================ */
+    var ARENA_SLOT = 'qc3_arena';
+    var ARENA_BOTS = [
+      { id: 'titan',   name: 'GPT-TITAN',      style: 'momentum',  color: 'text-neoncyan',    desc: 'Momentum breakout hunter' },
+      { id: 'sage',    name: 'CLAUDE-SAGE',    style: 'structure', desc: 'Wyckoff structure reader', color: 'text-neonmagenta' },
+      { id: 'nova',    name: 'GEMINI-NOVA',    style: 'meanrev',   desc: '3-sigma fade specialist',  color: 'text-neonamber' },
+      { id: 'viper',   name: 'LLAMA-VIPER',    style: 'scalper',   desc: 'Fast-window tick scalper', color: 'text-neongreen' },
+      { id: 'maverick',name: 'GROK-MAVERICK',  style: 'contrarian',desc: 'Crowd-fade contrarian',    color: 'text-neonred' },
+      { id: 'oracle',  name: 'DEEPSEEK-ORACLE',style: 'trend',     desc: 'Slow-trend rider',         color: 'text-slate-300' }
+    ];
+    var arena = { season: 1, stats: {} };
+    try {
+      var savedArena = JSON.parse(localStorage.getItem(ARENA_SLOT));
+      if (savedArena && savedArena.stats) arena = savedArena;
+    } catch (e) { /* new season */ }
+    ARENA_BOTS.forEach(function (b) {
+      if (!arena.stats[b.id]) arena.stats[b.id] = { equity: 10000, wins: 0, losses: 0 };
+    });
+    var botPositions = {}; // id -> open position (session-scoped)
+
+    function saveArena() { localStorage.setItem(ARENA_SLOT, JSON.stringify(arena)); }
+
+    function arenaTape(who, text, cls) {
+      var tape = document.getElementById('arena-tape');
+      if (!tape) return;
+      var row = document.createElement('p');
+      row.className = cls || 'text-slate-400';
+      row.textContent = '[' + new Date().toISOString().slice(11, 19) + '] ' + who + ' :: ' + text;
+      tape.insertBefore(row, tape.firstChild);
+      while (tape.children.length > 40) tape.removeChild(tape.lastChild);
+    }
+
+    /* Each persona reads the live buffers through its own strategy lens */
+    function botSignal(style, symbol) {
+      var buf = state.buffers[symbol];
+      if (buf.length < 20) return 0;
+      var fast = windowTrend(buf, 10), mid = windowTrend(buf, 25), slow = windowTrend(buf, 50);
+      switch (style) {
+        case 'momentum':   return (fast.z > 1.2 && mid.z > 0.5) ? 1 : (fast.z < -1.2 && mid.z < -0.5) ? -1 : 0;
+        case 'trend':      return (slow.z > 1.0 && mid.dir !== 'BEAR') ? 1 : (slow.z < -1.0 && mid.dir !== 'BULL') ? -1 : 0;
+        case 'meanrev':    return fast.z > 2.2 ? -1 : fast.z < -2.2 ? 1 : 0;
+        case 'contrarian': return (fast.z > 1.6 && slow.dir === 'FLAT') ? -1 : (fast.z < -1.6 && slow.dir === 'FLAT') ? 1 : 0;
+        case 'scalper':    return fast.z > 0.9 ? 1 : fast.z < -0.9 ? -1 : 0;
+        case 'structure':  return (mid.dir === 'FLAT' && slow.z > 0.6) ? 1 : (mid.dir === 'FLAT' && slow.z < -0.6) ? -1 : 0;
+        default: return 0;
+      }
+    }
+
+    var ARENA_SYMBOLS = Object.keys(ASSETS);
+
+    function arenaDecide() {
+      ARENA_BOTS.forEach(function (bot) {
+        var st = arena.stats[bot.id];
+        var pos = botPositions[bot.id];
+
+        if (pos) {
+          // manage open position: SL/TP or 3-minute time stop
+          var d = state.last[pos.symbol];
+          if (!d || d.price == null) return;
+          var p = d.price, exit = null, why = '';
+          if (pos.dir === 1 && p <= pos.sl) { exit = pos.sl; why = 'STOP'; }
+          else if (pos.dir === 1 && p >= pos.tp) { exit = pos.tp; why = 'TARGET'; }
+          else if (pos.dir === -1 && p >= pos.sl) { exit = pos.sl; why = 'STOP'; }
+          else if (pos.dir === -1 && p <= pos.tp) { exit = pos.tp; why = 'TARGET'; }
+          else if (Date.now() - pos.t > 180000) { exit = p; why = 'TIME'; }
+          if (exit != null) {
+            var pnl = (exit - pos.entry) * pos.qty * pos.dir;
+            st.equity += pnl;
+            if (pnl >= 0) st.wins++; else st.losses++;
+            delete botPositions[bot.id];
+            saveArena();
+            arenaTape(bot.name, why + ' ' + ASSETS[pos.symbol].label + ' -> ' + fmtUsd(pnl), pnl >= 0 ? 'text-neongreen' : 'text-neonred');
+          }
+          return;
+        }
+
+        // hunt for an entry (probabilistic scan keeps the tape organic)
+        if (Math.random() > 0.5) return;
+        var symbol = ARENA_SYMBOLS[Math.floor(Math.random() * ARENA_SYMBOLS.length)];
+        var sig = botSignal(bot.style, symbol);
+        if (!sig) return;
+        var d2 = state.last[symbol];
+        if (!d2 || d2.price == null) return;
+        var entry = d2.price;
+        var t = trail[symbol];
+        var slPct = t ? t.pct : 0.015;
+        var sl = entry * (1 - sig * slPct);
+        var tp = entry * (1 + sig * slPct * 2);
+        var qty = (st.equity * 0.01) / Math.abs(entry - sl);
+        botPositions[bot.id] = { symbol: symbol, dir: sig, entry: entry, sl: sl, tp: tp, qty: qty, t: Date.now() };
+        arenaTape(bot.name, (sig === 1 ? 'LONG ' : 'SHORT ') + ASSETS[symbol].label + ' @ ' + fmtPrice(symbol, entry), bot.color);
+      });
+      renderArena();
+    }
+
+    function renderArena() {
+      var board = document.getElementById('arena-board');
+      if (!board) return;
+      var rows = ARENA_BOTS.map(function (b) {
+        var st = arena.stats[b.id];
+        var total = st.wins + st.losses;
+        return { name: b.name, desc: b.desc, color: b.color, equity: st.equity, wr: total ? st.wins / total : 0, trades: total, you: false, live: !!botPositions[b.id] };
+      });
+      var myTotal = ledger.wins + ledger.losses;
+      rows.push({ name: 'YOU // HUMAN DESK', desc: 'Directive-driven sim trader', color: 'text-neongreen', equity: ledger.equity, wr: myTotal ? ledger.wins / myTotal : 0, trades: myTotal, you: true, live: !!ledger.open.length });
+      rows.sort(function (a, b) { return b.equity - a.equity; });
+
+      board.innerHTML = '';
+      rows.forEach(function (r, i) {
+        var card = document.createElement('div');
+        card.className = 'border rounded-sm px-3 py-2 flex items-center gap-3 ' + (r.you ? 'border-neongreen/50 bg-neongreen/5' : 'border-gridline');
+        var rank = document.createElement('span');
+        rank.className = 'font-orbitron text-xs w-6 ' + (i === 0 ? 'text-neonamber' : 'text-slate-500');
+        rank.textContent = String(i + 1).padStart(2, '0');
+        var mid = document.createElement('div');
+        mid.className = 'flex-1 min-w-0';
+        var nm = document.createElement('p');
+        nm.className = r.color + ' truncate';
+        nm.textContent = r.name + (r.live ? ' •' : '');
+        var ds = document.createElement('p');
+        ds.className = 'text-[10px] text-slate-600 truncate';
+        ds.textContent = r.desc;
+        mid.appendChild(nm); mid.appendChild(ds);
+        var eq = document.createElement('span');
+        eq.className = 'shrink-0 ' + (r.equity >= 10000 ? 'text-neongreen' : 'text-neonred');
+        eq.textContent = fmtUsd(r.equity);
+        var wr = document.createElement('span');
+        wr.className = 'shrink-0 text-slate-500 w-24 text-right';
+        wr.textContent = (r.wr * 100).toFixed(0) + '% // ' + r.trades + 'T';
+        card.appendChild(rank); card.appendChild(mid); card.appendChild(eq); card.appendChild(wr);
+        board.appendChild(card);
+      });
+      var sess = document.getElementById('arena-session');
+      if (sess) sess.textContent = 'SEASON: ' + arena.season;
+      if (!breakerTripped()) {
+        document.getElementById('arena-breaker').innerHTML = 'CIRCUIT: <span class="text-neongreen">ARMED</span>';
+      }
+    }
+
+    document.getElementById('btn-arena-reset').addEventListener('click', function () {
+      arena.season++;
+      ARENA_BOTS.forEach(function (b) { arena.stats[b.id] = { equity: 10000, wins: 0, losses: 0 }; });
+      botPositions = {};
+      ledger.equity = 10000; ledger.dayStart = 10000; ledger.wins = 0; ledger.losses = 0; ledger.open = []; ledger.closed = [];
+      saveArena(); saveLedger();
+      updateSimHud(); renderDesk(); renderArena();
+      arenaTape('SYS', 'Season ' + arena.season + ' started. All desks reset to $10,000.', 'text-neonamber');
+    });
+
+    /* ================================================================
+       PHASE 7 // MODULE 3: AI MENTOR — DISCIPLINE PARTNER
+       Context-aware chat: live market state + your sim ledger + learned
+       edge are injected into every question. Falls back to a local
+       rule-based coach when no API key is deciphered.
+       ================================================================ */
+    var MENTOR_SLOT = 'qc3_mentor';
+    var mentorHistory = [];
+    try { mentorHistory = JSON.parse(localStorage.getItem(MENTOR_SLOT)) || []; } catch (e) { mentorHistory = []; }
+
+    function saveMentor() {
+      while (mentorHistory.length > 12) mentorHistory.shift();
+      localStorage.setItem(MENTOR_SLOT, JSON.stringify(mentorHistory));
+    }
+
+    function mentorBubble(role, text) {
+      var log = document.getElementById('mentor-log');
+      var wrap = document.createElement('div');
+      var isUser = role === 'user';
+      wrap.className = isUser
+        ? 'max-w-[85%] ml-auto border border-neoncyan/30 bg-neoncyan/5 rounded-sm px-3 py-2 text-slate-300'
+        : 'max-w-[85%] border border-neongreen/30 bg-neongreen/5 rounded-sm px-3 py-2 text-slate-300';
+      var tag = document.createElement('p');
+      tag.className = 'font-orbitron text-[9px] tracking-widest uppercase mb-1 ' + (isUser ? 'text-neoncyan' : 'text-neongreen');
+      tag.textContent = isUser ? 'You' : 'Mentor';
+      wrap.appendChild(tag);
+      var body = document.createElement('div');
+      renderMarkdown(body, text);
+      wrap.appendChild(body);
+      log.appendChild(wrap);
+      log.scrollTop = log.scrollHeight;
+      return wrap;
+    }
+
+    function mentorContext() {
+      var symbol = state.active;
+      var d = state.last[symbol];
+      var mtf = computeMTF(symbol);
+      var myTotal = ledger.wins + ledger.losses;
+      var top = null, topEq = -Infinity;
+      ARENA_BOTS.forEach(function (b) {
+        if (arena.stats[b.id].equity > topEq) { topEq = arena.stats[b.id].equity; top = b.name; }
+      });
+      return '== LIVE CONTEXT (auto-injected) ==\n' +
+        'ACTIVE ASSET: ' + ASSETS[symbol].label + ' @ ' + fmtPrice(symbol, d.price) + ' (24h ' + (d.delta || 0).toFixed(2) + '%)\n' +
+        'MTF GATE: ' + mtf.gate + '\n' +
+        'USER SIM LEDGER: equity ' + fmtUsd(ledger.equity) + ' | ' + ledger.wins + 'W/' + ledger.losses + 'L' +
+        (myTotal ? ' (' + ((ledger.wins / myTotal) * 100).toFixed(0) + '% WR)' : ' (no trades yet)') +
+        ' | open positions: ' + ledger.open.length + ' | circuit breaker: ' + (breakerTripped() ? 'TRIPPED (daily -3%)' : 'armed') + '\n' +
+        'ADAPTIVE ENGINE: ' + learningContext().split('\n')[0] + '\n' +
+        'ARENA LEADER: ' + (top || 'n/a') + ' @ ' + fmtUsd(topEq) + '\n' +
+        'RECENT INTEL: ' + (typeof newsItems !== 'undefined' && newsItems.length ? newsItems.slice(0, 3).map(function (n) { return n.headline; }).join(' | ') : 'none loaded');
+    }
+
+    /* Local rule-based coach when no API key is present */
+    function mentorHeuristic(q) {
+      var s = q.toLowerCase();
+      if (/revenge|angry|loss|lost|tilt|again immediately/.test(s)) {
+        return '**Stop. Breathe.** Revenge trading is how small losses become blown accounts.\n' +
+          '- Your circuit breaker exists for this exact moment: ' + (breakerTripped() ? 'it is TRIPPED — you are done for today, and that is a win.' : 'you still have room, but only take A+ setups.') + '\n' +
+          '- Rule: after a loss, wait for the NEXT clean MTF-gated signal. No gate, no trade.\n' +
+          '- Journal the loss first: what was the setup, did you follow the plan? If yes, it was a good trade with a bad outcome.';
+      }
+      if (/size|sizing|how much|position|lot/.test(s)) {
+        var risk = ledger.equity * 0.01;
+        return '**Position sizing, by the book:**\n' +
+          '- Risk exactly **1% of equity** per trade: that is ' + fmtUsd(risk) + ' on your current ' + fmtUsd(ledger.equity) + ' sim account.\n' +
+          '- Qty = risk amount / distance to stop. Wider stop = smaller size, automatically.\n' +
+          '- Never add to losers. Scale winners only after the stop is at break-even.';
+      }
+      if (/market|now|today|look|update|bias/.test(s)) {
+        var symbol = state.active;
+        var mtf = computeMTF(symbol);
+        var d = state.last[symbol];
+        return '**' + ASSETS[symbol].label + ' right now:** ' + fmtPrice(symbol, d.price) + ' (' + (d.delta || 0).toFixed(2) + '% 24h)\n' +
+          '- MTF gate reads **' + mtf.gate + '** — ' + (mtf.gate === 'BLOCKED' || mtf.gate === 'WAIT' ? 'timeframes disagree, so the disciplined play is patience.' : 'timeframes align; if you trade, honor the directive card SL/TP exactly.') + '\n' +
+          '- Check the Global Intel radar before entering: news beats technicals.';
+      }
+      if (/review|performance|improve|stats/.test(s)) {
+        var t = ledger.wins + ledger.losses;
+        return '**Your sim desk review:**\n' +
+          '- Record: ' + ledger.wins + 'W / ' + ledger.losses + 'L' + (t ? ' (' + ((ledger.wins / t) * 100).toFixed(0) + '% win rate)' : '') + ', equity ' + fmtUsd(ledger.equity) + '.\n' +
+          '- ' + (t < 10 ? 'Sample is still small — focus on process, not P/L. Take 10+ gated trades before judging anything.' :
+            (ledger.wins / t >= 0.5 ? 'Positive edge forming. Protect it: same risk every trade, no impulse entries.' :
+            'Win rate is below 50%. Cut trade frequency in half and ONLY take directives with confidence above 65%.')) + '\n' +
+          '- Compare yourself to the Arena bots — if a rule-based bot beats you, your discipline (not your analysis) is the leak.';
+      }
+      return '**Here to help.** Ask me about: current market bias, position sizing, handling losses, or reviewing your sim performance.\n' +
+        '- For deeper AI-powered coaching, decipher an API key in the Key Vault and I upgrade to full cognitive mode.';
+    }
+
+    var mentorBusy = false;
+    function mentorAsk(q) {
+      if (mentorBusy || !q.trim()) return;
+      mentorBubble('user', q);
+      mentorHistory.push({ role: 'user', text: q });
+      saveMentor();
+      var status = document.getElementById('mentor-status');
+
+      if (!modelKey()) {
+        var a = mentorHeuristic(q);
+        mentorBubble('mentor', a);
+        mentorHistory.push({ role: 'mentor', text: a });
+        saveMentor();
+        status.textContent = 'LOCAL COACH // NO KEY';
+        return;
+      }
+
+      mentorBusy = true;
+      status.textContent = activeModel().label + ' // THINKING';
+      status.className = 'font-techmono text-[10px] text-neongreen';
+      var thinking = mentorBubble('mentor', '_Reading the desk..._');
+
+      var convo = mentorHistory.slice(-8).map(function (m) {
+        return (m.role === 'user' ? 'TRADER: ' : 'MENTOR: ') + m.text;
+      }).join('\n');
+
+      callModel({
+        systemInstruction:
+          'You are MENTOR, a friendly, veteran trading desk partner inside the QUANTUM CORE v3 terminal. ' +
+          'Your #1 mission: protect the trader\u2019s capital and discipline. Give short, warm, practical answers ' +
+          '(max 130 words, markdown, bullets welcome). Always anchor advice in risk management: 1% risk rule, ' +
+          'stop-loss discipline, no revenge trading, respect the MTF gate and circuit breaker. ' +
+          'Use the injected live context. Never give guaranteed predictions; frame everything as scenarios with risk.',
+        userQuery: mentorContext() + '\n\n== CONVERSATION ==\n' + convo + '\nTRADER: ' + q
+      }).then(function (text) {
+        thinking.remove();
+        mentorBubble('mentor', text);
+        mentorHistory.push({ role: 'mentor', text: text });
+        saveMentor();
+      }).catch(function (err) {
+        thinking.remove();
+        var fb = mentorHeuristic(q) + '\n- (Uplink failed: ' + err.message + ' — answered locally.)';
+        mentorBubble('mentor', fb);
+        mentorHistory.push({ role: 'mentor', text: fb });
+        saveMentor();
+      }).finally(function () {
+        mentorBusy = false;
+        status.textContent = activeModel().label + ' // READY';
+        status.className = 'font-techmono text-[10px] text-slate-500';
+      });
+    }
+
+    document.getElementById('mentor-form').addEventListener('submit', function (e) {
+      e.preventDefault();
+      var input = document.getElementById('mentor-input');
+      mentorAsk(input.value);
+      input.value = '';
+    });
+    Array.prototype.forEach.call(document.querySelectorAll('.mentor-chip'), function (chip) {
+      chip.addEventListener('click', function () { mentorAsk(chip.getAttribute('data-q')); });
+    });
+    // restore prior mentor conversation
+    mentorHistory.slice(-6).forEach(function (m) { mentorBubble(m.role === 'user' ? 'user' : 'mentor', m.text); });
+
+    /* ---------------- VIEW SWITCHER: Terminal / Intel / Arena / Mentor ---------------- */
+    var VIEWS = {
+      terminal: { nav: document.getElementById('nav-terminal'), el: document.getElementById('view-terminal'), accent: 'neoncyan' },
+      intel:    { nav: document.getElementById('nav-intel'),    el: document.getElementById('view-intel'),    accent: 'neonamber' },
+      arena:    { nav: document.getElementById('nav-arena'),    el: document.getElementById('view-arena'),    accent: 'neonmagenta' },
+      mentor:   { nav: document.getElementById('nav-mentor'),   el: document.getElementById('view-mentor'),   accent: 'neongreen' }
+    };
+
+    function switchView(name) {
+      Object.keys(VIEWS).forEach(function (k) {
+        var v = VIEWS[k];
+        var on = k === name;
+        v.el.classList.toggle('hidden', !on);
+        v.el.classList.toggle('flex', on && k !== 'terminal');
+        v.nav.className = 'font-orbitron text-[10px] tracking-widest uppercase rounded-sm px-3 py-2 border ' +
+          (on ? 'border-' + v.accent + ' text-' + v.accent + ' bg-' + v.accent + '/10'
+              : 'border-gridline text-slate-500 hover:text-' + v.accent + ' hover:border-' + v.accent + '/40');
+        if (on) v.nav.setAttribute('aria-current', 'page'); else v.nav.removeAttribute('aria-current');
+      });
+      if (name === 'intel' && !newsItems.length) refreshNews();
+      if (name === 'arena') { renderArena(); renderDesk(); }
+    }
+    Object.keys(VIEWS).forEach(function (k) {
+      VIEWS[k].nav.addEventListener('click', function () { switchView(k); });
+    });
 
     /* ---------------- PAGE VISIBILITY: pause background work ---------------- */
     document.addEventListener('visibilitychange', function () {
@@ -2184,6 +2770,9 @@
     setInterval(function () { if (!document.hidden) rollNodeStates(); }, 20000);
     setInterval(function () { if (!document.hidden) runSynthesis(true); }, 15000);
     setInterval(function () { if (!document.hidden) { learnEvaluate(); renderTradeDirective(); } }, 10000);
+    // Phase 7: sim fill engine (fast) + arena bot brains (slower cadence)
+    setInterval(function () { if (!document.hidden) { manageSimTrades(); if (!VIEWS.arena.el.classList.contains('hidden')) renderDesk(); } }, 4000);
+    setInterval(function () { if (!document.hidden) arenaDecide(); }, 12000);
 
     /* ---------------- IGNITION ---------------- */
     seedForex();
@@ -2194,7 +2783,11 @@
     pushMacroUpdate(); // first intel sweep immediately
     setTimeout(function () { runSynthesis(true); renderTradeDirective(); }, 4000); // first synthesis once buffers warm
     updateLearnHud();
-    aiPrint('> Phase 6 core online. Multi-model matrix + adaptive learning + global intel armed.', 'text-neongreen');
+    rollLedgerDay();
+    updateSimHud();
+    renderDesk();
+    renderArena();
+    aiPrint('> Phase 7 core online. Execution sim + AI Arena + Mentor systems armed.', 'text-neongreen');
     if (learning.samples) {
       aiPrint('> Learning engine restored: ' + learning.samples + ' evaluated signals, ' + (learnWinRate() * 100).toFixed(0) + '% validated edge.', 'text-slate-500');
     }

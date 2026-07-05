@@ -42,10 +42,22 @@ Architecture lock: single-file `index.html` (HTML5 + Tailwind CDN + vanilla JS).
   - FOOTER: learning telemetry HUD (`#ftr-learn`, "N SIG // X% EDGE") wired to the learning slot.
   - VERIFIED: view toggling terminal↔intel clean, price stream live, learning HUD live, zero runtime errors.
 
-## Additional localStorage Slots (Phase 6)
-- `qc3_learning` — adaptive engine state `{weights, samples, wins, insights}`
+- [x] **Phase 7 — Execution Sim + AI Arena + Mentor** (VERIFIED LIVE):
+  - PAIRS EXPANDED: 12 assets — crypto BTC/ETH/SOL/XRP/BNB/DOGE (live Binance WS, all 6 in stream string) + forex EUR/USD, GBP/USD, USD/JPY, AUD/USD, USD/CHF, USD/CAD (mock walk engine).
+  - MODULE 1: Execution Simulation & Risk Command — `qc3_ledger` paper desk ($10k start), "Execute Sim Trade" button on directive card (refuses STAND ASIDE gates — verified), hard 1%-risk position sizing (qty = risk/SL-distance), 4s SL/TP fill engine vs live ticks, 3% daily-loss circuit breaker with lockout, footer SIM P/L HUD (`#ftr-pnl`) + `#sim-equity`.
+  - MODULE 2: AI Arena (Quantum Colosseum view, `nav-arena`) — 6 AI personas (GPT-TITAN momentum, CLAUDE-SAGE structure, GEMINI-NOVA mean-rev, LLAMA-VIPER scalper, GROK-MAVERICK contrarian, DEEPSEEK-ORACLE trend) each trading live buffers via `botSignal()` heuristics every 12s with SL/TP/3-min time-stop; live leaderboard includes YOU row from ledger; Arena Tape fill feed; season reset button; persisted in `qc3_arena`.
+  - MODULE 3: AI Mentor (view `nav-mentor`) — chat partner with live context injection (`mentorContext()`: active asset, MTF gate, ledger stats, learned edge, arena leader, intel headlines); uses active provider via `callModel()` when key sealed, else `mentorHeuristic()` local coach (revenge-trading / sizing / market / performance-review rules); quick-prompt chips; history persisted in `qc3_mentor` (12 msgs).
+  - VIEW SWITCHER: generalized 4-view `VIEWS` map (terminal/intel/arena/mentor) with per-accent nav states.
+  - VERIFIED: 12 tabs, all 4 views toggle clean, arena bots taking live trades, mentor discipline reply works, sim exec correctly refused on blocked gate, zero SYS-TRAPs.
 
-## Next Candidates (Phase 7)
-- AI auto-inference scheduling (periodic cognitive sweeps, gate-aware)
-- Order flow depth simulation panel
-- Session P/L simulation ledger tied to trail SL / target hits
+## Additional localStorage Slots
+- `qc3_learning` — adaptive engine state `{weights, samples, wins, insights}`
+- `qc3_ledger` — sim desk `{equity, dayKey, dayStart, wins, losses, open[], closed[]}`
+- `qc3_arena` — arena `{season, stats:{botId:{equity,wins,losses}}}`
+- `qc3_mentor` — mentor chat history (last 12 messages)
+
+## Next Candidates (Phase 8)
+- Backtest Replay Engine (Binance klines REST replayed through MTF gate + synthesis)
+- Multi-model consensus mode (2-3 providers vote on the same payload)
+- AI post-mortem journal (auto-analysis of each closed sim trade)
+- Browser notifications / audio alerts on gate flips, fills, and traps
