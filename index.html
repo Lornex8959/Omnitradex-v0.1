@@ -271,6 +271,9 @@
         <button id="nav-mentor" class="font-orbitron text-[10px] tracking-widest uppercase rounded-sm px-3 py-2 border border-gridline text-slate-500 hover:text-neongreen hover:border-neongreen/40">
           <i class="fa-solid fa-user-graduate mr-1.5" aria-hidden="true"></i>Mentor
         </button>
+        <button id="nav-replay" class="font-orbitron text-[10px] tracking-widest uppercase rounded-sm px-3 py-2 border border-gridline text-slate-500 hover:text-neonred hover:border-neonred/40">
+          <i class="fa-solid fa-clock-rotate-left mr-1.5" aria-hidden="true"></i>Replay
+        </button>
       </nav>
       <button id="btn-theme" class="btn-neon font-orbitron text-xs tracking-widest text-neonamber rounded-sm px-3 py-2 uppercase" style="border-color: rgba(251,191,36,0.5); background: rgba(251,191,36,0.06);" aria-label="Toggle light and dark theme" title="Toggle theme">
         <i id="theme-icon" class="fa-solid fa-moon" aria-hidden="true"></i>
@@ -527,9 +530,12 @@
         </div>
         <!-- Parsed AI analysis output -->
         <div id="aiOutputText" class="max-h-36 overflow-y-auto border-t border-neonmagenta/25 px-4 py-3 font-inter text-xs leading-relaxed text-slate-300" style="display: none;" aria-live="polite"></div>
-        <div class="border-t border-neonmagenta/25 px-4 py-2.5">
-          <button id="btn-ai-trigger" class="btn-neon btn-neon-magenta w-full font-orbitron text-xs tracking-[0.25em] text-neonmagenta rounded-sm py-2 uppercase">
-            <i class="fa-solid fa-bolt-lightning mr-2" aria-hidden="true"></i>Trigger Cognitive Analysis
+        <div class="border-t border-neonmagenta/25 px-4 py-2.5 flex gap-2">
+          <button id="btn-ai-trigger" class="btn-neon btn-neon-magenta flex-1 font-orbitron text-[10px] tracking-[0.2em] text-neonmagenta rounded-sm py-2 uppercase">
+            <i class="fa-solid fa-bolt-lightning mr-1.5" aria-hidden="true"></i>Cognitive Analysis
+          </button>
+          <button id="btn-consensus" class="btn-neon flex-1 font-orbitron text-[10px] tracking-[0.2em] text-neoncyan rounded-sm py-2 uppercase" title="Poll every sealed AI engine on the same payload and tally the vote">
+            <i class="fa-solid fa-scale-balanced mr-1.5" aria-hidden="true"></i>Consensus Vote
           </button>
         </div>
       </div>
@@ -587,6 +593,9 @@
       <span id="arena-session" class="border border-gridline rounded-sm px-3 py-1.5 text-slate-500">SESSION: --</span>
       <span id="arena-breaker" class="border border-gridline rounded-sm px-3 py-1.5 text-slate-500">CIRCUIT: ARMED</span>
       <div class="ml-auto flex items-center gap-2">
+        <button id="btn-share-desk" class="btn-neon font-orbitron text-[10px] tracking-widest text-neoncyan rounded-sm px-3 py-1.5 uppercase">
+          <i class="fa-solid fa-share-nodes mr-1.5" aria-hidden="true"></i>Share Desk
+        </button>
         <button id="btn-arena-reset" class="btn-neon font-orbitron text-[10px] tracking-widest text-neonamber rounded-sm px-3 py-1.5 uppercase" style="border-color: rgba(251,191,36,0.5); background: rgba(251,191,36,0.06);">
           <i class="fa-solid fa-rotate-left mr-1.5" aria-hidden="true"></i>Reset Season
         </button>
@@ -631,6 +640,25 @@
         </div>
       </div>
     </div>
+
+    <!-- Phase 9: AI Post-Mortem Trade Journal -->
+    <div class="neon-panel neon-panel-green hud-corners rounded-sm flex flex-col max-h-[280px] min-h-[160px]">
+      <div class="flex items-center justify-between border-b border-gridline px-4 py-2.5">
+        <h3 class="font-orbitron text-xs tracking-[0.25em] text-neongreen uppercase">
+          <i class="fa-solid fa-book-skull mr-2" aria-hidden="true"></i>Trade Journal // AI Post-Mortem
+        </h3>
+        <div class="flex items-center gap-2">
+          <span id="journal-count" class="font-techmono text-[10px] text-slate-500">0 AUTOPSIES</span>
+          <button id="btn-journal-ai" class="btn-neon font-orbitron text-[9px] tracking-widest text-neonmagenta rounded-sm px-2.5 py-1 uppercase" style="border-color: rgba(232,121,249,0.5); background: rgba(232,121,249,0.06);">
+            <i class="fa-solid fa-brain mr-1" aria-hidden="true"></i>Deep Review
+          </button>
+        </div>
+      </div>
+      <div id="journal-ai-output" class="hidden border-b border-gridline px-4 py-3 font-inter text-xs leading-relaxed text-slate-300 max-h-28 overflow-y-auto" aria-live="polite"></div>
+      <div id="journal-panel" class="flex-1 overflow-y-auto px-4 py-3 font-techmono text-[10px] space-y-2">
+        <p class="text-slate-500">Every closed sim trade is auto-autopsied here: R-multiple, gate discipline, and a coach verdict.</p>
+      </div>
+    </div>
   </section>
 
   <!-- ================================================================ -->
@@ -668,6 +696,82 @@
   </section>
 
   <!-- ================================================================ -->
+  <!-- BACKTEST REPLAY VIEW (Phase 9): historical klines through the gate -->
+  <!-- ================================================================ -->
+  <section id="view-replay" class="hidden flex-1 flex-col gap-3 min-h-0" aria-label="Backtest replay engine">
+
+    <!-- Replay control strip -->
+    <div class="neon-panel hud-corners rounded-sm px-4 py-3 flex flex-wrap items-center gap-3 font-techmono text-[11px]" style="border-color: rgba(248,113,113,0.35);">
+      <h2 class="font-orbitron text-xs tracking-[0.25em] text-neonred uppercase mr-2">
+        <i class="fa-solid fa-clock-rotate-left mr-2" aria-hidden="true"></i>Backtest Replay Engine
+      </h2>
+      <label for="replay-symbol" class="sr-only">Backtest asset</label>
+      <select id="replay-symbol" class="bg-paneldeep border border-gridline rounded-sm px-2.5 py-1.5 font-techmono text-[11px] text-neoncyan focus:outline-none focus:border-neoncyan/60">
+        <option value="BTCUSDT">BTC/USDT</option>
+        <option value="ETHUSDT">ETH/USDT</option>
+        <option value="SOLUSDT">SOL/USDT</option>
+        <option value="XRPUSDT">XRP/USDT</option>
+        <option value="BNBUSDT">BNB/USDT</option>
+        <option value="DOGEUSDT">DOGE/USDT</option>
+      </select>
+      <label for="replay-interval" class="sr-only">Candle interval</label>
+      <select id="replay-interval" class="bg-paneldeep border border-gridline rounded-sm px-2.5 py-1.5 font-techmono text-[11px] text-neoncyan focus:outline-none focus:border-neoncyan/60">
+        <option value="1m">1 MIN</option>
+        <option value="5m">5 MIN</option>
+        <option value="15m" selected>15 MIN</option>
+        <option value="1h">1 HOUR</option>
+        <option value="4h">4 HOUR</option>
+      </select>
+      <button id="btn-replay-run" class="btn-neon font-orbitron text-[10px] tracking-widest text-neonred rounded-sm px-4 py-1.5 uppercase" style="border-color: rgba(248,113,113,0.5); background: rgba(248,113,113,0.06);">
+        <i class="fa-solid fa-play mr-1.5" aria-hidden="true"></i>Run Replay
+      </button>
+      <span id="replay-status" class="ml-auto text-slate-500">500 candles // MTF gate + vol trail + 2R // 1% risk</span>
+    </div>
+
+    <div class="flex-1 min-h-0 grid grid-cols-1 lg:grid-cols-3 gap-3">
+      <!-- Equity curve -->
+      <div class="neon-panel hud-corners rounded-sm flex flex-col min-h-[280px] lg:col-span-2">
+        <div class="flex items-center justify-between border-b border-gridline px-4 py-2.5">
+          <h3 class="font-orbitron text-xs tracking-[0.25em] text-neoncyan uppercase">
+            <i class="fa-solid fa-chart-line mr-2" aria-hidden="true"></i>Equity Curve
+          </h3>
+          <span id="replay-net" class="font-techmono text-[10px] text-slate-500">NET // --</span>
+        </div>
+        <div id="replay-canvas-wrap" class="flex-1 min-h-[220px] relative p-2">
+          <canvas id="replay-canvas" class="w-full h-full block" aria-label="Backtest equity curve"></canvas>
+          <p id="replay-standby" class="absolute inset-0 flex items-center justify-center font-techmono text-[11px] text-slate-600">SELECT ASSET + INTERVAL AND FIRE "RUN REPLAY" — SAME BRAIN, PAST DATA.</p>
+        </div>
+      </div>
+
+      <!-- Stats + trade log -->
+      <div class="flex flex-col gap-3 min-h-0">
+        <div class="neon-panel hud-corners rounded-sm flex flex-col" style="border-color: rgba(248,113,113,0.35);">
+          <div class="flex items-center justify-between border-b border-gridline px-4 py-2.5">
+            <h3 class="font-orbitron text-xs tracking-[0.25em] text-neonred uppercase">
+              <i class="fa-solid fa-square-poll-vertical mr-2" aria-hidden="true"></i>Replay Stats
+            </h3>
+            <span class="font-techmono text-[10px] text-slate-500">$10K PAPER START</span>
+          </div>
+          <div id="replay-stats" class="px-4 py-3 grid grid-cols-2 gap-x-4 gap-y-1 font-techmono text-[11px] text-slate-400">
+            <p class="text-slate-500 col-span-2">No replay executed yet.</p>
+          </div>
+        </div>
+        <div class="neon-panel hud-corners rounded-sm flex flex-col flex-1 min-h-[160px]">
+          <div class="flex items-center justify-between border-b border-gridline px-4 py-2.5">
+            <h3 class="font-orbitron text-xs tracking-[0.25em] text-neonamber uppercase">
+              <i class="fa-solid fa-list-check mr-2" aria-hidden="true"></i>Replay Fills
+            </h3>
+            <span class="font-techmono text-[10px] text-slate-500">GATE-DRIVEN ENTRIES</span>
+          </div>
+          <div id="replay-trades" class="flex-1 overflow-y-auto px-4 py-3 font-techmono text-[10px] space-y-1.5">
+            <p class="text-slate-500">Trade-by-trade fills will print here.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ================================================================ -->
   <!-- FOOTER TELEMETRY HUD -->
   <!-- ================================================================ -->
   <footer class="neon-panel rounded-sm px-4 py-2 flex flex-wrap items-center gap-x-6 gap-y-1 font-techmono text-[10px] text-slate-500">
@@ -678,7 +782,7 @@
     <span><i class="fa-solid fa-lock text-neonmagenta mr-1.5" aria-hidden="true"></i>KEYS: <span id="ftr-keys" class="text-neonmagenta">NOT DECIPHERED</span></span>
     <span><i class="fa-solid fa-graduation-cap text-neoncyan mr-1.5" aria-hidden="true"></i>LEARN: <span id="ftr-learn" class="text-slate-500">0 SIG // --% EDGE</span></span>
     <span><i class="fa-solid fa-sack-dollar text-neongreen mr-1.5" aria-hidden="true"></i>SIM P/L: <span id="ftr-pnl" class="text-slate-500">$0.00</span></span>
-    <span class="ml-auto text-slate-600">PHASE 8 // OMNITRADEX REBRAND + PILOT PROFILES + DUAL THEME</span>
+    <span class="ml-auto text-slate-600">PHASE 9 // REPLAY ENGINE + CONSENSUS + POST-MORTEM JOURNAL + DESK CARDS</span>
   </footer>
 
   <!-- ================================================================ -->
@@ -760,6 +864,28 @@
           <button type="button" id="pilot-cancel-btn" class="btn-neon flex-1 font-orbitron text-[10px] tracking-widest text-slate-400 rounded-sm py-2 uppercase" style="border-color: rgba(148,163,184,0.3); background: rgba(148,163,184,0.04);">Close</button>
         </div>
       </form>
+    </div>
+  </div>
+
+  <!-- ================================================================ -->
+  <!-- DESK CARD MODAL (Phase 9: shareable read-only stats permalink) -->
+  <!-- ================================================================ -->
+  <div id="desk-modal" class="fixed inset-0 z-50 hidden items-center justify-center bg-void/80 p-4" role="dialog" aria-modal="true" aria-labelledby="desk-modal-title">
+    <div class="neon-panel neon-panel-green hud-corners rounded-sm w-full max-w-md max-h-[90vh] overflow-y-auto p-5 flex flex-col gap-4">
+      <div>
+        <h2 id="desk-modal-title" class="font-orbitron text-sm tracking-[0.25em] text-neongreen uppercase">
+          <i class="fa-solid fa-id-card mr-2" aria-hidden="true"></i><span id="desk-card-heading">Desk Card</span>
+        </h2>
+        <p id="desk-card-sub" class="font-techmono text-[10px] text-slate-500 mt-1">Read-only snapshot. Stats are encoded into the link itself — nothing is uploaded anywhere.</p>
+      </div>
+      <div id="desk-card-body" class="border border-neongreen/30 bg-neongreen/5 rounded-sm px-4 py-3 font-techmono text-[11px] space-y-2"></div>
+      <div class="flex gap-2">
+        <button type="button" id="desk-copy-btn" class="btn-neon flex-1 font-orbitron text-[10px] tracking-widest text-neoncyan rounded-sm py-2 uppercase">
+          <i class="fa-solid fa-link mr-1.5" aria-hidden="true"></i>Copy Share Link
+        </button>
+        <button type="button" id="desk-close-btn" class="btn-neon flex-1 font-orbitron text-[10px] tracking-widest text-slate-400 rounded-sm py-2 uppercase" style="border-color: rgba(148,163,184,0.3); background: rgba(148,163,184,0.04);">Close</button>
+      </div>
+      <p id="desk-copy-status" class="font-techmono text-[10px] text-neongreen min-h-[14px]" role="status" aria-live="polite"></p>
     </div>
   </div>
 
@@ -1858,8 +1984,12 @@
        the selected premium engine, with exponential backoff retries.
        ================================================================ */
     function providerRequest(payload) {
-      var m = activeModel();
-      var key = modelKey();
+      return providerRequestFor(activeModel(), modelKey(), payload);
+    }
+
+    /* Phase 9: adapter accepts an explicit model + key so the consensus
+       engine can poll MULTIPLE sealed providers on the same payload. */
+    function providerRequestFor(m, key, payload) {
       if (m.provider === 'gemini') {
         return fetch('https://generativelanguage.googleapis.com/v1beta/models/' + m.model + ':generateContent?key=' + encodeURIComponent(key), {
           method: 'POST',
@@ -2049,6 +2179,109 @@
     }
     window.triggerCoreAIInference = triggerCoreAIInference;
     el.aiBtn.addEventListener('click', triggerCoreAIInference);
+
+    /* ================================================================
+       PHASE 9 // MODULE 2: MULTI-MODEL CONSENSUS ENGINE
+       Polls every sealed provider with the SAME live payload and
+       tallies the BIAS votes into a majority verdict. Ties = NEUTRAL.
+       ================================================================ */
+    var CONSENSUS_REPS = { gemini: 'gemini-flash', openai: 'openai-gpt', anthropic: 'anthropic-claude', groq: 'groq-llama' };
+
+    function sealedEngines() {
+      var out = [];
+      Object.keys(CONSENSUS_REPS).forEach(function (prov) {
+        var key = getSlot(prov);
+        if (key) out.push({ m: MODELS[CONSENSUS_REPS[prov]], key: key });
+      });
+      return out;
+    }
+
+    function parseBias(text) {
+      var m = String(text).match(/BIAS[^A-Za-z]*?(LONG|SHORT|NEUTRAL)/i);
+      if (m) return m[1].toUpperCase();
+      var loose = String(text).match(/\b(LONG|SHORT|NEUTRAL)\b/i);
+      return loose ? loose[1].toUpperCase() : 'NEUTRAL';
+    }
+
+    var VOTE_CLS = { LONG: 'text-neongreen', SHORT: 'text-neonred', NEUTRAL: 'text-neonamber', 'NO-REPLY': 'text-slate-600' };
+
+    function renderConsensusCard(results, verdict, tally) {
+      el.aiOutput.style.display = 'block';
+      el.aiOutput.innerHTML = '';
+      var head = document.createElement('p');
+      head.className = 'font-orbitron text-[11px] tracking-widest uppercase ' + (VOTE_CLS[verdict] || 'text-neonamber');
+      head.textContent = 'CONSENSUS VERDICT: ' + verdict + ' (' + tally.LONG + 'L / ' + tally.SHORT + 'S / ' + tally.NEUTRAL + 'N)';
+      el.aiOutput.appendChild(head);
+      results.forEach(function (r) {
+        var row = document.createElement('p');
+        row.className = 'flex items-center justify-between gap-3 font-techmono text-[11px]';
+        var name = document.createElement('span');
+        name.className = 'text-slate-400';
+        name.textContent = r.label;
+        var vote = document.createElement('span');
+        vote.className = 'font-semibold ' + (VOTE_CLS[r.vote] || 'text-slate-500');
+        vote.textContent = r.vote;
+        row.appendChild(name); row.appendChild(vote);
+        el.aiOutput.appendChild(row);
+      });
+      var note = document.createElement('p');
+      note.className = 'text-slate-500 border-t border-neonmagenta/20 pt-1.5 mt-1.5';
+      var replied = results.filter(function (r) { return r.vote !== 'NO-REPLY'; }).length;
+      note.textContent = replied + '/' + results.length + ' engines replied. Majority rules; split decks stand aside.';
+      el.aiOutput.appendChild(note);
+    }
+
+    function runConsensusVote() {
+      if (aiBusy) return;
+      var since = Date.now() - lastInferenceAt;
+      if (since < INFERENCE_COOLDOWN) {
+        aiPrint('> Rate limiter: cooldown active. Retry in ' + Math.ceil((INFERENCE_COOLDOWN - since) / 1000) + 's.', 'text-neonamber');
+        return;
+      }
+      var engines = sealedEngines();
+      if (engines.length < 2) {
+        aiPrint('> CONSENSUS needs 2+ sealed engines. Vault holds ' + engines.length + '. Decipher more keys (Gemini / OpenAI / Anthropic / Groq).', 'text-neonamber');
+        return;
+      }
+      lastInferenceAt = Date.now();
+      aiBusy = true;
+      var btn = document.getElementById('btn-consensus');
+      btn.disabled = true; btn.classList.add('opacity-50');
+      setLoader(true);
+      el.aiOutput.style.display = 'none';
+
+      var payload = buildPayload();
+      payload.systemInstruction = 'You are one voting member of a multi-model trading committee. ' +
+        'Analyze the dashboard scrape and respond with EXACTLY this format: first line "BIAS: LONG" or "BIAS: SHORT" or "BIAS: NEUTRAL", ' +
+        'then ONE sentence of reasoning. HARD RULE: if the MTF GATE is BLOCKED or EXECUTION PAUSE is TRUE, vote NEUTRAL.';
+      aiPrint('> CONSENSUS VOTE: polling ' + engines.length + ' engines on ' + ASSETS[state.active].label + '...', 'text-neoncyan glow-cyan');
+
+      Promise.all(engines.map(function (e) {
+        return providerRequestFor(e.m, e.key, payload)
+          .then(function (text) { return { label: e.m.label, vote: parseBias(text) }; })
+          .catch(function (err) {
+            aiPrint('> ' + e.m.label + ' abstained (' + err.message + ').', 'text-slate-500');
+            return { label: e.m.label, vote: 'NO-REPLY' };
+          });
+      })).then(function (results) {
+        var tally = { LONG: 0, SHORT: 0, NEUTRAL: 0 };
+        results.forEach(function (r) { if (tally[r.vote] != null) tally[r.vote]++; });
+        var verdict = 'NEUTRAL';
+        if (tally.LONG > tally.SHORT && tally.LONG > tally.NEUTRAL) verdict = 'LONG';
+        else if (tally.SHORT > tally.LONG && tally.SHORT > tally.NEUTRAL) verdict = 'SHORT';
+        renderConsensusCard(results, verdict, tally);
+        results.forEach(function (r) {
+          aiPrint('> VOTE :: ' + r.label + ' -> ' + r.vote, VOTE_CLS[r.vote] || 'text-slate-500');
+        });
+        aiPrint('> CONSENSUS: ' + verdict + ' on ' + ASSETS[state.active].label + ' (' + tally.LONG + 'L/' + tally.SHORT + 'S/' + tally.NEUTRAL + 'N).', VOTE_CLS[verdict]);
+        pushMemory('CONSENSUS ' + verdict + ' on ' + ASSETS[state.active].label + ' — committee split ' + tally.LONG + 'L/' + tally.SHORT + 'S/' + tally.NEUTRAL + 'N.');
+      }).finally(function () {
+        aiBusy = false;
+        btn.disabled = false; btn.classList.remove('opacity-50');
+        setLoader(false);
+      });
+    }
+    document.getElementById('btn-consensus').addEventListener('click', runConsensusVote);
 
     /* ---------------- MACRO WORLD SCRAPER (simulated intel rotation) ---------------- */
     var MACRO_FEED = [
@@ -2400,7 +2633,8 @@
       var qty = riskAmt / dist;
       ledger.open.push({
         symbol: td.symbol, dir: td.dir === 'LONG' ? 1 : -1, entry: td.entry,
-        sl: td.sl, tp: td.tp, qty: qty, strat: td.strat, t: Date.now()
+        sl: td.sl, tp: td.tp, qty: qty, strat: td.strat, t: Date.now(),
+        risk: riskAmt, conf: td.conf, gate: td.dir // Phase 9: journal forensics
       });
       saveLedger();
       updateSimHud();
@@ -2419,6 +2653,7 @@
       ledger.closed.push({ symbol: pos.symbol, dir: pos.dir, pnl: pnl, why: why, t: Date.now() });
       while (ledger.closed.length > 30) ledger.closed.shift();
       saveLedger();
+      logPostMortem(pos, exit, pnl, why); // Phase 9: auto-autopsy every closed trade
       updateSimHud();
       renderDesk();
       var msg = why + ' ' + ASSETS[pos.symbol].label + ' -> ' + fmtUsd(pnl);
@@ -2487,6 +2722,142 @@
         box.appendChild(row);
       });
     }
+
+    /* ================================================================
+       PHASE 9 // MODULE 3: AI POST-MORTEM TRADE JOURNAL
+       Every closed sim trade is auto-autopsied: R-multiple, discipline
+       check, tilt detection, and a coach verdict. Deep Review sends the
+       full journal to the active engine for pattern-level analysis.
+       ================================================================ */
+    var JOURNAL_SLOT = 'qc3_journal';
+    var journal = [];
+    try { journal = JSON.parse(localStorage.getItem(JOURNAL_SLOT)) || []; } catch (e) { journal = []; }
+    function saveJournal() { localStorage.setItem(JOURNAL_SLOT, JSON.stringify(journal)); }
+
+    function postMortemVerdict(e, recentLossStreak) {
+      if (recentLossStreak >= 3) return 'TILT ALERT: 3+ consecutive losses. The next trade is the most dangerous one of your day — step back before the market sizes YOU.';
+      if (e.why === 'TARGET') {
+        if (e.r >= 1.8) return 'Clean 2R execution. Entry on an aligned gate, stop honored, target held. This is the trade to replicate — bottle the boredom.';
+        return 'Winner, but under 2R — did the target get moved closer mid-trade? Let planned targets breathe.';
+      }
+      if (e.why === 'STOP') {
+        if (e.r >= -1.15) return 'Good loss. Risk was pre-defined, the stop did its job at ~1R. Losing correctly is a skill — nothing to fix here.';
+        return 'Stop slipped beyond plan (' + e.r.toFixed(1) + 'R). On live desks that is gap risk; in sim it means the stop was set inside noise. Widen via the vol trail, size down.';
+      }
+      return 'Manual/other exit. Ask yourself: was that the plan, or an emotion with a mouse?';
+    }
+
+    function logPostMortem(pos, exit, pnl, why) {
+      var risk = typeof pos.risk === 'number' && pos.risk > 0 ? pos.risk : Math.abs(pos.entry - pos.sl) * pos.qty;
+      var r = risk > 0 ? pnl / risk : 0;
+      var streak = 0;
+      for (var i = journal.length - 1; i >= 0 && journal[i].pnl < 0; i--) streak++;
+      if (pnl < 0) streak++;
+      var entry = {
+        sym: pos.symbol, dir: pos.dir, entry: pos.entry, exit: exit,
+        pnl: pnl, r: r, why: why, strat: pos.strat || 'n/a',
+        conf: pos.conf != null ? pos.conf : null,
+        hold: Date.now() - (pos.t || Date.now()), t: Date.now()
+      };
+      entry.verdict = postMortemVerdict(entry, streak);
+      journal.push(entry);
+      while (journal.length > 40) journal.shift();
+      saveJournal();
+      renderJournal();
+      aiPrint('> POST-MORTEM filed: ' + (entry.dir === 1 ? 'LONG ' : 'SHORT ') + ASSETS[entry.sym].label + ' -> ' + entry.r.toFixed(2) + 'R.', 'text-slate-500');
+    }
+
+    function fmtHold(ms) {
+      var s = Math.round(ms / 1000);
+      if (s < 90) return s + 's';
+      if (s < 5400) return Math.round(s / 60) + 'm';
+      return (s / 3600).toFixed(1) + 'h';
+    }
+
+    function renderJournal() {
+      var box = document.getElementById('journal-panel');
+      var count = document.getElementById('journal-count');
+      if (!box) return;
+      if (count) count.textContent = journal.length + (journal.length === 1 ? ' AUTOPSY' : ' AUTOPSIES');
+      box.innerHTML = '';
+      if (!journal.length) {
+        var p0 = document.createElement('p');
+        p0.className = 'text-slate-500';
+        p0.textContent = 'Every closed sim trade is auto-autopsied here: R-multiple, gate discipline, and a coach verdict.';
+        box.appendChild(p0);
+        return;
+      }
+      journal.slice().reverse().forEach(function (e) {
+        var row = document.createElement('div');
+        row.className = 'border border-gridline rounded-sm px-2.5 py-1.5 space-y-0.5';
+        var top = document.createElement('div');
+        top.className = 'flex items-center justify-between gap-2';
+        var l = document.createElement('span');
+        l.className = e.dir === 1 ? 'text-neongreen' : 'text-neonred';
+        l.textContent = (e.dir === 1 ? 'LONG ' : 'SHORT ') + ASSETS[e.sym].label + ' // ' + e.why + ' // held ' + fmtHold(e.hold);
+        var rBadge = document.createElement('span');
+        rBadge.className = 'font-semibold ' + (e.pnl >= 0 ? 'text-neongreen' : 'text-neonred');
+        rBadge.textContent = (e.r >= 0 ? '+' : '') + e.r.toFixed(2) + 'R (' + fmtUsd(e.pnl) + ')';
+        top.appendChild(l); top.appendChild(rBadge);
+        var verdict = document.createElement('p');
+        verdict.className = 'text-slate-500 leading-relaxed font-inter text-[10px]';
+        verdict.textContent = e.verdict;
+        row.appendChild(top); row.appendChild(verdict);
+        box.appendChild(row);
+      });
+    }
+
+    function journalDigest() {
+      var wins = journal.filter(function (e) { return e.pnl >= 0; }).length;
+      var avgR = journal.reduce(function (a, e) { return a + e.r; }, 0) / journal.length;
+      return journal.slice(-10).map(function (e, i) {
+        return (i + 1) + '. ' + (e.dir === 1 ? 'LONG' : 'SHORT') + ' ' + ASSETS[e.sym].label + ' via ' + e.strat +
+          ' | exit ' + e.why + ' | ' + e.r.toFixed(2) + 'R | held ' + fmtHold(e.hold) + (e.conf != null ? ' | entry conf ' + e.conf + '%' : '');
+      }).join('\n') + '\nAGGREGATE: ' + journal.length + ' trades, ' + wins + ' wins, avg ' + avgR.toFixed(2) + 'R.';
+    }
+
+    function runDeepReview() {
+      var out = document.getElementById('journal-ai-output');
+      if (!journal.length) {
+        out.classList.remove('hidden');
+        out.textContent = 'No closed trades to review yet. Take some sim entries first — the journal writes itself.';
+        return;
+      }
+      if (!modelKey()) {
+        // heuristic desk-coach aggregate when no key is sealed
+        var wins = journal.filter(function (e) { return e.pnl >= 0; }).length;
+        var wr = wins / journal.length;
+        var avgR = journal.reduce(function (a, e) { return a + e.r; }, 0) / journal.length;
+        var fast = journal.filter(function (e) { return e.hold < 120000; }).length;
+        var msg = 'LOCAL REVIEW (no key sealed): ' + journal.length + ' trades, ' + (wr * 100).toFixed(0) + '% win rate, avg ' + avgR.toFixed(2) + 'R. ';
+        msg += wr >= 0.5 ? 'Edge is positive — protect it by never sizing above 1%. ' : 'Edge is negative — trade LESS, only on aligned gates. ';
+        msg += fast > journal.length / 2 ? 'Over half your trades close inside 2 minutes: you are trading noise, not structure.' : 'Hold times look structural rather than impulsive. Keep it that way.';
+        out.classList.remove('hidden');
+        out.textContent = msg;
+        return;
+      }
+      if (aiBusy) return;
+      var since = Date.now() - lastInferenceAt;
+      if (since < INFERENCE_COOLDOWN) {
+        aiPrint('> Rate limiter: cooldown active. Retry in ' + Math.ceil((INFERENCE_COOLDOWN - since) / 1000) + 's.', 'text-neonamber');
+        return;
+      }
+      lastInferenceAt = Date.now();
+      aiBusy = true;
+      out.classList.remove('hidden');
+      out.textContent = 'Compiling forensic journal payload for ' + activeModel().label + '...';
+      callModel({
+        systemInstruction: 'You are an elite trading performance coach reviewing a paper-trading journal. ' +
+          'In max 90 words: name the single biggest recurring mistake, the single biggest strength, and ONE concrete rule to adopt tomorrow. Be direct, no fluff.',
+        userQuery: '== SIM TRADE JOURNAL (most recent 10) ==\n' + journalDigest()
+      }).then(function (text) {
+        renderMarkdown(out, text);
+        aiPrint('> DEEP REVIEW delivered by ' + activeModel().label + '.', 'text-neonmagenta');
+      }).catch(function (err) {
+        out.textContent = 'Deep review failed: ' + err.message;
+      }).finally(function () { aiBusy = false; });
+    }
+    document.getElementById('btn-journal-ai').addEventListener('click', runDeepReview);
 
     /* ================================================================
        PHASE 7 // MODULE 2: AI ARENA — QUANTUM COLOSSEUM
@@ -2822,7 +3193,7 @@
        ================================================================ */
     var PILOTS_SLOT = 'otx_pilots';
     var SESSION_SLOT = 'otx_session';
-    var PROGRESS_SLOTS = ['qc3_ledger', 'qc3_learning', 'qc3_arena', 'qc3_mentor', 'quantum_memory', 'qc3_wallet_nodes'];
+    var PROGRESS_SLOTS = ['qc3_ledger', 'qc3_learning', 'qc3_arena', 'qc3_mentor', 'quantum_memory', 'qc3_wallet_nodes', 'qc3_journal'];
     var RANKS = ['CADET', 'OPERATOR', 'SPECIALIST', 'VETERAN', 'COMMANDER', 'QUANTUM ELITE'];
 
     function loadPilots() {
@@ -2984,12 +3355,130 @@
     }, 60000);
     renderPilotHud();
 
-    /* ---------------- VIEW SWITCHER: Terminal / Intel / Arena / Mentor ---------------- */
+    /* ================================================================
+       PHASE 9 // MODULE 4: SHAREABLE DESK CARD
+       Encodes the pilot's stats into the link itself (base64url hash
+       fragment) — a read-only permalink with ZERO backend, honoring
+       the sovereign architecture lock. Visitors see a badge, not data.
+       ================================================================ */
+    function b64uEncode(obj) {
+      return btoa(unescape(encodeURIComponent(JSON.stringify(obj))))
+        .replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/, '');
+    }
+    function b64uDecode(str) {
+      var b64 = str.replace(/-/g, '+').replace(/_/g, '/');
+      while (b64.length % 4) b64 += '=';
+      return JSON.parse(decodeURIComponent(escape(atob(b64))));
+    }
+
+    function buildDeskCard() {
+      var name = activePilot();
+      var pilots = loadPilots();
+      var xp = name && pilots[name] ? (pilots[name].xp || 0) : 0;
+      return {
+        v: 1,
+        n: name ? name.toUpperCase() : 'GUEST OPERATOR',
+        eq: Math.round(ledger.equity * 100) / 100,
+        w: ledger.wins, l: ledger.losses,
+        xp: xp, rk: name ? pilotRank(xp) : 'UNRANKED', lv: name ? pilotLevel(xp) : 0,
+        ed: Math.round(learnWinRate() * 100), sg: learning.samples,
+        t: Date.now()
+      };
+    }
+
+    var deskModal = document.getElementById('desk-modal');
+    var deskShareLink = '';
+
+    function renderDeskCard(card, visitor) {
+      document.getElementById('desk-card-heading').textContent = visitor ? 'Incoming Desk Card' : 'Your Desk Card';
+      document.getElementById('desk-card-sub').textContent = visitor
+        ? 'Another pilot shared this snapshot with you. Stats were carried inside the link itself.'
+        : 'Read-only snapshot. Stats are encoded into the link itself — nothing is uploaded anywhere.';
+      var body = document.getElementById('desk-card-body');
+      body.innerHTML = '';
+      var head = document.createElement('p');
+      head.className = 'font-orbitron text-xs tracking-widest text-neongreen uppercase';
+      head.textContent = card.n + (card.lv ? ' // LV' + card.lv + ' ' + card.rk : ' // ' + card.rk);
+      body.appendChild(head);
+      var pnl = card.eq - 10000;
+      var rows = [
+        ['SIM EQUITY', fmtUsd(card.eq)],
+        ['NET P/L', (pnl >= 0 ? '+' : '') + fmtUsd(pnl).replace('$-', '-$')],
+        ['RECORD', card.w + 'W / ' + card.l + 'L'],
+        ['LEARNED EDGE', card.sg ? card.ed + '% over ' + card.sg + ' signals' : 'cold start'],
+        ['XP', card.xp + ' XP'],
+        ['STAMPED', new Date(card.t).toUTCString().replace(' GMT', ' UTC')]
+      ];
+      var grid = document.createElement('div');
+      grid.className = 'grid grid-cols-2 gap-x-4 gap-y-1';
+      rows.forEach(function (pair) {
+        var s = document.createElement('span');
+        var lbl = document.createElement('span');
+        lbl.className = 'text-slate-600 uppercase mr-1.5';
+        lbl.textContent = pair[0] + ':';
+        s.appendChild(lbl);
+        var val = document.createElement('span');
+        val.className = pair[0] === 'NET P/L' ? (pnl >= 0 ? 'text-neongreen' : 'text-neonred') : 'text-slate-300';
+        val.textContent = pair[1];
+        s.appendChild(val);
+        grid.appendChild(s);
+      });
+      body.appendChild(grid);
+      var tag = document.createElement('p');
+      tag.className = 'text-slate-600 text-[9px] uppercase tracking-widest border-t border-neongreen/20 pt-1.5';
+      tag.textContent = 'OMNITRADEX ENGINE // PAPER SIM DESK // SOVEREIGN LOCAL DATA';
+      body.appendChild(tag);
+      document.getElementById('desk-copy-status').textContent = '';
+      deskModal.classList.remove('hidden');
+      deskModal.classList.add('flex');
+    }
+
+    function closeDeskModal() {
+      deskModal.classList.add('hidden');
+      deskModal.classList.remove('flex');
+    }
+
+    document.getElementById('btn-share-desk').addEventListener('click', function () {
+      var card = buildDeskCard();
+      deskShareLink = location.origin + location.pathname + '#desk=' + b64uEncode(card);
+      renderDeskCard(card, false);
+    });
+    document.getElementById('desk-copy-btn').addEventListener('click', function () {
+      var status = document.getElementById('desk-copy-status');
+      if (!deskShareLink) { status.textContent = 'Visitor card — open your own Arena to share yours.'; return; }
+      var done = function () { status.textContent = 'Share link copied to clipboard. Beam it to your squad.'; };
+      var fail = function () { status.textContent = deskShareLink; };
+      if (navigator.clipboard && navigator.clipboard.writeText) {
+        navigator.clipboard.writeText(deskShareLink).then(done).catch(fail);
+      } else { fail(); }
+    });
+    document.getElementById('desk-close-btn').addEventListener('click', closeDeskModal);
+    deskModal.addEventListener('click', function (e) { if (e.target === deskModal) closeDeskModal(); });
+    document.addEventListener('keydown', function (e) { if (e.key === 'Escape' && !deskModal.classList.contains('hidden')) closeDeskModal(); });
+
+    function checkSharedDeskLink() {
+      var m = location.hash.match(/#desk=([A-Za-z0-9_-]+)/);
+      if (!m) return;
+      try {
+        var card = b64uDecode(m[1]);
+        if (!card || card.v !== 1) return;
+        deskShareLink = '';
+        renderDeskCard(card, true);
+        aiPrint('> INCOMING DESK CARD: ' + card.n + ' // ' + fmtUsd(card.eq) + ' // ' + card.w + 'W-' + card.l + 'L.', 'text-neoncyan');
+      } catch (e) {
+        aiPrint('> Desk card link corrupted — ignoring payload.', 'text-neonamber');
+      }
+      // strip the fragment so refreshes don't re-trigger the visitor modal
+      try { history.replaceState(null, '', location.pathname + location.search); } catch (e2) { /* keep hash */ }
+    }
+
+    /* ---------------- VIEW SWITCHER: Terminal / Intel / Arena / Mentor / Replay ---------------- */
     var VIEWS = {
       terminal: { nav: document.getElementById('nav-terminal'), el: document.getElementById('view-terminal'), accent: 'neoncyan' },
       intel:    { nav: document.getElementById('nav-intel'),    el: document.getElementById('view-intel'),    accent: 'neonamber' },
       arena:    { nav: document.getElementById('nav-arena'),    el: document.getElementById('view-arena'),    accent: 'neonmagenta' },
-      mentor:   { nav: document.getElementById('nav-mentor'),   el: document.getElementById('view-mentor'),   accent: 'neongreen' }
+      mentor:   { nav: document.getElementById('nav-mentor'),   el: document.getElementById('view-mentor'),   accent: 'neongreen' },
+      replay:   { nav: document.getElementById('nav-replay'),   el: document.getElementById('view-replay'),   accent: 'neonred' }
     };
 
     function switchView(name) {
@@ -3004,11 +3493,224 @@
         if (on) v.nav.setAttribute('aria-current', 'page'); else v.nav.removeAttribute('aria-current');
       });
       if (name === 'intel' && !newsItems.length) refreshNews();
-      if (name === 'arena') { renderArena(); renderDesk(); }
+      if (name === 'arena') { renderArena(); renderDesk(); renderJournal(); }
     }
     Object.keys(VIEWS).forEach(function (k) {
       VIEWS[k].nav.addEventListener('click', function () { switchView(k); });
     });
+
+    /* ================================================================
+       PHASE 9 // MODULE 1: BACKTEST REPLAY ENGINE
+       Pulls real Binance klines (REST, .com -> .us geo failover) and
+       replays them through the SAME live brain: MTF alignment gate,
+       volatility-scaled stop, 2R target, hard 1% risk sizing.
+       ================================================================ */
+    var REPLAY_ENDPOINTS = ['https://api.binance.com', 'https://api.binance.us'];
+    var replayBusy = false;
+
+    function fetchKlines(symbol, interval, epIdx) {
+      epIdx = epIdx || 0;
+      var url = REPLAY_ENDPOINTS[epIdx] + '/api/v3/klines?symbol=' + symbol + '&interval=' + interval + '&limit=500';
+      return fetch(url).then(function (res) {
+        if (!res.ok) throw new Error('HTTP ' + res.status);
+        return res.json();
+      }).then(function (rows) {
+        if (!rows || !rows.length) throw new Error('empty kline payload');
+        return rows.map(function (r) {
+          return { t: r[0], o: +r[1], h: +r[2], l: +r[3], c: +r[4] };
+        });
+      }).catch(function (err) {
+        if (epIdx + 1 < REPLAY_ENDPOINTS.length) return fetchKlines(symbol, interval, epIdx + 1);
+        throw err;
+      });
+    }
+
+    // same alignment logic as computeMTF, but on an arbitrary close buffer
+    function gateFor(buf) {
+      var fast = windowTrend(buf, MTF_WINDOWS.fast);
+      var mid = windowTrend(buf, MTF_WINDOWS.mid);
+      var slow = windowTrend(buf, MTF_WINDOWS.slow);
+      if (fast.dir === 'BULL' && mid.dir === 'BULL' && slow.dir !== 'BEAR') return 'LONG-OK';
+      if (fast.dir === 'BEAR' && mid.dir === 'BEAR' && slow.dir !== 'BULL') return 'SHORT-OK';
+      return 'BLOCKED';
+    }
+
+    function volPctFor(buf) {
+      if (buf.length < 15) return 0.02;
+      var win = buf.slice(-20), moves = [], mean = 0, i;
+      for (i = 1; i < win.length; i++) moves.push(Math.abs((win[i] - win[i - 1]) / win[i - 1]));
+      for (i = 0; i < moves.length; i++) mean += moves[i];
+      mean /= moves.length;
+      return Math.min(0.04, Math.max(0.005, mean * 12));
+    }
+
+    function runBacktest(candles, symbol) {
+      var equity = 10000, pos = null, eqCurve = [], trades = [];
+      var closes = [];
+      for (var i = 0; i < candles.length; i++) {
+        var k = candles[i];
+        closes.push(k.c);
+        if (closes.length > 60) closes.shift();
+
+        if (pos) {
+          var hitSL = pos.dir === 1 ? k.l <= pos.sl : k.h >= pos.sl;
+          var hitTP = pos.dir === 1 ? k.h >= pos.tp : k.l <= pos.tp;
+          var exit = null, why = '';
+          if (hitSL) { exit = pos.sl; why = 'STOP'; }           // conservative: stop fills first
+          else if (hitTP) { exit = pos.tp; why = 'TARGET'; }
+          if (exit != null) {
+            var pnl = (exit - pos.entry) * pos.qty * pos.dir;
+            equity += pnl;
+            trades.push({ dir: pos.dir, entry: pos.entry, exit: exit, pnl: pnl, why: why, t: k.t });
+            pos = null;
+          }
+        }
+
+        if (!pos && closes.length >= MTF_WINDOWS.slow) {
+          var gate = gateFor(closes);
+          if (gate === 'LONG-OK' || gate === 'SHORT-OK') {
+            var dir = gate === 'LONG-OK' ? 1 : -1;
+            var vp = volPctFor(closes);
+            var entry = k.c;
+            var sl = entry * (1 - dir * vp);
+            var tp = entry * (1 + dir * vp * 2); // 2R discipline, same as live desk
+            var dist = Math.abs(entry - sl);
+            if (dist > 0) pos = { dir: dir, entry: entry, sl: sl, tp: tp, qty: (equity * 0.01) / dist, t: k.t };
+          }
+        }
+
+        eqCurve.push(equity + (pos ? (k.c - pos.entry) * pos.qty * pos.dir : 0));
+      }
+      if (pos) { // force-close a dangling position at the final candle
+        var lastC = candles[candles.length - 1].c;
+        var pnl2 = (lastC - pos.entry) * pos.qty * pos.dir;
+        equity += pnl2;
+        trades.push({ dir: pos.dir, entry: pos.entry, exit: lastC, pnl: pnl2, why: 'EOD', t: candles[candles.length - 1].t });
+        eqCurve[eqCurve.length - 1] = equity;
+      }
+      return { equity: equity, curve: eqCurve, trades: trades, symbol: symbol };
+    }
+
+    function drawEquityCurve(curve, net) {
+      var canvas = document.getElementById('replay-canvas');
+      var wrap = document.getElementById('replay-canvas-wrap');
+      var dpr = window.devicePixelRatio || 1;
+      var w = wrap.clientWidth - 16, h = wrap.clientHeight - 16;
+      canvas.width = w * dpr; canvas.height = h * dpr;
+      canvas.style.width = w + 'px'; canvas.style.height = h + 'px';
+      var ctx = canvas.getContext('2d');
+      ctx.scale(dpr, dpr);
+      ctx.clearRect(0, 0, w, h);
+      if (curve.length < 2) return;
+      var min = Math.min.apply(null, curve.concat([10000]));
+      var max = Math.max.apply(null, curve.concat([10000]));
+      var pad = (max - min) * 0.08 || 1;
+      min -= pad; max += pad;
+      var y = function (v) { return h - ((v - min) / (max - min)) * h; };
+      var x = function (i) { return (i / (curve.length - 1)) * w; };
+      // $10k baseline
+      ctx.strokeStyle = 'rgba(148,163,184,0.35)';
+      ctx.setLineDash([4, 4]);
+      ctx.beginPath(); ctx.moveTo(0, y(10000)); ctx.lineTo(w, y(10000)); ctx.stroke();
+      ctx.setLineDash([]);
+      // equity line
+      ctx.strokeStyle = net >= 0 ? '#4ade80' : '#f87171';
+      ctx.lineWidth = 1.5;
+      ctx.shadowColor = ctx.strokeStyle;
+      ctx.shadowBlur = 6;
+      ctx.beginPath();
+      ctx.moveTo(x(0), y(curve[0]));
+      for (var i = 1; i < curve.length; i++) ctx.lineTo(x(i), y(curve[i]));
+      ctx.stroke();
+      ctx.shadowBlur = 0;
+    }
+
+    function renderReplayResults(res, interval) {
+      document.getElementById('replay-standby').style.display = 'none';
+      var net = res.equity - 10000;
+      var wins = res.trades.filter(function (t) { return t.pnl >= 0; }).length;
+      var losses = res.trades.length - wins;
+      var grossW = 0, grossL = 0;
+      res.trades.forEach(function (t) { if (t.pnl >= 0) grossW += t.pnl; else grossL += Math.abs(t.pnl); });
+      var pf = grossL > 0 ? (grossW / grossL).toFixed(2) : (grossW > 0 ? 'INF' : '--');
+      var peak = -Infinity, maxDD = 0;
+      res.curve.forEach(function (v) { if (v > peak) peak = v; var dd = (peak - v) / peak; if (dd > maxDD) maxDD = dd; });
+
+      var netEl = document.getElementById('replay-net');
+      netEl.textContent = 'NET // ' + (net >= 0 ? '+' : '') + fmtUsd(net).replace('$-', '-$');
+      netEl.className = 'font-techmono text-[10px] ' + (net >= 0 ? 'text-neongreen' : 'text-neonred');
+
+      var stats = document.getElementById('replay-stats');
+      stats.innerHTML = '';
+      [['TRADES', String(res.trades.length)],
+       ['RECORD', wins + 'W / ' + losses + 'L'],
+       ['WIN RATE', res.trades.length ? Math.round((wins / res.trades.length) * 100) + '%' : '--'],
+       ['PROFIT FACTOR', String(pf)],
+       ['MAX DRAWDOWN', (maxDD * 100).toFixed(1) + '%'],
+       ['FINAL EQUITY', fmtUsd(res.equity)]].forEach(function (pair) {
+        var s = document.createElement('span');
+        var lbl = document.createElement('span');
+        lbl.className = 'text-slate-600 uppercase mr-1.5';
+        lbl.textContent = pair[0] + ':';
+        s.appendChild(lbl);
+        var val = document.createElement('span');
+        val.className = pair[0] === 'FINAL EQUITY' ? (net >= 0 ? 'text-neongreen' : 'text-neonred') : 'text-slate-300';
+        val.textContent = pair[1];
+        s.appendChild(val);
+        stats.appendChild(s);
+      });
+
+      var list = document.getElementById('replay-trades');
+      list.innerHTML = '';
+      if (!res.trades.length) {
+        var p0 = document.createElement('p');
+        p0.className = 'text-slate-500';
+        p0.textContent = 'Gate never aligned — zero trades. Discipline includes sitting out entire regimes.';
+        list.appendChild(p0);
+      }
+      res.trades.slice(-14).reverse().forEach(function (t) {
+        var row = document.createElement('div');
+        row.className = 'flex items-center justify-between gap-2';
+        var l = document.createElement('span');
+        l.className = t.dir === 1 ? 'text-neongreen' : 'text-neonred';
+        l.textContent = (t.dir === 1 ? 'LONG' : 'SHORT') + ' @ ' + fmtPrice(res.symbol, t.entry) + ' // ' + t.why;
+        var r = document.createElement('span');
+        r.className = t.pnl >= 0 ? 'text-neongreen' : 'text-neonred';
+        r.textContent = fmtUsd(t.pnl);
+        row.appendChild(l); row.appendChild(r);
+        list.appendChild(row);
+      });
+
+      drawEquityCurve(res.curve, net);
+      var status = document.getElementById('replay-status');
+      status.textContent = ASSETS[res.symbol].label + ' // ' + interval.toUpperCase() + ' // 500 candles replayed through the live gate.';
+      status.className = 'ml-auto ' + (net >= 0 ? 'text-neongreen' : 'text-neonred');
+    }
+
+    function runReplay() {
+      if (replayBusy) return;
+      var symbol = document.getElementById('replay-symbol').value;
+      var interval = document.getElementById('replay-interval').value;
+      var status = document.getElementById('replay-status');
+      var btn = document.getElementById('btn-replay-run');
+      replayBusy = true;
+      btn.disabled = true; btn.classList.add('opacity-50');
+      status.textContent = 'Pulling ' + ASSETS[symbol].label + ' ' + interval + ' klines from exchange archive...';
+      status.className = 'ml-auto text-neonamber';
+      fetchKlines(symbol, interval).then(function (candles) {
+        status.textContent = 'Replaying ' + candles.length + ' candles through MTF gate + vol trail...';
+        var res = runBacktest(candles, symbol);
+        renderReplayResults(res, interval);
+        aiPrint('> REPLAY COMPLETE: ' + ASSETS[symbol].label + ' ' + interval + ' -> ' + res.trades.length + ' trades, net ' + fmtUsd(res.equity - 10000) + '.', res.equity >= 10000 ? 'text-neongreen' : 'text-neonred');
+      }).catch(function (err) {
+        status.textContent = 'REPLAY FAILED: ' + err.message + ' (kline archive unreachable from this region).';
+        status.className = 'ml-auto text-neonred';
+      }).finally(function () {
+        replayBusy = false;
+        btn.disabled = false; btn.classList.remove('opacity-50');
+      });
+    }
+    document.getElementById('btn-replay-run').addEventListener('click', runReplay);
 
     /* ---------------- PAGE VISIBILITY: pause background work ---------------- */
     document.addEventListener('visibilitychange', function () {
@@ -3068,7 +3770,9 @@
     updateSimHud();
     renderDesk();
     renderArena();
-    aiPrint('> OMNITRADEX ENGINE online. Phase 8: pilot profiles + dual theme armed. Fly with discipline.', 'text-neongreen');
+    renderJournal();
+    checkSharedDeskLink();
+    aiPrint('> OMNITRADEX ENGINE online. Phase 9: replay engine, consensus committee, post-mortem journal + desk cards armed.', 'text-neongreen');
     if (learning.samples) {
       aiPrint('> Learning engine restored: ' + learning.samples + ' evaluated signals, ' + (learnWinRate() * 100).toFixed(0) + '% validated edge.', 'text-slate-500');
     }
