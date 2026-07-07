@@ -230,8 +230,7 @@ Promise.reject('UNHANDLED TEST');
 ## 📊 BEFORE vs AFTER
 
 | Scenario | Before (❌) | After (✅) |
-|----------|-----------|-----------|
-| Gemini API hangs | App freezes indefinitely | Times out at 10s, retries 2x, shows error |
+|----------|-----------|-----------|n| Gemini API hangs | App freezes indefinitely | Times out at 10s, retries 2x, shows error |
 | Network hiccup on Binance | WebSocket silently fails | Retries with backoff, logs to terminal |
 | Invalid wallet address | Added anyway, breaks logic | Validated, error shown, safe default |
 | Unhandled promise rejection | Browser console error | Caught, logged to terminal, no crash |
