@@ -1,10 +1,11 @@
 'use strict';
 /* OmniTradeX // optional official TradingView widget, isolated from private data */
 (function () {
-  var host = document.getElementById('tradingview-widget');
   var loaded = false;
   window.otxTradingView = {
     mount: function () {
+      // The host is created lazily by the widget toggle, so resolve it at mount time.
+      var host = document.getElementById('tradingview-widget');
       if (!host || loaded) return;
       loaded = true;
       var script = document.createElement('script'); script.src = 'https://s3.tradingview.com/external-embedding/embed-widget-advanced-chart.js'; script.async = true;

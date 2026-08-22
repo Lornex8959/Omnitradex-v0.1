@@ -7,15 +7,16 @@
   function ensureLibrary(done) {
     if (window.LightweightCharts) return done();
     var s = document.createElement('script');
-    s.src = 'https://unpkg.com/lightweight-charts@4.2.3/dist/lightweight-charts.standalone.production.js';
+    s.src = 'https://unpkg.com/lightweight-charts@5.2.1/dist/lightweight-charts.standalone.production.js';
     s.onload = done; s.onerror = function () { var e = document.getElementById('chart-error'); if (e) e.textContent = 'Chart library unavailable — live quote feed remains active.'; };
     document.head.appendChild(s);
   }
   function init() {
     if (!container || chart || !window.LightweightCharts) return;
     chart = LightweightCharts.createChart(container, { layout: { background: { color: '#080d15' }, textColor: '#7f8da3' }, grid: { vertLines: { color: '#182232' }, horzLines: { color: '#182232' } }, rightPriceScale: { borderColor: '#27364c' }, timeScale: { borderColor: '#27364c', timeVisible: true, secondsVisible: false }, crosshair: { mode: 0 } });
-    candles = chart.addCandlestickSeries({ upColor: '#42d392', downColor: '#ed6a7a', borderVisible: false, wickUpColor: '#42d392', wickDownColor: '#ed6a7a', priceLineVisible: true });
-    volume = chart.addHistogramSeries({ priceFormat: { type: 'volume' }, priceScaleId: '', scaleMargins: { top: 0.82, bottom: 0 } });
+    // Lightweight Charts v5 uses addSeries(); legacy addCandlestickSeries() was removed.
+    candles = chart.addSeries(LightweightCharts.CandlestickSeries, { upColor: '#42d392', downColor: '#ed6a7a', borderVisible: false, wickUpColor: '#42d392', wickDownColor: '#ed6a7a', priceLineVisible: true });
+    volume = chart.addSeries(LightweightCharts.HistogramSeries, { priceFormat: { type: 'volume' }, priceScaleId: '', priceScale: { scaleMargins: { top: 0.82, bottom: 0 } } });
     resize();
     window.addEventListener('resize', resize);
     document.querySelectorAll('[data-chart-interval]').forEach(function (b) { b.addEventListener('click', function () { interval = b.dataset.chartInterval; document.querySelectorAll('[data-chart-interval]').forEach(function (x) { x.classList.toggle('chart-control-active', x === b); }); bootstrap(); }); });
@@ -47,7 +48,8 @@
   }
   window.chartOnTick = function (tick) {
     if (!candles || tick.symbol !== state.active) return;
-    var time = Math.floor(tick.eventAt / 60000) * 60;
+    var intervalSeconds = Math.max(60, parseInt(interval, 10) || 1) * 60;
+    var time = Math.floor(tick.eventAt / (intervalSeconds * 1000)) * intervalSeconds;
     var prior = candleMap[time] || { time: time, open: tick.price, high: tick.price, low: tick.price, close: tick.price };
     prior.close = tick.price; prior.high = Math.max(prior.high, tick.price); prior.low = Math.min(prior.low, tick.price); candleMap[time] = prior; candles.update(prior);
   };
