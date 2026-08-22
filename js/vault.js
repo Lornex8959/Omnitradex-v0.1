@@ -2,10 +2,9 @@
 /* OmniTradeX Engine // module: vault — load order matters, see index.html */
 
 /* ================================================================
-   PHASE 6 // MODULE 1: SOVEREIGN MULTI-PROVIDER KEY VAULT
-   Premium model credentials (Gemini / OpenAI / Anthropic / Groq)
-   plus the Finnhub news key — ALL locked into localStorage only,
-   transmitted ONLY to their own official provider endpoints.
+   SECURE PROVIDER BOUNDARY
+   Provider credentials are intentionally not accepted or persisted by
+   this legacy browser terminal. Use a server-side authenticated route.
    ================================================================ */
 var KEY_SLOT = 'qc3_gemini_key';
 var VAULT_SLOTS = {
@@ -17,8 +16,11 @@ var VAULT_SLOTS = {
 };
 var MODEL_SLOT = 'qc3_model';
 
-function getSlot(name) { return localStorage.getItem(VAULT_SLOTS[name]) || ''; }
-function getKey() { return getSlot('gemini'); }
+// Remove credentials created by older insecure versions on first load.
+Object.keys(VAULT_SLOTS).forEach(function (name) { localStorage.removeItem(VAULT_SLOTS[name]); });
+
+function getSlot() { return ''; }
+function getKey() { return ''; }
 function activeModelId() { return localStorage.getItem(MODEL_SLOT) || 'gemini-flash'; }
 
 /* Premium model registry: provider adapters resolve endpoint + auth shape */
@@ -66,20 +68,13 @@ el.keysBtn.addEventListener('click', function () {
 
 keyForm.addEventListener('submit', function (e) {
   e.preventDefault();
-  var sealed = 0;
-  Object.keys(vaultInputs).forEach(function (n) {
-    var val = vaultInputs[n].value.trim();
-    if (val) { localStorage.setItem(VAULT_SLOTS[n], val); sealed++; }
-    else localStorage.removeItem(VAULT_SLOTS[n]);
-  });
+  // This legacy browser surface never persists or transmits provider secrets.
+  Object.keys(VAULT_SLOTS).forEach(function (n) { localStorage.removeItem(VAULT_SLOTS[n]); });
   localStorage.setItem(MODEL_SLOT, modelSelect.value);
-  if (sealed) {
-    aiPrint('> Key vault sealed: ' + sealed + ' credential(s) locked to local sandbox.', 'text-neongreen');
-    aiPrint('> Cognitive engine bound: ' + activeModel().label, 'text-neonmagenta');
-  }
-  setFooterKeys(anyModelKey());
-  setLoader(false); // refresh ARMED status with the active model label
-  if (typeof refreshNews === 'function') refreshNews();
+  aiPrint('> Provider keys are disabled in the browser terminal.', 'text-neonamber');
+  aiPrint('> Configure a server-side authenticated AI route before enabling inference.', 'text-slate-400');
+  setFooterKeys(false);
+  setLoader(false);
   closeKeyModal();
 });
 
