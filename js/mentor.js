@@ -9,7 +9,12 @@
    ================================================================ */
 var MENTOR_SLOT = 'qc3_mentor';
 var mentorHistory = [];
-try { mentorHistory = JSON.parse(localStorage.getItem(MENTOR_SLOT)) || []; } catch (e) { mentorHistory = []; }
+try {
+  var storedMentor = JSON.parse(localStorage.getItem(MENTOR_SLOT));
+  mentorHistory = Array.isArray(storedMentor) ? storedMentor.filter(function (m) {
+    return m && (m.role === 'user' || m.role === 'mentor') && typeof m.text === 'string';
+  }).slice(-12).map(function (m) { return { role: m.role, text: m.text.slice(0, 4000) }; }) : [];
+} catch (e) { mentorHistory = []; }
 
 function saveMentor() {
   while (mentorHistory.length > 12) mentorHistory.shift();
@@ -94,7 +99,9 @@ function mentorHeuristic(q) {
 
 var mentorBusy = false;
 function mentorAsk(q) {
-  if (mentorBusy || !q.trim()) return;
+ if (mentorBusy || !q.trim()) return;
+ q = String(q).slice(0, 2000);
+ window.dispatchEvent(new CustomEvent('otx:coaching-request', { detail: { query: q, symbol: state.active, at: new Date().toISOString() } }));
   mentorBubble('user', q);
   mentorHistory.push({ role: 'user', text: q });
   saveMentor();
