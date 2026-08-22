@@ -2,7 +2,7 @@
 /* OmniTradeX Engine // module: core — load order matters, see index.html */
 
   /* ================================================================
- OMNITRADEX ENGINE (QUANTUM CORE v3) // COGNITIVE TRADING SYSTEM
+ OMNITRADEX PRO (QUANTUM CORE v3) // COGNITIVE TRADING SYSTEM
  ================================================================ */
   
 /* ---------------- ASSET REGISTRY ---------------- */

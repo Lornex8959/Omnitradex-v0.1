@@ -1,2 +1,2 @@
-# Omnitradex-v0.1
+# OmniTradeX Pro
 Elite trading nd mRket analysis assitant

@@ -49,7 +49,7 @@ rollLedgerDay();
 updateSimHud();
 renderDesk();
 renderArena();
-aiPrint('> OMNITRADEX ENGINE online. Phase 9: replay, consensus voting, auto journal + alerts armed. Fly with discipline.', 'text-neongreen');
+aiPrint('> OMNITRADEX PRO online. Phase 9: replay, consensus voting, auto journal + alerts armed. Fly with discipline.', 'text-neongreen');
 renderJournal();
 if (journal.length) aiPrint('> Journal restored: ' + journal.length + ' post-mortem entries from local sandbox.', 'text-slate-500');
 if (learning.samples) {
