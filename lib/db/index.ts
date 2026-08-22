@@ -10,15 +10,34 @@ const connectionString =
   process.env.POSTGRES_URL_NON_POOLING ??
   process.env.DATABASE_URL ??
   process.env.POSTGRES_URL ??
-  process.env.POSTGRES_PRISMA_URL
+  process.env.POSTGRES_PRISMA_URL ??
+  process.env.STORAGE1_DATABASE_URL_UNPOOLED ??
+  process.env.STORAGE1_POSTGRES_URL_NON_POOLING ??
+  process.env.STORAGE1_DATABASE_URL ??
+  process.env.STORAGE1_POSTGRES_URL ??
+  process.env.STORAGE1_POSTGRES_PRISMA_URL
+
+const discreteConfig =
+  (process.env.PGHOST ?? process.env.POSTGRES_HOST) &&
+  (process.env.PGUSER ?? process.env.POSTGRES_USER) &&
+  (process.env.PGPASSWORD ?? process.env.POSTGRES_PASSWORD) &&
+  (process.env.PGDATABASE ?? process.env.POSTGRES_DATABASE)
+    ? {
+        host: process.env.PGHOST ?? process.env.POSTGRES_HOST,
+        user: process.env.PGUSER ?? process.env.POSTGRES_USER,
+        password: process.env.PGPASSWORD ?? process.env.POSTGRES_PASSWORD,
+        database: process.env.PGDATABASE ?? process.env.POSTGRES_DATABASE,
+        port: Number(process.env.PGPORT ?? 5432),
+      }
+    : undefined
 
 // Keep module evaluation build-safe while bounding serverless connections.
 export const pool = new Pool({
-  connectionString: connectionString ?? 'postgresql://missing-neon-configuration',
+  ...(connectionString ? { connectionString } : discreteConfig ?? { host: 'missing-neon-configuration' }),
   max: 5,
-  connectionTimeoutMillis: 2500,
-  idleTimeoutMillis: 10000,
-  ssl: connectionString ? { rejectUnauthorized: true } : undefined,
+  connectionTimeoutMillis: 8000,
+  idleTimeoutMillis: 30000,
+  ssl: connectionString || discreteConfig ? { rejectUnauthorized: true } : undefined,
 })
 export const db = drizzle(pool, { schema })
 
