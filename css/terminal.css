@@ -181,3 +181,13 @@ html.light .strategy-card.active-strat { border-color: rgba(14, 116, 144, 0.6); 
 
 /* Smooth theme transition */
 body, .neon-panel, .bg-paneldeep { transition: background-color 0.3s ease, border-color 0.3s ease, color 0.3s ease; }
+
+/* Phase 10: market workstation controls and chart surface */
+.professional-chart { height: 300px; min-height: 240px; border: 1px solid #1a2334; background: #080d15; }
+.chart-control { padding: 0.25rem 0.45rem; border: 1px solid transparent; color: #64748b; text-transform: uppercase; font-size: 9px; letter-spacing: .08em; }
+.chart-control:hover { color: #22d3ee; border-color: rgba(34,211,238,.35); }
+.chart-control-active { color: #22d3ee; border-color: rgba(34,211,238,.55); background: rgba(34,211,238,.08); }
+.chart-widget-control { color: #e879f9; }
+#market-source { letter-spacing: .08em; }
+@media (max-width: 640px) { .professional-chart { height: 250px; } }
+

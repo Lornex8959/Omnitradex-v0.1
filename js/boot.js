@@ -60,3 +60,20 @@ if (quantum_memory.length) {
 }
 setFooterUplink('ACTIVE');
 if (anyModelKey()) setFooterKeys(true);
+// Phase 10: initialize professional chart and optional external TradingView panel.
+if (window.otxCharts) window.otxCharts.init();
+var widgetBtn = document.getElementById('btn-widget');
+if (widgetBtn) widgetBtn.addEventListener('click', function () {
+  var host = document.getElementById('tradingview-widget');
+  if (!host) {
+    var panel = document.createElement('div');
+    panel.className = 'neon-panel mt-2 p-2';
+    panel.innerHTML = '<div class="flex items-center justify-between pb-2 font-techmono text-[10px] text-slate-500"><span>TRADINGVIEW // EXTERNAL ANALYSIS WIDGET</span><button id="btn-widget-close" class="text-neonred">CLOSE</button></div><div id="tradingview-widget" class="h-[360px]"></div>';
+    var chart = document.getElementById('tv-chart');
+    if (chart && chart.parentNode) chart.parentNode.appendChild(panel);
+    host = document.getElementById('tradingview-widget');
+    var close = document.getElementById('btn-widget-close');
+    if (close) close.addEventListener('click', function () { panel.remove(); });
+  }
+  if (window.otxTradingView) window.otxTradingView.mount();
+});

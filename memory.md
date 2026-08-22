@@ -77,9 +77,18 @@ Architecture lock: single-file `index.html` (HTML5 + Tailwind CDN + vanilla JS).
 - MODEL POLICY: provider IDs remain configurable in the local vault; do not silently claim AI output is market truth. The UI must label simulated heuristics, paper execution, and educational-only results.
 - KNOWN LIMITATION: localStorage credentials and browser-direct provider calls are appropriate for a personal prototype, not a production multi-user trading service. Neon is reserved for the planned server-side persistence/auth migration.
 
-## Next Candidates (Phase 10)
+## Phase 10 — Realtime Market Workstation
+- [x] Binance public combined WebSocket adapter with normalized ticker events, endpoint fallback, exponential reconnect, heartbeat/stale-feed detection, and explicit LIVE/STALE provenance.
+- [x] TradingView Lightweight Charts primary synchronized candlestick/volume surface with timeframe controls.
+- [x] Optional official TradingView widget for external deep analysis; isolated from private app state.
+- [x] Binance account connection boundary scaffold: no private keys requested or stored in browser; live execution remains disabled until a server route is provisioned.
+- [x] Bounded Research Coach: evidence summary, regime/invalidation/risk/lesson output, and local adaptive coaching ledger; no autonomous execution authority.
+- [x] Modular files added: `js/market-data.js`, `js/charts.js`, `js/tradingview.js`, `js/binance-account.js`, `js/agent.js`.
+- [x] Verification: all JavaScript modules compile; DOM IDs are unique. Browser preview was unavailable during final pass.
+
+## Next Candidates (Phase 11)
 - Replace tick-tape replay with Binance klines REST ingestion, candle aggregation, fees and slippage model.
-- Add a market-data provenance panel: source, last event timestamp, reconnect count, stale-feed lockout.
+- Provision Next.js + Neon server routes for encrypted broker OAuth/credential custody, journal sync, and audit events.
 - Add deterministic risk controls: max notional, spread/slippage assumptions, daily journal export, immutable audit events.
-- Migrate to Next.js + Neon server routes before any real account connectivity, multi-user sharing, or persistent cloud data.
-- Social layer: shareable read-only "desk card" (encoded stats permalink), with no credentials or private data.
+- Build agent evaluation harness: replay historical candles, score coaching accuracy, and require human approval for every paper action.
+- Social layer: shareable read-only desk card with no credentials or private data.

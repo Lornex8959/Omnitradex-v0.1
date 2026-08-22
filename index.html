@@ -161,6 +161,24 @@
           </div>
         </div>
 
+        <!-- Institutional chart surface -->
+        <div class="px-4 pt-3">
+          <div class="flex flex-wrap items-center justify-between gap-2 border border-gridline bg-paneldeep px-3 py-2 font-techmono text-[10px]">
+            <div class="flex items-center gap-3">
+              <span><i id="market-status-dot" class="inline-block h-1.5 w-1.5 rounded-full mr-1.5 bg-neonamber"></i><span id="market-source" class="text-neonamber">BINANCE PUBLIC // CONNECTING</span></span>
+              <span class="text-slate-600">PAPER EXECUTION ONLY</span>
+            </div>
+            <div class="flex items-center gap-1" role="group" aria-label="Chart timeframe">
+              <button data-chart-interval="1m" class="chart-control chart-control-active">1m</button>
+              <button data-chart-interval="5m" class="chart-control">5m</button>
+              <button data-chart-interval="15m" class="chart-control">15m</button>
+              <button id="btn-widget" class="chart-control chart-widget-control">TV WIDGET</button>
+            </div>
+          </div>
+          <div id="tv-chart" class="professional-chart mt-2" aria-label="TradingView Lightweight Charts market chart"></div>
+          <div id="chart-error" class="min-h-4 pt-1 font-techmono text-[10px] text-neonamber" role="status"></div>
+        </div>
+
         <!-- Risk boundaries -->
         <div class="grid grid-cols-2 gap-2 px-4 pb-4 font-techmono text-[11px]">
           <div class="border border-neonred/30 bg-neonred/5 rounded-sm px-3 py-2 flex items-center justify-between">
@@ -342,6 +360,13 @@
             <i class="fa-solid fa-check-to-slot mr-1.5" aria-hidden="true"></i>Vote
           </button>
         </div>
+      </div>
+
+      <div class="neon-panel hud-corners rounded-sm p-3 space-y-2" aria-label="Account connection and coaching">
+        <div class="flex items-center justify-between"><h2 class="font-orbitron text-xs tracking-[0.2em] text-neonamber uppercase"><i class="fa-solid fa-vault mr-2" aria-hidden="true"></i>Account Boundary</h2><span id="account-status" class="font-techmono text-[10px] text-slate-500">NOT CONNECTED</span></div>
+        <p id="account-note" class="font-techmono text-[10px] leading-relaxed text-slate-500">Public market data is active. Private access is disabled until a secure server route is provisioned.</p>
+        <form id="account-form" class="flex gap-2"><label class="sr-only" for="account-provider">Broker provider</label><select id="account-provider" class="min-w-0 flex-1 bg-paneldeep border border-gridline rounded-sm px-2 py-1.5 font-techmono text-[10px] text-slate-300"><option>Binance read-only intent</option></select><button class="btn-neon font-orbitron text-[10px] tracking-widest text-neonamber rounded-sm px-3 py-1.5 uppercase" type="submit">Connect</button></form>
+        <div class="border-t border-gridline pt-2"><div class="flex items-center justify-between"><span class="font-orbitron text-[10px] tracking-widest text-neoncyan uppercase">Research Coach</span><span id="coach-status" class="font-techmono text-[10px] text-slate-600">READY</span></div><button id="btn-coach" class="btn-neon mt-2 w-full font-orbitron text-[10px] tracking-widest text-neoncyan rounded-sm py-1.5 uppercase" type="button"><i class="fa-solid fa-graduation-cap mr-1.5" aria-hidden="true"></i>Run Evidence Review</button><div id="coaching-output" class="mt-2 max-h-40 overflow-y-auto font-techmono text-[10px]" aria-live="polite"><p class="text-slate-600">No coaching review yet. Research output is educational and never authorizes orders.</p></div></div>
       </div>
     </section>
   </main>
@@ -677,6 +702,11 @@
   <script src="js/consensus.js"></script>
   <script src="js/replay.js"></script>
   <script src="js/views.js"></script>
+  <script src="js/charts.js"></script>
+  <script src="js/tradingview.js"></script>
+  <script src="js/binance-account.js"></script>
+  <script src="js/agent.js"></script>
+  <script src="js/market-data.js"></script>
   <script src="js/boot.js"></script>
 </body>
 </html>
