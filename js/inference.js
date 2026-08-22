@@ -76,11 +76,8 @@ function providerRequestFor(m, key, payload) {
         { role: 'user', content: payload.userQuery }
       ]
     })
-  }).then(function (res) {
-    if (!res.ok) throw new Error('HTTP ' + res.status);
-    return res.json();
   }).then(function (json) {
-    var text = json.choices && json.choices[0] && json.choices[0].message && json.choices[0].message.content;
+    var text = json && json.choices && json.choices[0] && json.choices[0].message && json.choices[0].message.content;
     if (!text) throw new Error('Empty inference payload');
     return text;
   });

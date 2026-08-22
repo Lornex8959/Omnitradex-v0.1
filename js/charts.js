@@ -2,8 +2,11 @@
 /* OmniTradeX // TradingView Lightweight Charts adapter */
 (function () {
   var chart = null, candles = null, volume = null, container = document.getElementById('tv-chart');
+  var resizeObserver = null;
+  var bootstrapToken = 0;
   var candleMap = {};
   var interval = '1m';
+  var allowedIntervals = { '1m': true, '5m': true, '15m': true, '1h': true, '4h': true };
   function ensureLibrary(done) {
     if (window.LightweightCharts) return done();
     var s = document.createElement('script');
@@ -18,13 +21,17 @@
     candles = chart.addSeries(LightweightCharts.CandlestickSeries, { upColor: '#42d392', downColor: '#ed6a7a', borderVisible: false, wickUpColor: '#42d392', wickDownColor: '#ed6a7a', priceLineVisible: true });
     volume = chart.addSeries(LightweightCharts.HistogramSeries, { priceFormat: { type: 'volume' }, priceScaleId: '', priceScale: { scaleMargins: { top: 0.82, bottom: 0 } } });
     resize();
-    window.addEventListener('resize', resize);
+    if (typeof ResizeObserver === 'function') {
+      resizeObserver = new ResizeObserver(resize);
+      resizeObserver.observe(container);
+    } else window.addEventListener('resize', resize);
     document.querySelectorAll('[data-chart-interval]').forEach(function (b) { b.addEventListener('click', function () { interval = b.dataset.chartInterval; document.querySelectorAll('[data-chart-interval]').forEach(function (x) { x.classList.toggle('chart-control-active', x === b); }); bootstrap(); }); });
     bootstrap();
   }
   function resize() { if (chart && container) chart.applyOptions({ width: container.clientWidth, height: Math.max(280, container.clientHeight) }); }
   function bootstrap() {
     if (!candles || !state.active) return;
+    var requestToken = ++bootstrapToken;
     var symbol = state.active;
     var crypto = /USDT$/.test(symbol);
     if (!crypto) { var forexMsg = document.getElementById('chart-error'); if (forexMsg) forexMsg.textContent = 'Candles unavailable for this asset: Binance provides crypto klines only.'; return; }
@@ -32,6 +39,7 @@
     fetch('https://api.binance.com/api/v3/klines?symbol=' + encodeURIComponent(symbol) + '&interval=' + encodeURIComponent(interval) + '&limit=300', { headers: { Accept: 'application/json' } })
       .then(function (r) { if (!r.ok) throw new Error('HTTP ' + r.status); return r.json(); })
       .then(function (rows) {
+        if (requestToken !== bootstrapToken) return;
         if (!Array.isArray(rows) || rows.length < 2) throw new Error('No valid klines');
         var data = [], vol = [];
         rows.forEach(function (row) {
