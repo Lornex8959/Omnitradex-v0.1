@@ -4,8 +4,6 @@
   var chart = null, candles = null, volume = null, container = document.getElementById('tv-chart');
   var candleMap = {};
   var interval = '1m';
-  var requestId = 0;
-  var resizeObserver = null;
   function ensureLibrary(done) {
     if (window.LightweightCharts) return done();
     var s = document.createElement('script');
@@ -27,7 +25,6 @@
   function resize() { if (chart && container) chart.applyOptions({ width: container.clientWidth, height: Math.max(280, container.clientHeight) }); }
   function bootstrap() {
     if (!candles || !state.active) return;
-    var currentRequest = ++requestId;
     var symbol = state.active;
     var crypto = /USDT$/.test(symbol);
     if (!crypto) { var forexMsg = document.getElementById('chart-error'); if (forexMsg) forexMsg.textContent = 'Candles unavailable for this asset: Binance provides crypto klines only.'; return; }
@@ -35,7 +32,6 @@
     fetch('https://api.binance.com/api/v3/klines?symbol=' + encodeURIComponent(symbol) + '&interval=' + encodeURIComponent(interval) + '&limit=300', { headers: { Accept: 'application/json' } })
       .then(function (r) { if (!r.ok) throw new Error('HTTP ' + r.status); return r.json(); })
       .then(function (rows) {
-        if (currentRequest !== requestId) return;
         if (!Array.isArray(rows) || rows.length < 2) throw new Error('No valid klines');
         var data = [], vol = [];
         rows.forEach(function (row) {
@@ -48,7 +44,7 @@
         candleMap = {}; data.forEach(function (x) { candleMap[x.time] = x; }); candles.setData(data); volume.setData(vol); candles.priceScale().applyOptions({ autoScale: true });
         if (errorMsg) errorMsg.textContent = 'BINANCE KLINES // ' + data.length + ' REAL CANDLES // ' + interval;
       })
-      .catch(function (err) { if (currentRequest !== requestId) return; if (errorMsg) errorMsg.textContent = 'Binance klines unavailable (' + err.message + '). Live ticker remains active.'; });
+      .catch(function (err) { if (errorMsg) errorMsg.textContent = 'Binance klines unavailable (' + err.message + '). Live ticker remains active.'; });
   }
   window.chartOnTick = function (tick) {
     if (!candles || tick.symbol !== state.active) return;

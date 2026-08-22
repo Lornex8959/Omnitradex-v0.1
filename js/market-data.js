@@ -8,12 +8,9 @@
   var streams = 'btcusdt@ticker/ethusdt@ticker/solusdt@ticker/xrpusdt@ticker/bnbusdt@ticker/dogeusdt@ticker';
   var attempt = 0;
   var retryTimer = null;
-  var staleTimer = null;
   var opened = false;
   var lastEvent = 0;
   var requested = false;
-  var shuttingDown = false;
-  var connectionToken = 0;
 
   function setSource(status, cls) {
     if (typeof setFeed === 'function') setFeed(status, cls || 'text-slate-500');
@@ -33,11 +30,10 @@
   }
 
   function connect() {
-    if (shuttingDown || retryTimer || state.ws || !window.WebSocket) return;
-    var token = ++connectionToken;
+    if (retryTimer || !window.WebSocket) return;
     setSource('CONNECTING', 'text-neonamber');
     var ws;
-    try { ws = new WebSocket(endpoints[attempt % endpoints.length] + streams); } catch (e) { attempt++; schedule(); return; }
+    try { ws = new WebSocket(endpoints[attempt % endpoints.length] + streams); } catch (e) { schedule(); return; }
     state.ws = ws;
     opened = false;
     ws.onopen = function () {
@@ -45,7 +41,6 @@
       setSource('LIVE', 'text-neongreen');
     };
     ws.onmessage = function (event) {
-      if (token !== connectionToken || shuttingDown) return;
       var tick = null;
       try { tick = parseTicker(JSON.parse(event.data)); } catch (e) { return; }
       if (!tick) return;
@@ -57,17 +52,15 @@
     };
     ws.onerror = function () { try { ws.close(); } catch (e) {} };
     ws.onclose = function () {
-      if (token !== connectionToken || shuttingDown) return;
       if (state.ws === ws) state.ws = null;
-      attempt = opened ? Math.min(attempt + 1, 8) : Math.min(attempt + 2, 8);
+      if (!opened) attempt++;
       setSource('RECONNECTING', 'text-neonamber');
       schedule();
     };
   }
   function schedule() {
-    if (shuttingDown || retryTimer) return;
-    var base = Math.min(30000, 1000 * Math.pow(2, Math.min(5, attempt)));
-    var delay = Math.round(base * (0.8 + Math.random() * 0.4));
+    if (retryTimer) return;
+    var delay = Math.min(30000, 1000 * Math.pow(2, Math.min(5, attempt)));
     retryTimer = setTimeout(function () { retryTimer = null; connect(); }, delay);
   }
   setInterval(function () {
@@ -76,14 +69,8 @@
       try { if (state.ws) state.ws.close(); } catch (e) {}
     }
   }, 5000);
-  function shutdown() {
-    shuttingDown = true;
-    connectionToken++;
-    if (retryTimer) { clearTimeout(retryTimer); retryTimer = null; }
-    if (state.ws) { try { state.ws.close(); } catch (e) {} state.ws = null; }
-  }
-  window.addEventListener('beforeunload', shutdown);
-  window.otxMarket = { connect: connect, shutdown: shutdown, status: function () { return { mode: state.marketMode || 'UNKNOWN', lastEvent: lastEvent, ageMs: lastEvent ? Date.now() - lastEvent : null }; } };
+  window.addEventListener('beforeunload', function () { if (state.ws) state.ws.close(); });
+  window.otxMarket = { connect: connect, status: function () { return { mode: state.marketMode || 'UNKNOWN', lastEvent: lastEvent }; } };
   window.connectBinance = function () { if (!requested) { requested = true; connect(); } };
 }());
 
