@@ -1,3 +1,4 @@
+import 'server-only'
 import { drizzle } from 'drizzle-orm/node-postgres'
 import { Pool } from 'pg'
 import * as schema from './schema'
@@ -17,7 +18,7 @@ export const pool = new Pool({
   max: 5,
   connectionTimeoutMillis: 2500,
   idleTimeoutMillis: 10000,
-  ssl: connectionString ? { rejectUnauthorized: false } : undefined,
+  ssl: connectionString ? { rejectUnauthorized: true } : undefined,
 })
 export const db = drizzle(pool, { schema })
 

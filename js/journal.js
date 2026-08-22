@@ -6,10 +6,10 @@
    Every closed sim trade is journaled with R-multiple, hold time
    and an automatic post-mortem note. Profile-bound via localStorage.
    ================================================================ */
-var JOURNAL_SLOT = 'otx_journal';
 var journal = [];
-try { journal = JSON.parse(localStorage.getItem(JOURNAL_SLOT)) || []; } catch (e) { journal = []; }
-function saveJournal() { localStorage.setItem(JOURNAL_SLOT, JSON.stringify(journal)); }
+/* Journal data is session-only until a protected Neon API is available. Never
+   persist authenticated trade history in browser storage. */
+function saveJournal() { return; }
 
 function fmtHold(ms) {
   var s = Math.round(ms / 1000);
@@ -129,7 +129,7 @@ document.getElementById('journal-export').addEventListener('click', function () 
   a.click();
   a.remove();
   URL.revokeObjectURL(url);
-  aiPrint('> JOURNAL EXPORTED: ' + journal.length + ' entries downloaded as JSON.', 'text-neoncyan');
+  aiPrint('> JOURNAL EXPORTED: ' + journal.length + ' session entries downloaded as JSON.', 'text-neoncyan');
 });
 
 // two-step clear (window.confirm is blocked in sandboxed frames)
