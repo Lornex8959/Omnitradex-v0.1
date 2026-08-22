@@ -1,0 +1,155 @@
+/* ================================================================
+   OmniTradeX Engine // terminal design system
+   Professional financial-terminal pass: flat surfaces, hairline
+   borders, restrained accents, tabular numerics. No glow, no toys.
+   ================================================================ */
+
+/* ============ TYPOGRAPHY ============ */
+/* Headers: semibold, tight tracking. Telemetry: medium, tabular figures. */
+.font-orbitron { font-weight: 650 !important; letter-spacing: 0.03em; }
+.font-techmono { font-weight: 500; font-variant-numeric: tabular-nums; font-feature-settings: 'tnum' 1, 'ss01' 1; }
+body { font-variant-numeric: tabular-nums; }
+
+/* ============ GLOBAL BASE ============ */
+body {
+  background-color: #05070d;
+  -webkit-font-smoothing: antialiased;
+}
+
+::selection { background: rgba(56, 189, 248, 0.25); }
+
+:focus-visible {
+  outline: 1px solid rgba(56, 189, 248, 0.7);
+  outline-offset: 1px;
+}
+
+/* ============ CUSTOM SCROLLBARS ============ */
+::-webkit-scrollbar { width: 6px; height: 6px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: #1e293b; border-radius: 3px; }
+::-webkit-scrollbar-thumb:hover { background: #334155; }
+* { scrollbar-width: thin; scrollbar-color: #1e293b transparent; }
+
+/* ============ PANEL SURFACES (formerly neon) ============ */
+/* Flat cards: solid surface, hairline border, faint elevation. */
+.neon-panel {
+  background: #0a0f1a;
+  border: 1px solid #1a2334;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.4);
+}
+.neon-panel-magenta { border-color: #241a34; }
+.neon-panel-green { border-color: #16281f; }
+
+/* Corner brackets retired — replaced with a quiet 2px accent tick top-left. */
+.hud-corners { position: relative; }
+.hud-corners::before {
+  content: '';
+  position: absolute;
+  top: -1px; left: -1px;
+  width: 22px; height: 2px;
+  background: #22d3ee;
+  opacity: 0.55;
+  pointer-events: none;
+}
+.hud-corners::after { content: none; }
+.neon-panel-magenta.hud-corners::before { background: #e879f9; }
+.neon-panel-green.hud-corners::before { background: #4ade80; }
+
+/* Glow text retired — professional terminals do not glow. */
+.glow-cyan, .glow-green, .glow-magenta { text-shadow: none; }
+
+/* Status dot: steady, small pulse in opacity only. */
+@keyframes pulse-dot {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.4; }
+}
+.pulse-dot { animation: pulse-dot 2s ease-in-out infinite; box-shadow: none; }
+
+/* Scanline sweep retired. */
+.scanline-bar { display: none; }
+
+/* Strategy rows: quiet hover, clear selected state, no motion. */
+.strategy-card { transition: background-color 0.12s ease, border-color 0.12s ease; cursor: pointer; }
+.strategy-card:hover {
+  border-color: #2a3a52;
+  background: rgba(148, 163, 184, 0.04);
+  transform: none;
+}
+.strategy-card.active-strat {
+  border-color: rgba(34, 211, 238, 0.55);
+  background: rgba(34, 211, 238, 0.05);
+  box-shadow: inset 2px 0 0 #22d3ee;
+}
+
+/* AI terminal: hairline accent border, no bloom. */
+.ai-terminal {
+  border: 1px solid rgba(232, 121, 249, 0.28);
+  box-shadow: none;
+}
+
+/* Buttons: flat, precise, subtle states. */
+.btn-neon {
+  transition: background-color 0.12s ease, border-color 0.12s ease, color 0.12s ease;
+  border: 1px solid #24324a;
+  background: rgba(148, 163, 184, 0.03);
+}
+.btn-neon:hover {
+  background: rgba(56, 189, 248, 0.08);
+  border-color: rgba(56, 189, 248, 0.45);
+  box-shadow: none;
+}
+.btn-neon:active { background: rgba(56, 189, 248, 0.14); }
+.btn-neon-magenta {
+  border-color: rgba(232, 121, 249, 0.35);
+  background: rgba(232, 121, 249, 0.05);
+}
+.btn-neon-magenta:hover {
+  background: rgba(232, 121, 249, 0.12);
+  border-color: rgba(232, 121, 249, 0.55);
+  box-shadow: none;
+}
+
+/* ============ LIGHT MODE (SOLAR DECK) ============ */
+html.light { color-scheme: light; }
+html.light body {
+  background-color: #f1f4f8;
+  background-image: none;
+  color: #1e293b;
+}
+html.light .neon-panel {
+  background: #ffffff;
+  border-color: #d8dfe8;
+  box-shadow: 0 1px 3px rgba(15, 23, 42, 0.06);
+}
+html.light .neon-panel-magenta { border-color: #e5d5ea; }
+html.light .neon-panel-green { border-color: #d3e5d8; }
+html.light .ai-terminal { border-color: rgba(162, 28, 175, 0.3); box-shadow: none; }
+html.light .text-slate-100, html.light .text-slate-200, html.light .text-white { color: #0f172a; }
+html.light .text-slate-300 { color: #1e293b; }
+html.light .text-slate-400 { color: #334155; }
+html.light .text-slate-500 { color: #475569; }
+html.light .text-slate-600 { color: #64748b; }
+html.light .text-neoncyan { color: #0e7490; }
+html.light .text-neongreen { color: #15803d; }
+html.light .text-neonmagenta { color: #a21caf; }
+html.light .text-neonamber { color: #b45309; }
+html.light .text-neonred { color: #b91c1c; }
+html.light .bg-paneldeep { background-color: #f8fafc; }
+html.light .border-gridline { border-color: #d8dfe8; }
+html.light .hud-corners::before { background: #0e7490; }
+html.light .neon-panel-magenta.hud-corners::before { background: #a21caf; }
+html.light .neon-panel-green.hud-corners::before { background: #15803d; }
+html.light ::-webkit-scrollbar-thumb { background: #cbd5e1; }
+html.light * { scrollbar-color: #cbd5e1 transparent; }
+html.light .bg-void\/80 { background-color: rgba(51, 65, 85, 0.55); }
+/* Waveform screen intentionally stays a dark display in light mode */
+html.light #waveform-wrap { background-color: #0a0f1a; }
+html.light .btn-neon { border-color: #c3cede; background: #f8fafc; }
+html.light .btn-neon:hover { background: rgba(14, 116, 144, 0.08); border-color: rgba(14, 116, 144, 0.5); box-shadow: none; }
+html.light .btn-neon-magenta { border-color: rgba(162, 28, 175, 0.4); background: rgba(162, 28, 175, 0.04); }
+html.light .btn-neon-magenta:hover { background: rgba(162, 28, 175, 0.1); box-shadow: none; }
+html.light .strategy-card:hover { border-color: rgba(14, 116, 144, 0.5); background: rgba(14, 116, 144, 0.04); }
+html.light .strategy-card.active-strat { border-color: rgba(14, 116, 144, 0.6); background: rgba(14, 116, 144, 0.06); box-shadow: inset 2px 0 0 #0e7490; }
+
+/* Smooth theme transition */
+body, .neon-panel, .bg-paneldeep { transition: background-color 0.3s ease, border-color 0.3s ease, color 0.3s ease; }
