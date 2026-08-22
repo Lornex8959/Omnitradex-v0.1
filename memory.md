@@ -70,9 +70,16 @@ Architecture lock: single-file `index.html` (HTML5 + Tailwind CDN + vanilla JS).
 - `otx_session` — active pilot callsign
 - `otx_profile_<name>` — per-pilot snapshot of all progress slots
 
-## Next Candidates (Phase 9)
-- Backtest Replay Engine (Binance klines REST replayed through MTF gate + synthesis)
-- Multi-model consensus mode (2-3 providers vote on the same payload)
-- AI post-mortem journal (auto-analysis of each closed sim trade)
-- Browser notifications / audio alerts on gate flips, fills, and traps
-- Social layer: shareable read-only "desk card" (encoded stats permalink)
+## Professional Upgrade Pass — 2026-08
+- MODULARIZED: runtime split across `js/` modules with explicit classic-script load order; `index.html` is now the composition shell.
+- HARDENED: all modules pass standalone JavaScript syntax compilation; duplicate DOM IDs checked; dynamic user/API text uses `textContent` or the safe markdown renderer.
+- UX: institutional terminal density pass applied — flat graphite surfaces, hairline borders, restrained accents, tabular numerics, responsive horizontal navigation, explicit loading/disabled states.
+- MODEL POLICY: provider IDs remain configurable in the local vault; do not silently claim AI output is market truth. The UI must label simulated heuristics, paper execution, and educational-only results.
+- KNOWN LIMITATION: localStorage credentials and browser-direct provider calls are appropriate for a personal prototype, not a production multi-user trading service. Neon is reserved for the planned server-side persistence/auth migration.
+
+## Next Candidates (Phase 10)
+- Replace tick-tape replay with Binance klines REST ingestion, candle aggregation, fees and slippage model.
+- Add a market-data provenance panel: source, last event timestamp, reconnect count, stale-feed lockout.
+- Add deterministic risk controls: max notional, spread/slippage assumptions, daily journal export, immutable audit events.
+- Migrate to Next.js + Neon server routes before any real account connectivity, multi-user sharing, or persistent cloud data.
+- Social layer: shareable read-only "desk card" (encoded stats permalink), with no credentials or private data.

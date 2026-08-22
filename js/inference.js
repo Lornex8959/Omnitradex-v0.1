@@ -7,19 +7,33 @@
    the selected premium engine, with exponential backoff retries.
    ================================================================ */
 function providerRequestFor(m, key, payload) {
+  if (!m || !m.provider || !m.model || !key) return Promise.reject(new Error('Provider configuration is incomplete'));
+  var controller = typeof AbortController === 'function' ? new AbortController() : null;
+  var timeout = setTimeout(function () { if (controller) controller.abort(); }, 30000);
+  function request(url, options) {
+    if (controller) options.signal = controller.signal;
+    return fetch(url, options).then(function (res) {
+      return res.text().then(function (raw) {
+        var json = null;
+        try { json = raw ? JSON.parse(raw) : null; } catch (e) { /* provider sent non-JSON */ }
+        if (!res.ok) {
+          var detail = json && json.error && (json.error.message || json.error.type);
+          throw new Error('HTTP ' + res.status + (detail ? ' — ' + String(detail).slice(0, 140) : ''));
+        }
+        return json;
+      });
+    }).finally(function () { clearTimeout(timeout); });
+  }
   if (m.provider === 'gemini') {
-    return fetch('https://generativelanguage.googleapis.com/v1beta/models/' + m.model + ':generateContent?key=' + encodeURIComponent(key), {
+    return request('https://generativelanguage.googleapis.com/v1beta/models/' + m.model + ':generateContent?key=' + encodeURIComponent(key), {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
         systemInstruction: { parts: [{ text: payload.systemInstruction }] },
         contents: [{ parts: [{ text: payload.userQuery }] }]
       })
-    }).then(function (res) {
-      if (!res.ok) throw new Error('HTTP ' + res.status);
-      return res.json();
     }).then(function (json) {
-      var text = json.candidates && json.candidates[0] &&
+      var text = json && json.candidates && json.candidates[0] &&
         json.candidates[0].content && json.candidates[0].content.parts &&
         json.candidates[0].content.parts[0].text;
       if (!text) throw new Error('Empty inference payload');
@@ -27,7 +41,7 @@ function providerRequestFor(m, key, payload) {
     });
   }
   if (m.provider === 'anthropic') {
-    return fetch('https://api.anthropic.com/v1/messages', {
+    return request('https://api.anthropic.com/v1/messages', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -41,11 +55,8 @@ function providerRequestFor(m, key, payload) {
         system: payload.systemInstruction,
         messages: [{ role: 'user', content: payload.userQuery }]
       })
-    }).then(function (res) {
-      if (!res.ok) throw new Error('HTTP ' + res.status);
-      return res.json();
     }).then(function (json) {
-      var text = json.content && json.content[0] && json.content[0].text;
+      var text = json && json.content && json.content[0] && json.content[0].text;
       if (!text) throw new Error('Empty inference payload');
       return text;
     });
@@ -54,7 +65,7 @@ function providerRequestFor(m, key, payload) {
   var url = m.provider === 'groq'
     ? 'https://api.groq.com/openai/v1/chat/completions'
     : 'https://api.openai.com/v1/chat/completions';
-  return fetch(url, {
+  return request(url, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + key },
     body: JSON.stringify({
